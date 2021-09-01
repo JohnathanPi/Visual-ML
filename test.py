@@ -1,4 +1,11 @@
+import json
 import sys
-print('#Hello from python#')
-print('First param:'+sys.argv[1]+'#')
-print('Second param:'+sys.argv[2]+'#')
+import ast
+
+def func():
+    incoming_data = sys.argv[1]
+    test_data = ast.literal_eval(incoming_data)
+    print(test_data[0]['x'])
+
+
+func()

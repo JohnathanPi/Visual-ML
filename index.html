@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
     <title>add data test</title>
-    <link rel="stylesheet" type="text/css"   href="\css\styles.css">
+    <link rel="stylesheet" type="text/css" href="\css\styles.css">
     <!-- Google Fonts -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,8 @@
         <div class="graph">
             <canvas id="my_graph"></canvas>
         </div>
+        <button onclick = "graph_test()">load_data_test</button>
+        <button onclick = "request()">request_test</button>
         <div class="model-selection">
             <div class="model-selection-header">
                 <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
@@ -59,8 +61,8 @@
             <div class="model_setting_box" id="input_box_kmeans" style="background-color: burlywood;">
                 <textarea class="input_design border-gradient border-gradient-aqua" name="input_data_text"
                     placeholder="Enter Data" id="input_data_kmeans" cols="30" rows="10"></textarea>
-                <textarea class="input_design_labels border-gradient border-gradient-aqua" name=""
-                    placeholder="Enter K" id="input_k" cols="" rows=""></textarea>
+                <textarea class="input_design_labels border-gradient border-gradient-aqua" name="" placeholder="Enter K"
+                    id="input_k" cols="" rows=""></textarea>
                 <div class="button_container">
                     <button onclick="parse_data()" class="insert_data">ADD</button>
                     <button onclick="clear_data()" class="insert_data">CLEAR</button>
@@ -68,7 +70,7 @@
             </div>
         </div>
     </div>
-    <script src = "\js\index.js"></script>
+    <script src="\js\index.js"></script>
 
 
 
