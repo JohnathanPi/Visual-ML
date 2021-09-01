@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <title>add data test</title>
+    <link rel="stylesheet" type="text/css"   href="\css\styles.css">
+    <!-- Google Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;500&display=swap" rel="stylesheet">
+</head>
+
+<body class="background">
+    <div class="header">
+        <div class="title-cont">
+            <p class="title">Graph Creator Thingy</p>
+        </div>
+        <div class="navbar">
+            <span class="navbtn linear-wipe">World</span>
+            <span class="navbtn linear-wipe">Wide</span>
+            <span class="navbtn linear-wipe">Oink</span>
+        </div>
+    </div>
+    <div class="content">
+        <div class="graph">
+            <canvas id="my_graph"></canvas>
+        </div>
+        <div class="model-selection">
+            <div class="model-selection-header">
+                <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
+                    <option value="1" selected>Linear Regression</option>
+                    <option value="2">SVM</option>
+                    <option value="3">K-Means</option>
+                </select>
+            </div>
+            <div class="model_setting_box" id="input_box_lr">
+                <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
+                    placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
+                <div class="button_container">
+                    <button onclick="parse_data()" class="insert_data">ADD</button>
+                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                </div>
+            </div>
+            <div class="model_setting_box" id="input_box_svm">
+                <textarea class="input_design_smaller border-gradient border-gradient-aqua" name="input_data_text"
+                    placeholder="Enter Data" id="labled_input_data" cols="" rows=""></textarea>
+                <textarea class="input_design_labels border-gradient border-gradient-aqua" name=""
+                    placeholder="Enter Lables" id="input_lables" cols="" rows=""></textarea>
+                <div class="button_container">
+                    <button onclick="parse_labled_data()" class="insert_data">ADD</button>
+                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                </div>
+            </div>
+            <div class="model_setting_box" id="input_box_kmeans" style="background-color: burlywood;">
+                <textarea class="input_design border-gradient border-gradient-aqua" name="input_data_text"
+                    placeholder="Enter Data" id="input_data_kmeans" cols="30" rows="10"></textarea>
+                <textarea class="input_design_labels border-gradient border-gradient-aqua" name=""
+                    placeholder="Enter K" id="input_k" cols="" rows=""></textarea>
+                <div class="button_container">
+                    <button onclick="parse_data()" class="insert_data">ADD</button>
+                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src = "\js\index.js"></script>
+
+
+
+</body>
+
+
+</html>

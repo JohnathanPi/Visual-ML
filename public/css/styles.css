@@ -1,0 +1,223 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Kumbh Sans', sans-serif
+}
+
+.background {
+    background-color: #333;
+}
+
+.title {
+    font-weight: 500;
+    align-self: center;
+    height: 100%;
+    font-size: 1.875rem;
+}
+
+.title-cont {
+    display: flex;
+    border-right: 0.125rem solid #78CEB4;
+    flex-direction: column;
+    flex: 1 1 7.5%;
+}
+
+.navbar {
+    flex: 1 1 70%;
+    align-self: center;
+    padding-left: 2%;
+    color: white;
+}
+
+.navbtn {
+    font-size: 1.875rem;
+    font-weight: 300;
+    padding: 1%;
+    margin: 1.875rem;
+}
+
+.header {
+    display: flex;
+    text-align: left;
+    border-bottom: 0.125rem solid #78CEB4;
+    height: 6.25rem;
+    color: #78CEB4;
+    /* background-image: linear-gradient(132deg, rgb(113, 143, 175) 0.00%, rgb(69, 92, 114) 100.00%); */
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.graph {
+    width: 800px;
+    height:600px;
+    margin: 100px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: -0.563rem 0.75rem 0.938rem -0.188rem rgba(0,0,0,0.27);
+
+}
+
+.model-selection {
+    height: 31.25rem;
+    width: 25rem;
+    /* background-image: linear-gradient(45deg,#e1eaff,#fbf0f4); */
+    font-size: 1.875rem;
+    border-radius: 1.25rem;
+    margin-right: 18.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items:center;
+    border: #78CEB4 2px solid;
+    transition-duration: 0.5s;
+}
+
+.model-selection:hover {
+    box-shadow: 0rem 0rem 2rem 0rem #78ceb4;
+    transition-duration: 0.5s;
+}
+
+.model-selection-header {
+    display: flex;
+    width: 100%;
+    margin-bottom: 6.25rem;
+    font-size: 40;
+    justify-content: center;
+}
+
+#input_box_lr {
+    display: block;
+}
+
+#input_box_svm {
+    display: none;
+}
+
+#input_box_kmeans {
+    display: none;
+}
+.input_design {
+    height: 12.5rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.563rem;
+    margin-bottom: 0.938rem;
+    border: 0rem;
+    background: transparent;
+    padding: 0.313rem;
+    font-size: 1.25rem;
+    width: 15.625rem;
+}
+
+.input_design_smaller {
+    height: 9.375rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.563rem;
+    margin-bottom: 0.938rem;
+    border: 0px;
+    background: transparent;
+    padding: 0.313rem;
+    font-size: 1.25rem;
+    width: 15.625rem;  
+}
+
+.input_design_labels {
+    height: 3.125rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.563rem;
+    margin-bottom: 0.938rem;
+    border: 0px;
+    background: transparent;
+    padding: 0.313rem;
+    font-size: 1.25rem;
+    width: 15.625rem;  
+}
+
+.insert_data {
+    background: transparent;
+    color: white;
+    border: 0px;
+    font-size: 1.25rem;
+    transition-duration: 0.5s;
+}
+
+.insert_data:hover {
+    color: #78ceb4;
+    transition-duration: 0.5s;
+    letter-spacing: 0.188rem;
+}
+
+.border-gradient {
+    border: 0.625rem solid;
+    border-image-slice: 1;
+    border-width: .0.188rem;
+}
+  
+.border-gradient-aqua {
+    border-image-source: linear-gradient(to left, #78ceb4, #C8FCEA);
+    transition-duration: 0.5s;
+}
+
+.border-gradient-aqua:hover {
+    border-width: 0.313rem;
+    transition-duration: 0.5s;
+}
+
+.border-gradient-aqua:active {
+    border-width: 0.313rem;
+    transition-duration: 0.5s;
+}
+
+.button_container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.graph {
+    position: relative;
+}
+
+.model-selector {
+    font-family: 'Kumbh Sans', sans-serif;
+    padding: 0.625rem;
+    font-size: 2.188rem;
+    background-color: transparent;
+    border: 0px;
+    background: transparent;
+    /* background: -webkit-linear-gradient(132deg, rgb(30, 144, 255) 0.00%, rgb(138, 43, 226) 100.00%); */
+    background: -webkit-linear-gradient(132deg, #78CEB4 0.00%, #C8FCEA 100.00%); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+option {
+    background-image:linear-gradient(45deg,#e1eaff,#fbf0f4) ;
+}
+
+.linear-wipe {
+    font-weight: 500;
+    color: royalblue;
+    overflow: hidden;
+    background: linear-gradient(to right, #78CEB4, #C8FCEA 50%, white 50%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    background-position: 100%;
+    transition: background-position 750ms ease;
+}
+
+.linear-wipe:hover {
+    background-position: 0 100%;
+}
