@@ -146,14 +146,21 @@ let request = () => {
             console.log('resolved');
             return response.json();
         }).then((data) => {
-            my_graph.data.datasets.push({
-                label: 'Regression Line',
-                data: data,
-                showLine: true,
-                fill: false,
-                borderColor: '#DAEDBD'
-                });
-            my_graph.update();
+            // my_graph.data.datasets.push({
+            //     label: 'Regression Line',
+            //     data: data,
+            //     showLine: true,
+            //     fill: false,
+            //     borderColor: '#DAEDBD'
+            //     });
+            // my_graph.update();
+            let slope = data["slope"];
+            let bias = data["bias"];
+            // need to graph y = x*slope + bias
+            // find min and max points in curr dataset
+            lin_reg_data = my_graph.data.datasets[0].data;
+            console.log(lin_reg_data);
+            
         })
         .catch((err) => {
             console.log('rejected', err);
