@@ -3,7 +3,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const app = express();
-let graph_data = "";
+var graph_data = "";
 
 app.use(express.json());
 
@@ -14,8 +14,8 @@ app.get('/',(req,res) => {
 
 app.post('/api', (req, res) => {
   // recieve array of objects, each representing a point
-  graph_data = req.body;
-  console.log('loaded data is', graph_data[0]);
+  graph_data = JSON.stringify(req.body);
+  console.log('loaded data is', graph_data, 'and of type', typeof graph_data);
   res.end();
 })
 
@@ -23,7 +23,7 @@ app.post('/api', (req, res) => {
 app.get('/python', (req, res) => {
   let dataToSend;
   // spawn new child process to call the python script
-  const python = spawn('py', ['test.py', "[ {'x': 5, 'y' : 4}, {'x': 2, 'y' : 3}  ]"]);
+  const python = spawn('py', ['test.py', graph_data]);
   // collect data from script
   python.stdout.on('data', function (data) {
     dataToSend = data;
@@ -33,7 +33,7 @@ app.get('/python', (req, res) => {
       console.log(`child process close all stdio with code ${code}`);
       // send data to browser
       let final_data = dataToSend;
-      console.log('datatosend is', final_data);
+      console.log('datatosend is', typeof final_data);
       res.write(final_data);
       res.end();
   });

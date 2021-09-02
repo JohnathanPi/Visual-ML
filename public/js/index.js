@@ -108,8 +108,6 @@ function clear_data() {
     my_graph.data.datasets.forEach(dataset => {
         dataset.data = [];
     });
-    // my_graph.data.datasets[0].data = [];
-    // my_graph.data.datasets[1].data = [];
     my_graph.update();
 };
 
@@ -145,14 +143,18 @@ function graph_test() {
 let request = () => {
     console.log('im at request');
     fetch('/python').then((response) => {
-            console.log('resolved', response);
+            console.log('resolved');
             return response.json();
         }).then((data) => {
-            console.log(data);
-            my_graph.data.datasets[0].data.push(data);
+            my_graph.data.datasets.push({
+                label: 'Regression Line',
+                data: data,
+                showLine: true,
+                fill: false,
+                borderColor: '#DAEDBD'
+                });
             my_graph.update();
         })
-
         .catch((err) => {
             console.log('rejected', err);
         })
