@@ -8,16 +8,42 @@ var my_graph = new Chart(ctx, {
                 data: [],
                 fill: false,
                 backgroundColor: 'rgb(255, 99, 132)'
+            },
+                    {
+                data: [{'x': -20, 'y': 0}, {'x': 20, 'y': 0}],
+                label: "axis",
+                showLine: true,
+                fill: false,
+                borderWidth: 0.5,
+                borderColor: '#000000'
+            },
+                    {
+                data: [{'x': 0, 'y': -20}, {'x': 0, 'y': 20}],
+                label: "axis",
+                showLine: true,
+                fill: false,
+                borderWidth: 0.5,
+                borderColor: '#000000'
             }
 
         ]
     },
     options: {
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                     filter: function(legendItem, data) {
+                            return data.datasets[legendItem.datasetIndex].label != 'axis'
+                     }
+                }
+           }
+        },
         responsive: true,
         maintainAspectRatio: false,
         layout: {
             padding: 20
-        },
+        },  
         scales: {
             xAxes: [{
                 type: "linear",
@@ -146,20 +172,26 @@ let request = () => {
             console.log('resolved');
             return response.json();
         }).then((data) => {
-            // my_graph.data.datasets.push({
-            //     label: 'Regression Line',
-            //     data: data,
-            //     showLine: true,
-            //     fill: false,
-            //     borderColor: '#DAEDBD'
-            //     });
-            // my_graph.update();
             let slope = data["slope"];
             let bias = data["bias"];
             // need to graph y = x*slope + bias
             // find min and max points in curr dataset
-            lin_reg_data = my_graph.data.datasets[0].data;
-            console.log(lin_reg_data);
+            let point = (a, b, x) => {
+                return a*x + b;
+            };
+            let lin_reg_data = [];
+            for (let i = -20; i < 20; i += 10) {
+                lin_reg_data.push({'x': i, 'y':point(slope, bias, i)});
+            }
+            my_graph.data.datasets.push({
+                label: `y = ${slope}x + ${bias}`,
+                data: lin_reg_data,
+                showLine: true,
+                fill: false,
+                borderColor: '#DAEDBD'
+                });
+            my_graph.update();
+            
             
         })
         .catch((err) => {
