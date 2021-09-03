@@ -1,5 +1,10 @@
 var ctx = document.getElementById('my_graph').getContext('2d');
-var randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
+let colors = ['#8ecae6', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', '#003049', '#e5989b', '#ffc8dd', '#74c69d',
+'#560bad', '#f72585', '#b7e4c7', '#d9ed92', '#34a0a4', '#14213d', '#56cfe1', '#ced4da', '#ff758f', '#ffb700'];
+
+let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
+
 var my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
@@ -10,25 +15,6 @@ var my_graph = new Chart(ctx, {
                 fill: false,
                 backgroundColor: randomColor()
             }
-            //         {
-            //     data: [{'x': -20, 'y': 0}, {'x': 20, 'y': 0}],
-            //     label: "axis",
-            //     showLine: true,
-            //     fill: false,
-            //     borderWidth: 0.5,
-            //     pointStyle: 'line',
-            //     borderColor: '#000000'
-            // },
-            //         {
-            //     data: [{'x': 0, 'y': -20}, {'x': 0, 'y': 20}],
-            //     label: "axis",
-            //     showLine: true,
-            //     fill: false,
-            //     borderWidth: 0.5,
-            //     pointStyle: 'line',
-            //     borderColor: '#000000'
-            // }
-
         ]
     },
     options: {
@@ -92,15 +78,7 @@ var my_graph = new Chart(ctx, {
 });
 
 
-// x: {
-//     min: 100,
-//     max: 100
-// },
 
-// y: {
-//     min: 100,
-//     max: 100
-// }
 
 function parse_data() {
     const new_data = document.getElementById('input_data').value;
@@ -212,6 +190,29 @@ function edge_points() {
     return [left_bound, right_bound]
 };
 
+let calc_func_y = (a, b, x) => {
+    return a*x + b;
+};
+
+let calc_func_x = (a, b, y) => {
+    return (y - b) / a;
+};
+
+function line_through_border(slope, bias, border) {
+    // find the sides where the line intercepts the graphs border
+    border_y_intercept_1 = {'x' : calc_func_x(slope, bias, border), 'y' : border} // top of border box
+    border_y_intercept_2 = {'x' : calc_func_x(slope, bias, -border), 'y' : -border} // bottom of border box
+    border_x_intercept_1 = {'x': border, 'y' : calc_func_y(slope, bias, border)} // right of border box
+    border_x_intercept_2 = {'x': -border, 'y' : calc_func_y(slope, bias, -border)} // left of border box
+    let intercepts = [border_y_intercept_1, border_y_intercept_2, border_x_intercept_1, border_x_intercept_2];
+    let final_points = [];
+    intercepts.forEach(point => {
+        if ((-border <= point['x'] <= border) && (-border <= point['y'] <= border)) { // check if point is on the border
+            final_points.push(point);
+        };
+    });
+    return final_points.slice(0, 2);
+}
 
 function solve_linear_regression() {
     // send POST request to api that runs python script
@@ -235,17 +236,7 @@ function solve_linear_regression() {
             let bias = data["bias"];
             // need to graph y = x*slope + bias
             // find min and max points in curr dataset
-            let point = (a, b, x) => {
-                return a*x + b;
-            };
-            let bounds = edge_points();
-            console.log('bounds is', bounds);
-            // let lin_reg_data = [];
-            // for (let i = bounds[0]; i < bounds[1]; i += 1) {
-            //     lin_reg_data.push({'x': i, 'y':point(slope, bias, i)});
-            // }
-            let lin_reg_data = [{'x': bounds[0], 'y':point(slope, bias, bounds[0])}, {'x': bounds[1], 'y':point(slope, bias, bounds[1])}]
-            console.log('line data is', lin_reg_data);
+            let lin_reg_data = line_through_border(slope, bias, 20);
             my_graph.data.datasets.push({
                 label: `y = ${slope}x + ${bias}`,
                 data: lin_reg_data,

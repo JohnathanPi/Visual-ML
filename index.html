@@ -28,9 +28,9 @@
     </div>
     <div class="content">
         <div class="graph">
+            <!-- <div class="graph_settings">THIS IS A TEST!</div> -->
             <canvas id="my_graph"></canvas>
         </div>
-        <button onclick = "solve_linear_regression()">load_data_test</button>
         <div class="model-selection">
             <div class="model-selection-header">
                 <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
@@ -43,8 +43,13 @@
                 <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
                     placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
                 <div class="button_container">
-                    <button onclick="parse_data()" class="insert_data">ADD</button>
-                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                    <div class = "actions-cont">
+                        <button onclick="parse_data()" class="insert_data">ADD</button>
+                        <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                    </div>
+                    <div>
+                        <button onclick="solve_linear_regression()" class = 'insert_data'>SOLVE</button>
+                    </div>
                 </div>
             </div>
             <div class="model_setting_box" id="input_box_svm">

@@ -100,7 +100,7 @@ textarea {
 .model-selection-header {
     display: flex;
     width: 100%;
-    margin-bottom: 6.25rem;
+    /* margin-bottom: 6.25rem; */
     font-size: 40;
     justify-content: center;
 }
@@ -164,7 +164,7 @@ textarea {
 }
 
 .insert_data:hover {
-    color: #78ceb4;
+    color: #bc6fe3;
     transition-duration: 0.5s;
     letter-spacing: 0.188rem;
 }
@@ -192,7 +192,11 @@ textarea {
 
 .button_container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-wrap: nowrap;
 }
 
 .graph {
@@ -219,7 +223,7 @@ option {
     font-weight: 500;
     color: royalblue;
     overflow: hidden;
-    background: linear-gradient(to right, #78CEB4, #C8FCEA 50%, white 50%);
+    background: linear-gradient(to right, #bc6fe3, #c77dff 50%, white 50%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -230,4 +234,21 @@ option {
 
 .linear-wipe:hover {
     background-position: 0 100%;
+}
+
+.actions-cont {
+    display: flex;
+}
+
+#my-graph {
+    z-index: 2;
+}
+
+.graph_settings {
+    z-index: 3;
+    background-color: black;
+    opacity: 90%;
+    width: 100%;
+    height: 100%;
+    position: absolute;
 }
