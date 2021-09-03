@@ -48,32 +48,59 @@ var my_graph = new Chart(ctx, {
             padding: 20
         },
         scales: {
-            xAxes: [{
-                type: "linear",
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'X-Axis'
-                },
+            x: {
+                min: -20,
+                max: 20,
                 ticks: {
-                    min: -10,
-                    suggestedMax: 5
-                }
-            }, ],
-            yAxes: [{
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Y-Axis'
+                    display: true
                 },
+            },
+            y: {
+                
+                min: -20,
+                max: 20,
                 ticks: {
-                    beginAtZero: true,
-                    suggestedMax: 15
-                }
-            }]
+                    display: true
+                },
+            }
+            // xAxes: [{
+            //     type: "linear",
+            //     display: true,
+            //     scaleLabel: {
+            //         display: true,
+            //         labelString: 'X-Axis'
+            //     }
+            //     // ticks: {
+            //     //     min: -20,
+            //     //     suggestedMax: 20
+            //     // }
+            // } ],
+            // yAxes: [{
+            //     type: "linear",
+            //     display: true,
+            //     scaleLabel: {
+            //         display: true,
+            //         labelString: 'Y-Axis'
+            //     }
+            //     // ticks: {
+            //     //     beginAtZero: true,
+            //     //     suggestedMax: 20
+            //     // }
+            // }]
         }
     }
 });
+
+
+// x: {
+//     min: 100,
+//     max: 100
+// },
+
+// y: {
+//     min: 100,
+//     max: 100
+// }
 
 function parse_data() {
     const new_data = document.getElementById('input_data').value;
@@ -86,6 +113,8 @@ function parse_data() {
         };
         my_graph.data.datasets[0].data.push(point);
     });
+    my_graph.options.scales.x.position = 'center';
+    my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
     my_graph.update();
 };
@@ -170,9 +199,11 @@ function edge_points() {
     max_x = Math.max(...x_vals)
     min_y = Math.min(...y_vals)
     max_y = Math.min(...y_vals)
-    left_bound = min_x > 0 ? min_x -= 5*min_x : min_x += 5*min_x
-    right_bound = max_x > 0 ? max_x += 5*max_x : max_x -= 5*max_x
-    console.log(left_bound, right_bound)
+    left_bound = min_x >= 0 ? min_x -= 5*min_x : min_x += 5*min_x;
+    right_bound = max_x >= 0 ? max_x += 5*max_x : max_x -= 5*max_x;
+    // lower_bound = min_y >= 0 ? min_y -= 5*min_y : min_y += 5*min_y;
+    // upper_bound = max_y >= 0 ? max_y += 5*max_y : max_y -= 5*max_y;
+    // console.log(left_bound, right_bound, upper_bound, lower_bound);
     // HANDLE 0'S
     // return [
     //     {'x':min_x, 'y':min_y},
@@ -209,10 +240,11 @@ function solve_linear_regression() {
             };
             let bounds = edge_points();
             console.log('bounds is', bounds);
-            let lin_reg_data = [];
-            for (let i = bounds[0]; i < bounds[1]; i += 1) {
-                lin_reg_data.push({'x': i, 'y':point(slope, bias, i)});
-            }
+            // let lin_reg_data = [];
+            // for (let i = bounds[0]; i < bounds[1]; i += 1) {
+            //     lin_reg_data.push({'x': i, 'y':point(slope, bias, i)});
+            // }
+            let lin_reg_data = [{'x': bounds[0], 'y':point(slope, bias, bounds[0])}, {'x': bounds[1], 'y':point(slope, bias, bounds[1])}]
             console.log('line data is', lin_reg_data);
             my_graph.data.datasets.push({
                 label: `y = ${slope}x + ${bias}`,
@@ -222,6 +254,7 @@ function solve_linear_regression() {
                 pointStyle: 'line',
                 borderColor: randomColor()
                 });
+            
             my_graph.update();    
         })
         .catch((err) => {

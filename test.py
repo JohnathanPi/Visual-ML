@@ -2,13 +2,6 @@ import json
 import sys
 import ast
 import numpy as np
-# import warnings
-
-# warnings.filterwarnings('ignore')
-def func():
-    incoming_data = sys.argv[1]
-    test_data = ast.literal_eval(incoming_data)
-    print(json.dumps(test_data))
 
 def linear_regression():
     # incoming_data = '[{"x":1, "y":4},{"x":2, "y":5},{"x":3, "y":6},{"x":-9, "y":1}]'

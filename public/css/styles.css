@@ -27,7 +27,7 @@ textarea {
     align-self: center;
     height: 100%;
     font-size: 1.875rem;
-    background-image: linear-gradient(to right, #9d4edd, #bc6fe3, #d690eb, #ecb3f4, #ffd6ff);    
+    background-image: linear-gradient(to right, #9d4edd, #bc6fe3, #d690eb);    
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
