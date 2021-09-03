@@ -1,9 +1,9 @@
 var ctx = document.getElementById('my_graph').getContext('2d');
-let colors = ['#8ecae6', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', '#003049', '#e5989b', '#ffc8dd', '#74c69d',
-'#560bad', '#f72585', '#b7e4c7', '#d9ed92', '#34a0a4', '#14213d', '#56cfe1', '#ced4da', '#ff758f', '#ffb700'];
+let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', '#2ec4b6', '#e5989b', '#ffc8dd', '#c77dff',
+'#560bad', '#f72585', '#b7e4c7', '#d9ed92', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e', '#72efdd', '#ffb700'];
 
 let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
-
+let max_val = 20;
 
 var my_graph = new Chart(ctx, {
     type: 'scatter',
@@ -49,30 +49,6 @@ var my_graph = new Chart(ctx, {
                     display: true
                 },
             }
-            // xAxes: [{
-            //     type: "linear",
-            //     display: true,
-            //     scaleLabel: {
-            //         display: true,
-            //         labelString: 'X-Axis'
-            //     }
-            //     // ticks: {
-            //     //     min: -20,
-            //     //     suggestedMax: 20
-            //     // }
-            // } ],
-            // yAxes: [{
-            //     type: "linear",
-            //     display: true,
-            //     scaleLabel: {
-            //         display: true,
-            //         labelString: 'Y-Axis'
-            //     }
-            //     // ticks: {
-            //     //     beginAtZero: true,
-            //     //     suggestedMax: 20
-            //     // }
-            // }]
         }
     }
 });
@@ -84,13 +60,24 @@ function parse_data() {
     const new_data = document.getElementById('input_data').value;
     let parsed_data = new_data.replace(/\(/g, "[").replace(/\)/g, "]");
     let data_points = JSON.parse("[" + parsed_data + "]");
+    let x_vals = [];
+    let y_vals = [];
     data_points.forEach(data_point => {
+        x_vals.push(data_point[0]);
+        y_vals.push(data_point[1]);
         let point = {
             'x': data_point[0],
             'y': data_point[1]
         };
         my_graph.data.datasets[0].data.push(point);
     });
+    max_x = Math.max(...x_vals);
+    max_y = Math.max(...y_vals);
+    max_val = max_x >= max_y ? max_x : max_y;
+    my_graph.options.scales.x.min = -max_val - 10;
+    my_graph.options.scales.x.max = max_val + 10;
+    my_graph.options.scales.y.min = -max_val - 10;
+    my_graph.options.scales.y.max = max_val + 10;
     my_graph.options.scales.x.position = 'center';
     my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
@@ -164,32 +151,6 @@ function setting_switch() {
     clear_data();
 }
 
-
-function edge_points() {
-    // finds the most extreme points in dataset in order to align axes and length of line
-    let x_vals = [];
-    let y_vals = [];
-    my_graph.data.datasets[0].data.forEach(point => {
-        x_vals.push(point['x']);
-        y_vals.push(point['y']);
-    });
-    min_x = Math.min(...x_vals)
-    max_x = Math.max(...x_vals)
-    min_y = Math.min(...y_vals)
-    max_y = Math.min(...y_vals)
-    left_bound = min_x >= 0 ? min_x -= 5*min_x : min_x += 5*min_x;
-    right_bound = max_x >= 0 ? max_x += 5*max_x : max_x -= 5*max_x;
-    // lower_bound = min_y >= 0 ? min_y -= 5*min_y : min_y += 5*min_y;
-    // upper_bound = max_y >= 0 ? max_y += 5*max_y : max_y -= 5*max_y;
-    // console.log(left_bound, right_bound, upper_bound, lower_bound);
-    // HANDLE 0'S
-    // return [
-    //     {'x':min_x, 'y':min_y},
-    //     {'x':max_x, 'y':max_y}
-    // ];
-    return [left_bound, right_bound]
-};
-
 let calc_func_y = (a, b, x) => {
     return a*x + b;
 };
@@ -211,6 +172,7 @@ function line_through_border(slope, bias, border) {
             final_points.push(point);
         };
     });
+    console.log(final_points.slice(0,2))
     return final_points.slice(0, 2);
 }
 
@@ -236,9 +198,10 @@ function solve_linear_regression() {
             let bias = data["bias"];
             // need to graph y = x*slope + bias
             // find min and max points in curr dataset
-            let lin_reg_data = line_through_border(slope, bias, 20);
+            border_size = max_val >= 20 ? max_val : 20;
+            let lin_reg_data = line_through_border(slope, bias, border_size + 10);
             my_graph.data.datasets.push({
-                label: `y = ${slope}x + ${bias}`,
+                label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`, 
                 data: lin_reg_data,
                 showLine: true,
                 fill: false,
