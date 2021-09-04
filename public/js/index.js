@@ -54,16 +54,16 @@ var my_graph = new Chart(ctx, {
 });
 
 function extract_data(user_data_string) {
-    
+    const coords = /\((\d+\,\d+)\)/g; // validate legal pairs of coordinates
+    let validated_data = user_data_string.replace(/ /g,"").replace(/\[|\]/g ,"").match(coords) || [];
+    validated_data = validated_data.toString().replace(/\(/g, "[").replace(/\)/g, "]");
+    return validated_data;
 }
 
 
 function parse_data() {
-    const coords = /\((\d+\,\d+)\)/g; // validate legal pairs of coordinates
     const new_data = document.getElementById('input_data').value;
-    let validated_data = new_data.replace(/ /g,"").replace(/\[|\]/g ,"").match(coords) || [];
-    console.log(validated_data);
-    let parsed_data = validated_data.toString().replace(/\(/g, "[").replace(/\)/g, "]");
+    let parsed_data = extract_data(new_data);
     let data_points = JSON.parse("[" + parsed_data + "]");
     let x_vals = [];
     let y_vals = [];
