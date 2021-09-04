@@ -54,8 +54,11 @@ var my_graph = new Chart(ctx, {
 });
 
 function extract_data(user_data_string) {
-    const coords = /\((\d+\,\d+)\)/g; // validate legal pairs of coordinates
+    const coords = /\((\-?\d+\,\-?\d+)\)/g; // validate legal pairs of coordinates
     let validated_data = user_data_string.replace(/ /g,"").replace(/\[|\]/g ,"").match(coords) || [];
+    if (parsed_data === []) {
+        console.log('data entered incorrectly !');
+    }
     validated_data = validated_data.toString().replace(/\(/g, "[").replace(/\)/g, "]");
     return validated_data;
 }
