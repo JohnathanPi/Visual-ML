@@ -5,6 +5,7 @@ let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', 
 let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
 let max_val = 20;
 
+
 var my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
@@ -55,10 +56,17 @@ var my_graph = new Chart(ctx, {
 
 function extract_data(user_data_string) {
     const coords = /\((\-?\d+\,\-?\d+)\)/g; // validate legal pairs of coordinates
-    let validated_data = user_data_string.replace(/ /g,"").replace(/\[|\]/g ,"").match(coords) || [];
-    if (parsed_data === []) {
-        console.log('data entered incorrectly !');
+    let preprocessed_data = user_data_string.replace(/ /g,"").replace(/\[|\]/g ,"")
+    let validated_data = preprocessed_data.match(coords) || [];
+    console.log(preprocessed_data.length === validated_data.length);
+    if (validated_data.length === 0) {
+        console.log('input error')
+        document.getElementById('input_data').placeholder = 'Illegal Data !';
+        return []; // Not sure this is ideal might cause problems later !
+        // Need to decide what to do with partially correct data 
+        // numbers starting with 0 known error
     }
+    document.getElementById('input_data').placeholder = 'Enter Data:';
     validated_data = validated_data.toString().replace(/\(/g, "[").replace(/\)/g, "]");
     return validated_data;
 }
@@ -131,6 +139,8 @@ function parse_labled_data() {
     });
     document.getElementById('labled_input_data').value = "";
     document.getElementById('input_lables').value = "";
+    console.log(my_graph.data.datasets[0]);
+    console.log(my_graph.data.datasets[1]);
     my_graph.update();
 }
 
@@ -169,6 +179,10 @@ let calc_func_x = (a, b, y) => {
 
 function line_through_border(slope, bias, border) {
     // find the sides where the line intercepts the graphs border
+    if (slope === 0) {
+        console.log('slope 0')
+        return [{'x': -border, 'y': bias}, {'x': border, 'y': bias}]
+    }
     border_y_intercept_1 = {'x' : calc_func_x(slope, bias, border), 'y' : border} // top of border box
     border_y_intercept_2 = {'x' : calc_func_x(slope, bias, -border), 'y' : -border} // bottom of border box
     border_x_intercept_1 = {'x': border, 'y' : calc_func_y(slope, bias, border)} // right of border box
@@ -182,6 +196,56 @@ function line_through_border(slope, bias, border) {
     });
     console.log(final_points.slice(0,2))
     return final_points.slice(0, 2);
+}
+
+function solve_svm() {
+    const data = {'1':my_graph.data.datasets[0].data, '-1':my_graph.data.datasets[1].data};
+    console.log(data);
+    options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    fetch('/api', options)
+    fetch('/svm').then((response) => {
+        return response.json();
+    }).then((data) => {
+        let slope = data["slope"];
+        let bias = data["bias"];
+        // need to graph y = x*slope + bias
+        // find min and max points in curr dataset
+        border_size = max_val >= 20 ? max_val : 20;
+        // edge cases (slope = 0) 
+        let seperating_plane = line_through_border(slope, bias, border_size + 10);
+        my_graph.data.datasets.push({
+            label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`, 
+            data: seperating_plane,
+            showLine: true,
+            fill: false,
+            pointStyle: 'line',
+            borderColor: randomColor()
+            });
+        delete data.slope
+        delete data.bias
+        let sv_coords = [];
+        Object.entries(data).forEach(point => {
+            sv_coords.push({'x': point[1][0], 'y': point[1][1]});
+            console.log(sv_coords);
+        })
+        my_graph.data.datasets.push({
+            label: 'Support Vectors', 
+            data: sv_coords,
+            showLine: false,
+            fill: false,
+            pointStyle: 'cross',
+            borderColor: '#000',
+            radius: 5
+            });
+        my_graph.update();  
+
+    })
 }
 
 function solve_linear_regression() {
@@ -199,17 +263,23 @@ function solve_linear_regression() {
     // fetch returning data from python script
     console.log('im at request');
     fetch('/python').then((response) => {
-            console.log('resolved');
             return response.json();
         }).then((data) => {
+            if(data === 0) {
+                // Need to show this directly to user !
+                throw new Error("Cannot perform regression with infinite slope")
+            } 
             let slope = data["slope"];
             let bias = data["bias"];
+            let r_squared = data["R^2"]
             // need to graph y = x*slope + bias
             // find min and max points in curr dataset
             border_size = max_val >= 20 ? max_val : 20;
+            // edge cases (slope = 0) 
             let lin_reg_data = line_through_border(slope, bias, border_size + 10);
+            console.log('returned', lin_reg_data)
             my_graph.data.datasets.push({
-                label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`, 
+                label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`, 
                 data: lin_reg_data,
                 showLine: true,
                 fill: false,

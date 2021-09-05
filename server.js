@@ -19,16 +19,33 @@ app.post('/api', (req, res) => {
   res.end();
 })
 
-
-app.get('/python', (req, res) => {
+app.get('/svm', (req, res) => {
   let dataToSend;
-  // spawn new child process to call the python script
-  const python = spawn('py', ['test.py', graph_data]);
-  // collect data from script
+  const python = spawn('py', ['svm.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
   });
-  // in close event we are sure that stream from child process is closed
+  python.on('close', (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      // send data to browser
+      let final_data = dataToSend;
+      console.log('datatosend is', final_data);
+      res.write(final_data);
+      res.end();
+  });
+})
+
+
+
+app.get('/python', (req, res) => {
+  let dataToSend;
+  const python = spawn('py', ['test.py', graph_data]);
+  python.stdout.on('data', function (data) {
+    dataToSend = data;
+    if(dataToSend === '0') {
+      console.log('Error occured in python scrip');
+    }
+  });
   python.on('close', (code) => {
       console.log(`child process close all stdio with code ${code}`);
       // send data to browser
@@ -37,7 +54,6 @@ app.get('/python', (req, res) => {
       res.write(final_data);
       res.end();
   });
-
 })
 
 
