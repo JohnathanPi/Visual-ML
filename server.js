@@ -35,6 +35,22 @@ app.get('/svm', (req, res) => {
   });
 })
 
+app.get('/k_means', (req, res) => {
+  let dataToSend;
+  const python = spawn('py', ['k_means.py', graph_data]);
+  python.stdout.on('data', function (data) {
+    dataToSend = data;
+  });
+  python.on('close', (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      // send data to browser
+      let final_data = dataToSend;
+      console.log('datatosend is', final_data);
+      res.write(final_data);
+      res.end();
+  });
+})
+
 
 
 app.get('/python', (req, res) => {

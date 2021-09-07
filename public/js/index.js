@@ -1,6 +1,7 @@
 var ctx = document.getElementById('my_graph').getContext('2d');
 let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', '#2ec4b6', '#e5989b', '#ffc8dd', '#c77dff',
-'#560bad', '#f72585', '#b7e4c7', '#d9ed92', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e', '#72efdd', '#ffb700'];
+    '#560bad', '#f72585', '#b7e4c7', '#d9ed92', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e', '#72efdd', '#ffb700'
+];
 
 let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
 let max_val = 20;
@@ -24,26 +25,24 @@ function onClickHandler(click) {
         }
     }
 
-    if (x_val > my_graph.scales['x'].min && 
+    if (x_val > my_graph.scales['x'].min &&
         x_val < my_graph.scales['x'].max &&
         y_val > my_graph.scales['y'].min &&
-        y_val < my_graph.scales['y'].max ) {
-            if (flag == 1) {
-                my_graph.data.datasets[0].data.push({
-                    'x' : x_val,
-                    'y' : y_val
-                });
-            }
-
-            else if (flag == 2) {
-                my_graph.data.datasets[1].data.push({
-                    'x' : x_val,
-                    'y' : y_val
-                })
-            }
+        y_val < my_graph.scales['y'].max) {
+        if (flag == 1) {
+            my_graph.data.datasets[0].data.push({
+                'x': x_val,
+                'y': y_val
+            });
+        } else if (flag == 2) {
+            my_graph.data.datasets[1].data.push({
+                'x': x_val,
+                'y': y_val
+            })
         }
-        my_graph.update();
     }
+    my_graph.update();
+}
 
 
 
@@ -51,30 +50,29 @@ var my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
         datasets: [{
-                type: 'scatter',
-                label: "Class 1",
-                data: [],
-                fill: false,
-                backgroundColor: randomColor()
-            }, {
-                type: 'scatter',
-                label: "Class 2",
-                data: [],
-                fill: false,
-                backgroundColor: randomColor()
-            }
-        ]
+            type: 'scatter',
+            label: "Class 1",
+            data: [],
+            fill: false,
+            backgroundColor: randomColor()
+        }, {
+            type: 'scatter',
+            label: "Class 2",
+            data: [],
+            fill: false,
+            backgroundColor: randomColor()
+        }]
     },
     options: {
         plugins: {
             legend: {
                 display: true,
                 labels: {
-                     filter: function(legendItem, data) {
-                            return data.datasets[legendItem.datasetIndex].label != 'axis'
-                     }
+                    filter: function (legendItem, data) {
+                        return data.datasets[legendItem.datasetIndex].label != 'axis'
+                    }
                 }
-           }
+            }
         },
         responsive: true,
         maintainAspectRatio: false,
@@ -90,7 +88,7 @@ var my_graph = new Chart(ctx, {
                 },
             },
             y: {
-                
+
                 min: -20,
                 max: 20,
                 ticks: {
@@ -104,7 +102,7 @@ var my_graph = new Chart(ctx, {
 function extract_data(user_data_string) {
     // CONSIDER ADDING SQUARED BRACKETS SINCE NUMPY ARRAYS
     const coords = /\((\-?\d+\,\-?\d+)\)/g; // validate legal pairs of coordinates
-    let preprocessed_data = user_data_string.replace(/ /g,"").replace(/\[|\]/g ,"")
+    let preprocessed_data = user_data_string.replace(/ /g, "").replace(/\[|\]/g, "")
     let validated_data = preprocessed_data.match(coords) || [];
     console.log(preprocessed_data.length === validated_data.length);
     if (validated_data.length === 0) {
@@ -239,7 +237,7 @@ function setting_switch() {
 }
 
 let calc_func_y = (a, b, x) => {
-    return a*x + b;
+    return a * x + b;
 };
 
 let calc_func_x = (a, b, y) => {
@@ -250,12 +248,30 @@ function line_through_border(slope, bias, border) {
     // find the sides where the line intercepts the graphs border
     if (slope === 0) {
         console.log('slope 0')
-        return [{'x': -border, 'y': bias}, {'x': border, 'y': bias}]
+        return [{
+            'x': -border,
+            'y': bias
+        }, {
+            'x': border,
+            'y': bias
+        }]
     }
-    border_y_intercept_1 = {'x' : calc_func_x(slope, bias, border), 'y' : border} // top of border box
-    border_y_intercept_2 = {'x' : calc_func_x(slope, bias, -border), 'y' : -border} // bottom of border box
-    border_x_intercept_1 = {'x': border, 'y' : calc_func_y(slope, bias, border)} // right of border box
-    border_x_intercept_2 = {'x': -border, 'y' : calc_func_y(slope, bias, -border)} // left of border box
+    border_y_intercept_1 = {
+        'x': calc_func_x(slope, bias, border),
+        'y': border
+    } // top of border box
+    border_y_intercept_2 = {
+        'x': calc_func_x(slope, bias, -border),
+        'y': -border
+    } // bottom of border box
+    border_x_intercept_1 = {
+        'x': border,
+        'y': calc_func_y(slope, bias, border)
+    } // right of border box
+    border_x_intercept_2 = {
+        'x': -border,
+        'y': calc_func_y(slope, bias, -border)
+    } // left of border box
     let intercepts = [border_y_intercept_1, border_y_intercept_2, border_x_intercept_1, border_x_intercept_2];
     let final_points = [];
     intercepts.forEach(point => {
@@ -263,12 +279,15 @@ function line_through_border(slope, bias, border) {
             final_points.push(point);
         };
     });
-    console.log(final_points.slice(0,2))
+    console.log(final_points.slice(0, 2))
     return final_points.slice(0, 2);
 }
 
 function solve_svm() {
-    const data = {'1':my_graph.data.datasets[0].data, '-1':my_graph.data.datasets[1].data};
+    const data = {
+        '1': my_graph.data.datasets[0].data,
+        '-1': my_graph.data.datasets[1].data
+    };
     console.log(data);
     options = {
         method: 'POST',
@@ -289,31 +308,54 @@ function solve_svm() {
         // edge cases (slope = 0) 
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
         my_graph.data.datasets.push({
-            label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`, 
+            label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
             data: seperating_plane,
             showLine: true,
             fill: false,
             pointStyle: 'line',
             borderColor: randomColor()
-            });
+        });
         delete data.slope
         delete data.bias
         let sv_coords = [];
         Object.entries(data).forEach(point => {
-            sv_coords.push({'x': point[1][0], 'y': point[1][1]});
+            sv_coords.push({
+                'x': point[1][0],
+                'y': point[1][1]
+            });
             console.log(sv_coords);
         })
         my_graph.data.datasets.push({
-            label: 'Support Vectors', 
+            label: 'Support Vectors',
             data: sv_coords,
             showLine: false,
             fill: false,
             pointStyle: 'cross',
             borderColor: '#000',
             radius: 10
-            });
-        my_graph.update();  
+        });
+        my_graph.update();
 
+    })
+}
+
+function solve_k_means() {
+    const data = my_graph.data.datasets[0].data;
+    options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    fetch('/api', options)
+    // fetch returning data from python script
+    fetch('/k_means').then((response) => {
+        return response.json();
+    }).then((data) => {
+        console.log(data);
+    }).catch((err) => {
+        console.log('rejected', err);
     })
 }
 
@@ -334,10 +376,10 @@ function solve_linear_regression() {
     fetch('/python').then((response) => {
             return response.json();
         }).then((data) => {
-            if(data === 0) {
+            if (data === 0) {
                 // Need to show this directly to user !
                 throw new Error("Cannot perform regression with infinite slope")
-            } 
+            }
             let slope = data["slope"];
             let bias = data["bias"];
             let r_squared = data["R^2"]
@@ -348,18 +390,17 @@ function solve_linear_regression() {
             let lin_reg_data = line_through_border(slope, bias, border_size + 10);
             console.log('returned', lin_reg_data)
             my_graph.data.datasets.push({
-                label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`, 
+                label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`,
                 data: lin_reg_data,
                 showLine: true,
                 fill: false,
                 pointStyle: 'line',
                 borderColor: randomColor()
-                });
-            
-            my_graph.update();    
+            });
+
+            my_graph.update();
         })
         .catch((err) => {
             console.log('rejected', err);
         })
 }
-
