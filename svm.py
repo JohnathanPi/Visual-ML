@@ -6,8 +6,9 @@ from sklearn import svm
 
 
 # data = "{'''1''': [{'x': 5, 'y':3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 7}], '''-1''': [{'x': -5, 'y':-3}, {'x': -1, 'y': -4}, {'x': -2, 'y': -7}]}"
-# data = "{'''1''': [{'x': -1, 'y':1}, {'x': 1, 'y': 1}], '''-1''': [{'x': 1, 'y':-1}, {'x': -1, 'y': -1}]}"
+# data = "{'''1''': [{'x': 2, 'y':2}, {'x': 1, 'y': 1}], '''-1''': [{'x': -2, 'y':2}, {'x': -1, 'y': 1}]}"
 data = sys.argv[1]
+# SOLVE INFINITE SLOPE CASE BY CHECKING FOR SYMMETRICAL SUPPORT VECTORS
 def solve_svm(data):
     data_obj = ast.literal_eval(data)
     X = []

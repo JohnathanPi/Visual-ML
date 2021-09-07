@@ -55,6 +55,7 @@ var my_graph = new Chart(ctx, {
 });
 
 function extract_data(user_data_string) {
+    // CONSIDER ADDING SQUARED BRACKETS SINCE NUMPY ARRAYS
     const coords = /\((\-?\d+\,\-?\d+)\)/g; // validate legal pairs of coordinates
     let preprocessed_data = user_data_string.replace(/ /g,"").replace(/\[|\]/g ,"")
     let validated_data = preprocessed_data.match(coords) || [];
@@ -102,9 +103,30 @@ function parse_data() {
 
 function parse_kmeans_data() {
     const new_data = document.getElementById('input_data_kmeans').value;
-    const desired_k = Number(document.getElementById('input_k').value);
-    let parsed_data = new_data.replace(/\(/g, "[").replace(/\)/g, "]");
+    let parsed_data = extract_data(new_data);
     let data_points = JSON.parse("[" + parsed_data + "]");
+    let x_vals = [];
+    let y_vals = [];
+    data_points.forEach(data_point => {
+        x_vals.push(data_point[0]);
+        y_vals.push(data_point[1]);
+        let point = {
+            'x': data_point[0],
+            'y': data_point[1]
+        };
+        my_graph.data.datasets[0].data.push(point);
+    });
+    max_x = Math.max(...x_vals);
+    max_y = Math.max(...y_vals);
+    max_val = max_x >= max_y ? max_x : max_y;
+    my_graph.options.scales.x.min = -max_val - 10;
+    my_graph.options.scales.x.max = max_val + 10;
+    my_graph.options.scales.y.min = -max_val - 10;
+    my_graph.options.scales.y.max = max_val + 10;
+    my_graph.options.scales.x.position = 'center';
+    my_graph.options.scales.y.position = 'center';
+    document.getElementById('input_data').value = "";
+    my_graph.update();
 
 }
 
@@ -241,7 +263,7 @@ function solve_svm() {
             fill: false,
             pointStyle: 'cross',
             borderColor: '#000',
-            radius: 5
+            radius: 10
             });
         my_graph.update();  
 
