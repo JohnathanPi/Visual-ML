@@ -5,13 +5,60 @@ let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', 
 let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
 let max_val = 20;
 
+document.getElementById('my_graph').onmousedown = (event) => {
+    onClickHandler(event);
+}
+
+function onClickHandler(click) {
+    let curr_scale, x_val, y_val;
+    let flag = 1;
+    if (click.button == 2) {
+        flag = 2;
+    }
+    for (let scale in my_graph.scales) {
+        curr_scale = my_graph.scales[scale];
+        if (scale == 'x') {
+            x_val = curr_scale.getValueForPixel(click.offsetX);
+        } else if (scale == "y") {
+            y_val = curr_scale.getValueForPixel(click.offsetY);
+        }
+    }
+
+    if (x_val > my_graph.scales['x'].min && 
+        x_val < my_graph.scales['x'].max &&
+        y_val > my_graph.scales['y'].min &&
+        y_val < my_graph.scales['y'].max ) {
+            if (flag == 1) {
+                my_graph.data.datasets[0].data.push({
+                    'x' : x_val,
+                    'y' : y_val
+                });
+            }
+
+            else if (flag == 2) {
+                my_graph.data.datasets[1].data.push({
+                    'x' : x_val,
+                    'y' : y_val
+                })
+            }
+        }
+        my_graph.update();
+    }
+
+
 
 var my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
         datasets: [{
                 type: 'scatter',
-                label: "Data label 1",
+                label: "Class 1",
+                data: [],
+                fill: false,
+                backgroundColor: randomColor()
+            }, {
+                type: 'scatter',
+                label: "Class 2",
                 data: [],
                 fill: false,
                 backgroundColor: randomColor()

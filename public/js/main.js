@@ -32,15 +32,18 @@ function ourClickHandler(element) {
         }
     }
 
-    if (valueX > globalChartRef.scales['xAxes'].min && valueX < globalChartRef.scales['xAxes'].max && valueY >
-        globalChartRef.scales['yAxes'].min && valueY < globalChartRef.scales['yAxes'].max) {
-        globalChartRef.data.datasets.forEach((dataset) => {
-            dataset.data.push({
-                x: valueX,
-                y: valueY,
-                extraInfo: 'info'
-            });
-        });
+    if (valueX > globalChartRef.scales['xAxes'].min && 
+        valueX < globalChartRef.scales['xAxes'].max && 
+        valueY >globalChartRef.scales['yAxes'].min && 
+        valueY < globalChartRef.scales['yAxes'].max) {
+        // globalChartRef.data.datasets.forEach((dataset) => {
+        //     dataset.data.push({
+        //         x: valueX,
+        //         y: valueY,
+        //         extraInfo: 'info'
+        //     });
+        // });
+        globalChartRef.data.datasets[0].data.push({'x': valueX, 'y': valueY});
         globalChartRef.update();
     }
 }
@@ -53,7 +56,7 @@ function createGraph() {
                 label: "Dataset Made of Clicked Points",
                 data: [],
                 fill: true,
-                showLine: true
+                showLine: false
             }]
         },
         options: {
