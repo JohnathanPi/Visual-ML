@@ -15,7 +15,7 @@ app.get('/',(req,res) => {
 app.post('/api', (req, res) => {
   // recieve array of objects, each representing a point
   graph_data = JSON.stringify(req.body);
-  console.log('loaded data is', graph_data, 'and of type', typeof graph_data);
+  // console.log('loaded data is', graph_data, 'and of type', typeof graph_data);
   res.end();
 })
 
@@ -40,6 +40,9 @@ app.get('/k_means', (req, res) => {
   const python = spawn('py', ['k_means.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
+  });
+  python.stderr.on('data', function(data) {
+    console.error(data.toString());
   });
   python.on('close', (code) => {
       console.log(`child process close all stdio with code ${code}`);

@@ -1,6 +1,6 @@
 var ctx = document.getElementById('my_graph').getContext('2d');
-let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06', '#83c5be', '#a0c4ff', '#2ec4b6', '#e5989b', '#ffc8dd', '#c77dff',
-    '#560bad', '#f72585', '#b7e4c7', '#d9ed92', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e', '#72efdd', '#ffb700'
+let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06',  '#e5989b', '#ffc8dd', '#c77dff',
+    '#560bad', '#f72585', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e','#ffb700'
 ];
 
 let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
@@ -31,8 +31,8 @@ function onClickHandler(click) {
         y_val < my_graph.scales['y'].max) {
         if (flag == 1) {
             my_graph.data.datasets[0].data.push({
-                'x': x_val,
-                'y': y_val
+                'x': Math.round(x_val),
+                'y': Math.round(y_val)
             });
         } else if (flag == 2) {
             my_graph.data.datasets[1].data.push({
@@ -351,9 +351,28 @@ function solve_k_means() {
     fetch('/api', options)
     // fetch returning data from python script
     fetch('/k_means').then((response) => {
+        // console.log(response.json())
         return response.json();
     }).then((data) => {
-        console.log(data);
+        console.log(data)
+        let data_set = [];
+        for (point in data) {
+            data_set.push({
+                'x' : data[point][0],
+                'y' : data[point][1]
+            });
+        }
+        my_graph.data.datasets.push({
+            label: "Centroids",
+            data: data_set,
+            showLine: false,
+            fill: false,
+            pointStyle: 'triangle',
+            borderColor: randomColor(),
+            radius: 10
+        });
+        my_graph.update()
+        
     }).catch((err) => {
         console.log('rejected', err);
     })
