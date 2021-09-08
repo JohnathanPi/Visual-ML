@@ -1,9 +1,8 @@
 var ctx = document.getElementById('my_graph').getContext('2d');
 let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06',  '#e5989b', '#ffc8dd', '#c77dff',
-    '#560bad', '#f72585', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e','#ffb700'
-];
+    '#560bad', '#f72585', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e','#ffb700'];
 
-let randomColor = () => colors[Math.floor(Math.random() * colors.length)];
+let randomColor = () => {return colors[Math.floor(Math.random() * colors.length)]};
 let max_val = 20;
 
 document.getElementById('my_graph').onmousedown = (event) => {
@@ -212,7 +211,10 @@ function parse_labled_data() {
 }
 
 
-function clear_data() {
+function clear_data(flag = 1) {
+    if (!flag) {
+        my_graph.data.datasets = [];
+    }
     my_graph.data.datasets.forEach(dataset => {
         if (dataset.label != 'axis') {
             dataset.data = [];
@@ -339,8 +341,13 @@ function solve_svm() {
     })
 }
 
+
 function solve_k_means() {
-    const data = my_graph.data.datasets[0].data;
+    let k = document.getElementById('input_k').value;
+    const data = {
+        'data' : my_graph.data.datasets[0].data,
+        'k' : k
+    }
     options = {
         method: 'POST',
         headers: {
@@ -354,12 +361,42 @@ function solve_k_means() {
         // console.log(response.json())
         return response.json();
     }).then((data) => {
-        console.log(data)
+        if (data === 0) {
+            throw new Error("Empty set occured, k not suitable !")
+        }
+        clear_data(0);
         let data_set = [];
-        for (point in data) {
+        centroids = data['centroids'];
+        centroid_counter = 0;
+        clusters = data['clusters'];
+        for (centroid in centroids) {
+            centroid_counter++;
             data_set.push({
-                'x' : data[point][0],
-                'y' : data[point][1]
+                'x' : centroids[centroid][0],
+                'y' : centroids[centroid][1]
+            });
+        }
+        cluster_colors = [];
+        for (let i = 0; i < centroid_counter; i++) {
+            console.log('yo');
+            let temp = randomColor();
+            console.log(temp);
+            cluster_colors.push(temp);
+        }
+        for (cluster in clusters) {
+            cluster_data = []
+            for (point in clusters[cluster]) {
+                cluster_data.push({
+                    'x' : clusters[cluster][point][0],
+                    'y':  clusters[cluster][point][1]
+                })
+            };
+            my_graph.data.datasets.push({
+                type: 'scatter',
+                label: `Cluster ${cluster}`,
+                data: cluster_data,
+                fill: false,
+                backgroundColor: colors[parseInt(cluster) - 1]
             });
         }
         my_graph.data.datasets.push({
@@ -368,7 +405,7 @@ function solve_k_means() {
             showLine: false,
             fill: false,
             pointStyle: 'triangle',
-            borderColor: randomColor(),
+            backgroundColor: randomColor(),
             radius: 10
         });
         my_graph.update()

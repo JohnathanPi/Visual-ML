@@ -15,7 +15,7 @@ app.get('/',(req,res) => {
 app.post('/api', (req, res) => {
   // recieve array of objects, each representing a point
   graph_data = JSON.stringify(req.body);
-  // console.log('loaded data is', graph_data, 'and of type', typeof graph_data);
+  console.log('loaded data is', graph_data, 'and of type', typeof graph_data);
   res.end();
 })
 

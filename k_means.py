@@ -40,11 +40,13 @@ def WSS():
     pass
 
 data = sys.argv[1]
-def k_means(data, k = 2):
+
+def k_means(data):
     try:
         data_objs = ast.literal_eval(data)
+        k = int(data_objs['k'])
         points = []
-        for pair in data_objs:
+        for pair in data_objs['data']:
             points.append([pair['x'], pair['y']])
         starting_k_s = []
         # Assign initial clusters and prevent empty clusters
@@ -69,8 +71,13 @@ def k_means(data, k = 2):
             if (prev_centroids == centroids):
                 break
         # print("the final clusters are", json.dumps(clusters))
-        print(json.dumps(centroids))
+        return_data = {
+            'centroids' : centroids,
+            'clusters': clusters
+        }
+        print(json.dumps(return_data))
     except Exception as e:
-        print(e)
+        sys.stderr.write(str(e))
+        print('0')
 
 k_means(data)
