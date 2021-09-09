@@ -62,7 +62,7 @@ def k_means(data):
         
         # Order of operations: Recieve indeces -> assign to clusters -> recalc centroids -> repeat
         i = 0
-        while(i < 10000):
+        while(i < 1000):
             prev_centroids = centroids
             assignments = assign_points(points, prev_centroids, k)
             clusters = assign_clusters(clusters, points, assignments, k)

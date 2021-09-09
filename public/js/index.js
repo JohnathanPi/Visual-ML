@@ -1,12 +1,110 @@
+// MISC
+////////////////////////////////////////////////////////////
 var ctx = document.getElementById('my_graph').getContext('2d');
-let colors = ['#70d6ff', '#e76f51', '#dc2f02', '#f48c06',  '#e5989b', '#ffc8dd', '#c77dff',
-    '#560bad', '#f72585', '#34a0a4', '#9d4edd', '#56cfe1', '#b5179e','#ffb700'];
+let colors = ['#003566', '#99e2b4', '#7400b8', '#f4845f', '#ffc300', 
+              '#9f6976', '#e4c1f9', '#f20089', '#89c2d9', '#344e41',
+              '#22577a', '#a11d33', '#c0fdfb', '#a7c957', '#00a6fb'];
 
 let randomColor = () => {return colors[Math.floor(Math.random() * colors.length)]};
 let max_val = 20;
 
 document.getElementById('my_graph').onmousedown = (event) => {
     onClickHandler(event);
+}
+
+function line_through_border(slope, bias, border) {
+    // find the sides where the line intercepts the graphs border
+    if (slope === 0) {
+        console.log('slope 0')
+        return [{
+            'x': -border,
+            'y': bias
+        }, {
+            'x': border,
+            'y': bias
+        }]
+    }
+    border_y_intercept_1 = {
+        'x': calc_func_x(slope, bias, border),
+        'y': border
+    } // top of border box
+    border_y_intercept_2 = {
+        'x': calc_func_x(slope, bias, -border),
+        'y': -border
+    } // bottom of border box
+    border_x_intercept_1 = {
+        'x': border,
+        'y': calc_func_y(slope, bias, border)
+    } // right of border box
+    border_x_intercept_2 = {
+        'x': -border,
+        'y': calc_func_y(slope, bias, -border)
+    } // left of border box
+    let intercepts = [border_y_intercept_1, border_y_intercept_2, border_x_intercept_1, border_x_intercept_2];
+    let final_points = [];
+    intercepts.forEach(point => {
+        if ((-border <= point['x'] <= border) && (-border <= point['y'] <= border)) { // check if point is on the border
+            final_points.push(point);
+        };
+    });
+    console.log(final_points.slice(0, 2))
+    return final_points.slice(0, 2);
+}
+
+
+function setting_switch() {
+    let setting_boxes = document.querySelectorAll('.model_setting_box')
+    let chosen_model = document.getElementById('model-selector');
+    let i = 0;
+    setting_boxes.forEach((setting_box) => {
+        i++;
+        if (chosen_model.value === String(i)) {
+            setting_box.style.display = 'block';
+        } else {
+            setting_box.style.display = 'none';
+        }
+    });
+    clear_data();
+}
+
+let calc_func_y = (a, b, x) => {
+    return a * x + b;
+};
+
+let calc_func_x = (a, b, y) => {
+    return (y - b) / a;
+};
+
+function shuffle(array) {
+    var copy = [], n = array.length, i;
+  
+    // While there remain elements to shuffle…
+    while (n) {
+  
+      // Pick a remaining element…
+      i = Math.floor(Math.random() * array.length);
+  
+      // If not already shuffled, move it to the new array.
+      if (i in array) {
+        copy.push(array[i]);
+        delete array[i];
+        n--;
+      }
+    }
+  
+    return copy;
+  }
+
+function add_datasets(graph, curr_sets) {
+    if (graph.data.datasets.length === curr_sets) {
+        graph.data.datasets.push({
+            type: 'scatter',
+            label: `Class ${curr_sets + 1}`,
+            data: [],
+            fill: false,
+            backgroundColor: randomColor()
+        });
+    }
 }
 
 function onClickHandler(click) {
@@ -29,11 +127,13 @@ function onClickHandler(click) {
         y_val > my_graph.scales['y'].min &&
         y_val < my_graph.scales['y'].max) {
         if (flag == 1) {
+            add_datasets(my_graph, 0);
             my_graph.data.datasets[0].data.push({
                 'x': Math.round(x_val),
                 'y': Math.round(y_val)
             });
         } else if (flag == 2) {
+            add_datasets(my_graph, 1)
             my_graph.data.datasets[1].data.push({
                 'x': x_val,
                 'y': y_val
@@ -48,19 +148,7 @@ function onClickHandler(click) {
 var my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
-        datasets: [{
-            type: 'scatter',
-            label: "Class 1",
-            data: [],
-            fill: false,
-            backgroundColor: randomColor()
-        }, {
-            type: 'scatter',
-            label: "Class 2",
-            data: [],
-            fill: false,
-            backgroundColor: randomColor()
-        }]
+        datasets: []
     },
     options: {
         plugins: {
@@ -97,7 +185,9 @@ var my_graph = new Chart(ctx, {
         }
     }
 });
-
+//////////////////////////////////////////
+// DATA HANDLING ////////////////////////
+/////////////////////////////////////////
 function extract_data(user_data_string) {
     // CONSIDER ADDING SQUARED BRACKETS SINCE NUMPY ARRAYS
     const coords = /\((\-?\d+\,\-?\d+)\)/g; // validate legal pairs of coordinates
@@ -130,6 +220,7 @@ function parse_data() {
             'x': data_point[0],
             'y': data_point[1]
         };
+        add_datasets(my_graph, 0);
         my_graph.data.datasets[0].data.push(point);
     });
     max_x = Math.max(...x_vals);
@@ -154,6 +245,7 @@ function parse_kmeans_data() {
     data_points.forEach(data_point => {
         x_vals.push(data_point[0]);
         y_vals.push(data_point[1]);
+        add_datasets(my_graph, 0);
         let point = {
             'x': data_point[0],
             'y': data_point[1]
@@ -222,68 +314,9 @@ function clear_data(flag = 1) {
     });
     my_graph.update();
 };
-
-function setting_switch() {
-    let setting_boxes = document.querySelectorAll('.model_setting_box')
-    let chosen_model = document.getElementById('model-selector');
-    let i = 0;
-    setting_boxes.forEach((setting_box) => {
-        i++;
-        if (chosen_model.value === String(i)) {
-            setting_box.style.display = 'block';
-        } else {
-            setting_box.style.display = 'none';
-        }
-    });
-    clear_data();
-}
-
-let calc_func_y = (a, b, x) => {
-    return a * x + b;
-};
-
-let calc_func_x = (a, b, y) => {
-    return (y - b) / a;
-};
-
-function line_through_border(slope, bias, border) {
-    // find the sides where the line intercepts the graphs border
-    if (slope === 0) {
-        console.log('slope 0')
-        return [{
-            'x': -border,
-            'y': bias
-        }, {
-            'x': border,
-            'y': bias
-        }]
-    }
-    border_y_intercept_1 = {
-        'x': calc_func_x(slope, bias, border),
-        'y': border
-    } // top of border box
-    border_y_intercept_2 = {
-        'x': calc_func_x(slope, bias, -border),
-        'y': -border
-    } // bottom of border box
-    border_x_intercept_1 = {
-        'x': border,
-        'y': calc_func_y(slope, bias, border)
-    } // right of border box
-    border_x_intercept_2 = {
-        'x': -border,
-        'y': calc_func_y(slope, bias, -border)
-    } // left of border box
-    let intercepts = [border_y_intercept_1, border_y_intercept_2, border_x_intercept_1, border_x_intercept_2];
-    let final_points = [];
-    intercepts.forEach(point => {
-        if ((-border <= point['x'] <= border) && (-border <= point['y'] <= border)) { // check if point is on the border
-            final_points.push(point);
-        };
-    });
-    console.log(final_points.slice(0, 2))
-    return final_points.slice(0, 2);
-}
+///////////////////////////////////////////////
+// SERVERSIDE MODEL RUNNING //////////////////
+//////////////////////////////////////////////
 
 function solve_svm() {
     const data = {
@@ -304,6 +337,7 @@ function solve_svm() {
     }).then((data) => {
         let slope = data["slope"];
         let bias = data["bias"];
+        console.log(`y = ${slope}x + ${bias}`)
         // need to graph y = x*slope + bias
         // find min and max points in curr dataset
         border_size = max_val >= 20 ? max_val : 20;
@@ -317,25 +351,25 @@ function solve_svm() {
             pointStyle: 'line',
             borderColor: randomColor()
         });
-        delete data.slope
-        delete data.bias
-        let sv_coords = [];
-        Object.entries(data).forEach(point => {
-            sv_coords.push({
-                'x': point[1][0],
-                'y': point[1][1]
-            });
-            console.log(sv_coords);
-        })
-        my_graph.data.datasets.push({
-            label: 'Support Vectors',
-            data: sv_coords,
-            showLine: false,
-            fill: false,
-            pointStyle: 'cross',
-            borderColor: '#000',
-            radius: 10
-        });
+        // delete data.slope
+        // delete data.bias
+        // let sv_coords = [];
+        // Object.entries(data).forEach(point => {
+        //     sv_coords.push({
+        //         'x': point[1][0],
+        //         'y': point[1][1]
+        //     });
+        //     console.log(sv_coords);
+        // })
+        // my_graph.data.datasets.push({
+        //     label: 'Support Vectors',
+        //     data: sv_coords,
+        //     showLine: false,
+        //     fill: false,
+        //     pointStyle: 'cross',
+        //     borderColor: '#000',
+        //     radius: 10
+        // });
         my_graph.update();
 
     })
@@ -376,13 +410,8 @@ function solve_k_means() {
                 'y' : centroids[centroid][1]
             });
         }
-        cluster_colors = [];
-        for (let i = 0; i < centroid_counter; i++) {
-            console.log('yo');
-            let temp = randomColor();
-            console.log(temp);
-            cluster_colors.push(temp);
-        }
+        cluster_colors = shuffle(colors).slice(0, centroid_counter);
+        cluster_colors.push('#eee');
         for (cluster in clusters) {
             cluster_data = []
             for (point in clusters[cluster]) {
@@ -396,7 +425,7 @@ function solve_k_means() {
                 label: `Cluster ${cluster}`,
                 data: cluster_data,
                 fill: false,
-                backgroundColor: colors[parseInt(cluster) - 1]
+                backgroundColor: cluster_colors[parseInt(cluster) - 1]
             });
         }
         my_graph.data.datasets.push({
@@ -405,7 +434,8 @@ function solve_k_means() {
             showLine: false,
             fill: false,
             pointStyle: 'triangle',
-            backgroundColor: randomColor(),
+            backgroundColor: cluster_colors,
+            borderColor: '#000',
             radius: 10
         });
         my_graph.update()
