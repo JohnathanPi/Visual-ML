@@ -21,7 +21,7 @@ app.post('/api', (req, res) => {
 
 app.get('/svm', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['svm.py', graph_data]);
+  const python = spawn('py', ['svm2.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
   });

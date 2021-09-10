@@ -135,8 +135,8 @@ function onClickHandler(click) {
         } else if (flag == 2) {
             add_datasets(my_graph, 1)
             my_graph.data.datasets[1].data.push({
-                'x': x_val,
-                'y': y_val
+                'x': Math.round(x_val),
+                'y': Math.round(y_val)
             })
         }
     }
