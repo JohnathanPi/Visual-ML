@@ -109,6 +109,10 @@ textarea {
     display: block;
 }
 
+#input_box_log_reg {
+    display: none;
+}
+
 #input_box_svm {
     display: none;
 }

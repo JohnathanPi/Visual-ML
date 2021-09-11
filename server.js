@@ -19,6 +19,22 @@ app.post('/api', (req, res) => {
   res.end();
 })
 
+app.get('/log_reg', (req, res) => {
+  let dataToSend;
+  const python = spawn('py', ['logistic_regression.py', graph_data]);
+  python.stdout.on('data', function (data) {
+    dataToSend = data;
+  });
+  python.on('close', (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      // send data to browser
+      let final_data = dataToSend;
+      console.log('datatosend is', final_data);
+      res.write(final_data);
+      res.end();
+  });
+})
+
 app.get('/svm', (req, res) => {
   let dataToSend;
   const python = spawn('py', ['svm2.py', graph_data]);

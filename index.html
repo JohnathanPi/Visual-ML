@@ -34,8 +34,9 @@
             <div class="model-selection-header">
                 <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
                     <option value="1" selected>Linear Regression</option>
-                    <option value="2">SVM</option>
-                    <option value="3">K-Means</option>
+                    <option value="2">Logistic Regression</option>
+                    <option value="3">SVM</option>
+                    <option value="4">K-Means</option>
                 </select>
             </div>
             <div class="model_setting_box" id="input_box_lr">
@@ -49,6 +50,19 @@
                     <div>
                         <button onclick="solve_linear_regression()" class = 'insert_data'>SOLVE</button>
                     </div>
+                </div>
+            </div>
+            <div class="model_setting_box" id="input_box_log_reg">
+                <textarea class="input_design_smaller border-gradient border-gradient-aqua" name="input_data_text"
+                    placeholder="Enter Data" id="labled_input_data" cols="" rows=""></textarea>
+                <textarea class="input_design_labels border-gradient border-gradient-aqua" name=""
+                    placeholder="Enter Lables" id="input_lables" cols="" rows=""></textarea>
+                <div class="button_container">
+                    <button onclick="parse_labled_data()" class="insert_data">ADD</button>
+                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                </div>
+                <div>
+                    <button onclick="solve_logistic_regression()" class = 'insert_data'>SOLVE</button>
                 </div>
             </div>
             <div class="model_setting_box" id="input_box_svm">

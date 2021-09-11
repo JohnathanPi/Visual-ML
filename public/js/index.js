@@ -445,6 +445,44 @@ function solve_k_means() {
     })
 }
 
+function solve_logistic_regression() {
+    const data = {
+        '1': my_graph.data.datasets[0].data,
+        '0': my_graph.data.datasets[1].data
+    };
+    console.log(data);
+    options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    fetch('/api', options)
+    fetch('/log_reg').then((response) => {
+        return response.json();
+    }).then((data) => {
+        let slope = data["slope"];
+        let bias = data["bias"];
+        console.log(`y = ${slope}x + ${bias}`)
+        // need to graph y = x*slope + bias
+        // find min and max points in curr dataset
+        border_size = max_val >= 20 ? max_val : 20;
+        // edge cases (slope = 0) 
+        let seperating_plane = line_through_border(slope, bias, border_size + 10);
+        my_graph.data.datasets.push({
+            label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
+            data: seperating_plane,
+            showLine: true,
+            fill: false,
+            pointStyle: 'line',
+            borderColor: randomColor()
+        });
+        my_graph.update();
+
+    })
+}
+
 function solve_linear_regression() {
     // send POST request to api that runs python script
     const data = my_graph.data.datasets[0].data;
