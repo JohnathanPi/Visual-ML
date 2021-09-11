@@ -464,6 +464,7 @@ function solve_logistic_regression() {
     }).then((data) => {
         let slope = data["slope"];
         let bias = data["bias"];
+        let acc = data["accuracy"]
         console.log(`y = ${slope}x + ${bias}`)
         // need to graph y = x*slope + bias
         // find min and max points in curr dataset
@@ -471,7 +472,7 @@ function solve_logistic_regression() {
         // edge cases (slope = 0) 
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
         my_graph.data.datasets.push({
-            label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
+            label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc} ` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
             data: seperating_plane,
             showLine: true,
             fill: false,
