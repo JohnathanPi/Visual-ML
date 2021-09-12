@@ -3,6 +3,7 @@ import sys
 import ast
 import numpy as np
 from sklearn import svm
+from sklearn.utils.extmath import weighted_mode
 
 
 # data = "{'''1''': [{'x': 5, 'y':3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 7}], '''-1''': [{'x': -5, 'y':-3}, {'x': -1, 'y': -4}, {'x': -2, 'y': -7}]}"
@@ -24,20 +25,16 @@ def solve_svm(data):
     clf = svm.SVC(kernel = 'linear') 
     clf.fit(X, y)
     support_vectors = {}
+    sv_s = clf.support_vectors_
+    for i, sv in enumerate(sv_s):
+        sv = sv.tolist()
+        support_vectors[i] = sv
     coeffs = clf.coef_.tolist()
-    print(coeffs)
+    weight_norm = np.linalg.norm(coeffs)
     intercept = clf.intercept_.tolist()
-    def return_x1(w0, x0, b, w1):
-        return np.around((-w0*x0 - b) / w1, 2)
-    def return_x0(w0, x1, b, w1):
-        return np.around((b - w1*x1) / w0, 2)
-
-    x0_1 = return_x0(coeffs[0][0], 25, intercept[0], coeffs[0][1])
-    x0_2 = return_x0(coeffs[0][0], -25, intercept[0], coeffs[0][1])
-    x1_1 = return_x1(coeffs[0][0], 25, intercept[0], coeffs[0][1])
-    x1_2 = return_x1(coeffs[0][0], -25, intercept[0], coeffs[0][1])
-    support_vectors['slope'] = np.around((x1_1 - x1_2) / (x0_1 - x0_2), 2)
-    support_vectors['bias'] = np.around(intercept[0], 2)
+    support_vectors['slope'] = np.around(-(coeffs[0][0] / coeffs[0][1]), 2)
+    support_vectors['bias'] = np.around(-(intercept[0] / coeffs[0][1]), 2)
+    support_vectors['weight_norm'] = np.around((2 / weight_norm) / 2)
     print(json.dumps(support_vectors))
 
 solve_svm(data)

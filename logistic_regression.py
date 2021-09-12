@@ -9,8 +9,10 @@ from numpy.lib.stride_tricks import broadcast_shapes
 
 # data = "{'''1''': [{'x': 2, 'y':2}, {'x': 1, 'y': 1}], '''0''': [{'x': -2, 'y':2}, {'x': -1, 'y': 1}]}"
 # data = "{'''1''': [{'x': 1, 'y':1}], '''0''': [{'x': -1, 'y':-1}]}"
-data = "{'''1''': [{'x': 5, 'y':10}, {'x': 5, 'y':5}], '''0''': [{'x': 10, 'y':10}, {'x': 10, 'y':5}]}"
-# data = sys.argv[1]
+# data = "{'''1''': [{'x': 5, 'y':10}, {'x': 5, 'y':5}], '''0''': [{'x': 10, 'y':10}, {'x': 10, 'y':5}]}"
+# data = "{'''1''': [{'x': 0, 'y':0}], '''0''': [{'x': -5, 'y':-5}]}"
+
+data = sys.argv[1]
 
 def sigmoid(x):
     return (1 / (1 + np.exp(-x)))
@@ -33,7 +35,7 @@ def logistic_regression(data):
             X.append([curr['x'], curr['y']])
             y.append(int(label))
     X = np.array(X)
-    n_iters = 15000
+    n_iters = 10000
     learning_rates = [0.0001, 0.001, 0.01, 0.1] 
     weights = [0, 0]
     bias = 0
@@ -52,6 +54,8 @@ def logistic_regression(data):
     best_learning_rate = max(accuracy_dict, key = accuracy_dict.get)
     weights, bias = param_dict[best_learning_rate]
     # print(y_preds, y)
+    # print(weights)
+    # print(bias)
     return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate]}
     print(json.dumps(return_dict))   
 

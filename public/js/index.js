@@ -1,9 +1,9 @@
 // MISC
 ////////////////////////////////////////////////////////////
 var ctx = document.getElementById('my_graph').getContext('2d');
-let colors = ['#003566', '#99e2b4', '#7400b8', '#f4845f', '#ffc300', 
-              '#9f6976', '#e4c1f9', '#f20089', '#89c2d9', '#344e41',
-              '#22577a', '#a11d33', '#c0fdfb', '#a7c957', '#00a6fb'];
+let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338', 
+              '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
+              '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'];
 
 let randomColor = () => {return colors[Math.floor(Math.random() * colors.length)]};
 let max_val = 20;
@@ -337,12 +337,12 @@ function solve_svm() {
     }).then((data) => {
         let slope = data["slope"];
         let bias = data["bias"];
-        console.log(`y = ${slope}x + ${bias}`)
-        // need to graph y = x*slope + bias
-        // find min and max points in curr dataset
+        let weight_norm = data['weight_norm'];
         border_size = max_val >= 20 ? max_val : 20;
         // edge cases (slope = 0) 
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
+        let margin_1 = line_through_border(slope, bias - weight_norm, border_size + 10);
+        let margin_2 = line_through_border(slope, bias + weight_norm, border_size + 10);
         my_graph.data.datasets.push({
             label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
             data: seperating_plane,
@@ -351,25 +351,45 @@ function solve_svm() {
             pointStyle: 'line',
             borderColor: randomColor()
         });
-        // delete data.slope
-        // delete data.bias
-        // let sv_coords = [];
-        // Object.entries(data).forEach(point => {
-        //     sv_coords.push({
-        //         'x': point[1][0],
-        //         'y': point[1][1]
-        //     });
-        //     console.log(sv_coords);
-        // })
-        // my_graph.data.datasets.push({
-        //     label: 'Support Vectors',
-        //     data: sv_coords,
-        //     showLine: false,
-        //     fill: false,
-        //     pointStyle: 'cross',
-        //     borderColor: '#000',
-        //     radius: 10
-        // });
+        my_graph.data.datasets.push({
+            label: 'margin',
+            data: margin_1,
+            showLine: true,
+            fill: false,
+            borderDash: [10, 10],
+            pointStyle: 'line',
+            borderWidth: 1,
+            borderColor: '#000'
+        });
+        my_graph.data.datasets.push({
+            data: margin_2,
+            showLine: true,
+            fill: false,
+            borderDash: [10, 10],
+            pointStyle: 'line',
+            borderWidth: 1,
+            borderColor: '#000'
+        });
+        delete data.slope;
+        delete data.bias;
+        delete data.weight_norm;
+        console.log('data is', data)
+        let sv_coords = [];
+        Object.entries(data).forEach(point => {
+            sv_coords.push({
+                'x': point[1][0],
+                'y': point[1][1]
+            });
+            console.log('sv coords are', sv_coords);
+        })
+        my_graph.data.datasets.push({
+            label: 'Support Vectors',
+            data: sv_coords,
+            showLine: false,
+            fill: false,
+            borderColor: '#000',
+            radius: 5
+        });
         my_graph.update();
 
     })
@@ -472,7 +492,7 @@ function solve_logistic_regression() {
         // edge cases (slope = 0) 
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
         my_graph.data.datasets.push({
-            label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc} ` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
+            label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
             data: seperating_plane,
             showLine: true,
             fill: false,
