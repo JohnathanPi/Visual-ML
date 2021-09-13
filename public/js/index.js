@@ -155,8 +155,8 @@ var my_graph = new Chart(ctx, {
             legend: {
                 display: true,
                 labels: {
-                    filter: function (legendItem, data) {
-                        return data.datasets[legendItem.datasetIndex].label != 'axis'
+                    filter: function(item, chart) {
+                        return !item.text.includes('margin2');
                     }
                 }
             }
@@ -337,12 +337,17 @@ function solve_svm() {
     }).then((data) => {
         let slope = data["slope"];
         let bias = data["bias"];
-        let weight_norm = data['weight_norm'];
+        let margin = data['margin'];
+        let weight_norm = data['weight_norm']
+        console.log('weightnormis', weight_norm[0])
+        console.log('margin time sweight norm', margin*weight_norm[0][0] + margin*weight_norm[0][1])
         border_size = max_val >= 20 ? max_val : 20;
         // edge cases (slope = 0) 
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
-        let margin_1 = line_through_border(slope, bias - weight_norm, border_size + 10);
-        let margin_2 = line_through_border(slope, bias + weight_norm, border_size + 10);
+        //let margin_1 = line_through_border(slope, bias - (margin*weight_norm[0][0] + margin*weight_norm[0][1]), border_size + 10);
+        //let margin_2 = line_through_border(slope, bias + (margin*weight_norm[0][0] + margin*weight_norm[0][1]), border_size + 10);
+        let margin_1 = line_through_border(slope, bias - margin, border_size + 10);
+        let margin_2 = line_through_border(slope, bias + margin, border_size + 10);
         my_graph.data.datasets.push({
             label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
             data: seperating_plane,
@@ -362,6 +367,7 @@ function solve_svm() {
             borderColor: '#000'
         });
         my_graph.data.datasets.push({
+            label: 'margin2',
             data: margin_2,
             showLine: true,
             fill: false,
@@ -373,6 +379,7 @@ function solve_svm() {
         delete data.slope;
         delete data.bias;
         delete data.weight_norm;
+        delete data.margin
         console.log('data is', data)
         let sv_coords = [];
         Object.entries(data).forEach(point => {
@@ -518,7 +525,7 @@ function solve_linear_regression() {
     fetch('/api', options)
     // fetch returning data from python script
     console.log('im at request');
-    fetch('/python').then((response) => {
+    fetch('/lin_reg').then((response) => {
             return response.json();
         }).then((data) => {
             if (data === 0) {

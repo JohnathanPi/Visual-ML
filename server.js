@@ -7,10 +7,13 @@ var graph_data = "";
 
 app.use(express.json());
 
-app.get('/',(req,res) => {
-  res.sendFile(path.join(__dirname+'/index.html'));
-});
+// app.get('/',(req,res) => {
+//   res.sendFile(path.join(__dirname+'/index.html'));
+// });
 
+app.get('/',(req,res) => {
+  res.sendFile(path.join(__dirname+'/index2.html'));
+});
 
 app.post('/api', (req, res) => {
   // recieve array of objects, each representing a point
@@ -72,9 +75,9 @@ app.get('/k_means', (req, res) => {
 
 
 
-app.get('/python', (req, res) => {
+app.get('/lin_reg', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['test.py', graph_data]);
+  const python = spawn('py', ['linear_regression.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
     if(dataToSend === '0') {

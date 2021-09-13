@@ -26,37 +26,42 @@ def accuracy(y_true, y_preds):
     return (final_preds == y_arr).sum() / y_arr.shape[0]
 
 def logistic_regression(data):
-    data_obj = ast.literal_eval(data)
-    X = []
-    y = []
-    for label in data_obj:
-        for i in range(len(data_obj[label])):
-            curr = data_obj[label][i]
-            X.append([curr['x'], curr['y']])
-            y.append(int(label))
-    X = np.array(X)
-    n_iters = 10000
-    learning_rates = [0.0001, 0.001, 0.01, 0.1] 
-    weights = [0, 0]
-    bias = 0
-    accuracy_dict = {}
-    param_dict = {}
-    for learning_rate in learning_rates:
-        for _ in range(n_iters):
-            y_preds = (sigmoid(linear_func(X, weights, bias)))
-            # Cost function gradients
-            dw = (1 / X.shape[0]) * np.dot(X.T, (y_preds - y))
-            db = (1 / X.shape[0]) * np.sum(y_preds - y)
-            weights -= learning_rate * dw
-            bias -= learning_rate * db
-        param_dict[learning_rate] = [weights, bias]
-        accuracy_dict[learning_rate] = accuracy(y, y_preds)
-    best_learning_rate = max(accuracy_dict, key = accuracy_dict.get)
-    weights, bias = param_dict[best_learning_rate]
-    # print(y_preds, y)
-    # print(weights)
-    # print(bias)
-    return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate]}
-    print(json.dumps(return_dict))   
+    try:
+        data_obj = ast.literal_eval(data)
+        X = []
+        y = []
+        for label in data_obj:
+            for i in range(len(data_obj[label])):
+                curr = data_obj[label][i]
+                X.append([curr['x'], curr['y']])
+                y.append(int(label))
+        X = np.array(X)
+        n_iters = 10000
+        learning_rates = [0.0001, 0.001, 0.01, 0.1] 
+        weights = [0, 0]
+        bias = 0
+        accuracy_dict = {}
+        param_dict = {}
+        for learning_rate in learning_rates:
+            for _ in range(n_iters):
+                y_preds = (sigmoid(linear_func(X, weights, bias)))
+                # Cost function gradients
+                dw = (1 / X.shape[0]) * np.dot(X.T, (y_preds - y))
+                db = (1 / X.shape[0]) * np.sum(y_preds - y)
+                weights -= learning_rate * dw
+                bias -= learning_rate * db
+            param_dict[learning_rate] = [weights, bias]
+            accuracy_dict[learning_rate] = accuracy(y, y_preds)
+        best_learning_rate = max(accuracy_dict, key = accuracy_dict.get)
+        weights, bias = param_dict[best_learning_rate]
+        # print(y_preds, y)
+        # print(weights)
+        # print(bias)
+        return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate]}
+        print(json.dumps(return_dict)) 
+    except Exception as e:
+        sys.stderr.write(str(e), "Error on line {}".format(sys.exc_info()[-1].tb_lineno))
+        print('0')
+
 
 logistic_regression(data)

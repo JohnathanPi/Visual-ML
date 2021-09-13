@@ -3,7 +3,7 @@ import sys
 import ast
 import numpy as np
 from sklearn import svm
-from sklearn.utils.extmath import weighted_mode
+
 
 
 # data = "{'''1''': [{'x': 5, 'y':3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 7}], '''-1''': [{'x': -5, 'y':-3}, {'x': -1, 'y': -4}, {'x': -2, 'y': -7}]}"
@@ -29,12 +29,15 @@ def solve_svm(data):
     for i, sv in enumerate(sv_s):
         sv = sv.tolist()
         support_vectors[i] = sv
-    coeffs = clf.coef_.tolist()
-    weight_norm = np.linalg.norm(coeffs)
+    # coeffs = clf.coef_.tolist()
+    coeffs = clf.coef_
+    # weight_norm = np.linalg.norm(coeffs)
+    weight_norm = np.sqrt(np.sum(coeffs ** 2))
     intercept = clf.intercept_.tolist()
     support_vectors['slope'] = np.around(-(coeffs[0][0] / coeffs[0][1]), 2)
     support_vectors['bias'] = np.around(-(intercept[0] / coeffs[0][1]), 2)
-    support_vectors['weight_norm'] = np.around((2 / weight_norm) / 2)
+    support_vectors['margin'] = np.around((1 / weight_norm))
+    support_vectors['weight_norm'] = np.around((coeffs / weight_norm)).tolist()
     print(json.dumps(support_vectors))
 
 solve_svm(data)

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <title>add data test</title>
+    <link rel="stylesheet" type="text/css" href="css\styles2.css">
+    <!-- Google Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;500&display=swap" rel="stylesheet">
+</head>
+
+<body class="background">
+    <div class="header">
+        <div class="title-cont">
+            <p class="title">Graph Creator Thingy</p>
+        </div>
+        <div class="navbar">
+            <span class="navbtn linear-wipe">World</span>
+            <span class="navbtn linear-wipe">Wide</span>
+            <span class="navbtn linear-wipe">Oink</span>
+        </div>
+    </div>
+    <div class="content">
+        <div class="model-selection-header">
+            <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
+                <option value="1" selected>Linear Regression</option>
+                <option value="2">Logistic Regression</option>
+                <option value="3">SVM</option>
+                <option value="4">K-Means</option>
+            </select>
+        </div>
+        <div class="graph" oncontextmenu="return false;">
+            <canvas id="my_graph"></canvas>
+        </div>
+    </div>
+    <script src="\js\index.js"></script>
+    <!-- <script src="\js\main.js"></script> -->
+
+
+
+</body>
+
+
+</html>

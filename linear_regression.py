@@ -5,7 +5,6 @@ import numpy as np
 
 def linear_regression():
     try:
-        # "[{'x': 5, 'y':3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 7}]"
         incoming_data = sys.argv[1]
         data_objs = ast.literal_eval(incoming_data)
         x_vals = []
@@ -15,12 +14,14 @@ def linear_regression():
             count += 1
             x_vals.append(point['x'])
             y_vals.append(point['y'])
-        x_arr = np.array([[1 for i in range(count)], x_vals])
-        x_arr_t = np.transpose(x_arr)
-        y_arr = np.array([y_vals])
-        inv_xt_x = np.linalg.inv(np.matmul(x_arr, x_arr_t))
-        x_ty = np.matmul(inv_xt_x, x_arr)
-        w = np.matmul(x_ty, np.transpose(y_arr))
+        X = np.array([[1 for i in range(count)], x_vals])
+        y = np.array([y_vals])
+        # (X^TX)^-1
+        inv_xt_x = np.linalg.inv(np.matmul(X, X.T)) 
+        # inv_xt_x = np.linalg.inv(np.matmul(X + 0.01*np.eye(X.shape[0], X.shape[1]), X.T)) 
+        # (X^Ty)
+        x_ty = np.matmul(inv_xt_x, X)
+        w = np.matmul(x_ty, np.transpose(y))
         final_weights = (np.around(w, 2)).ravel()
         slope, bias = final_weights[1], final_weights[0]
         weight_dict = {"slope" : slope, 'bias' : bias}
