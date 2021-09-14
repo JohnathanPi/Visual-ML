@@ -73,12 +73,7 @@ textarea {
     width: 800px;
     height:600px;
     background-color: white;
-    border-radius: 12px;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    border-radius: 12px; 
     box-shadow: -0.563rem 0.75rem 0.938rem -0.188rem rgba(0,0,0,0.27);
 
 }
@@ -121,6 +116,7 @@ textarea {
     font-size: 2.188rem;
     background-color: transparent;
     border: 0px;
+    text-align-last:center;
     background: transparent;
     background-image: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    
     -webkit-background-clip: text;
@@ -135,7 +131,23 @@ textarea {
 .model-selection-header {
     display: flex;
     width: 100%;
-    /* margin-bottom: 6.25rem; */
+    padding-bottom: 12.5px;
     font-size: 40;
     justify-content: center;
+}
+
+.insert_data {
+    display: none;
+    padding-top: 15px;
+    background: transparent;
+    color: white;
+    border: 0px;
+    font-size: 1.25rem;
+    transition-duration: 0.5s;
+}
+
+.insert_data:hover {
+    color: #bc6fe3;
+    transition-duration: 0.5s;
+    letter-spacing: 0.188rem;
 }

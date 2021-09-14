@@ -3,14 +3,14 @@ import sys
 import ast
 import numpy as np
 from sklearn import svm
+from sklearn.utils.extmath import weighted_mode
 
 
 
 # data = "{'''1''': [{'x': 5, 'y':3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 7}], '''-1''': [{'x': -5, 'y':-3}, {'x': -1, 'y': -4}, {'x': -2, 'y': -7}]}"
 # data = "{'''1''': [{'x': 2, 'y':2}, {'x': 1, 'y': 1}], '''-1''': [{'x': -2, 'y':2}, {'x': -1, 'y': 1}]}"
-# data = "{'''1''': [{'x': 8, 'y':16}, {'x': 13, 'y': 16}], 
-# '''-1''': [{'x': -2, 'y':2}, {'x': -1, 'y': 1}]}"
-# "{'1':[{'x':10,'y':16},{'x':15,'y':9},{'x':8,'y':8}],'-1':[{'x':5.017811704834607,'y':-10.264211369095273},{'x':4.0769013288097256,'y':-0.09607686148918759},{'x':-4.174158891716145,'y':-1.5372297838270619}]}"
+# data = "{'''1''': [{'x': 10, 'y':10}], '''-1''': [{'x': 5, 'y': 5}]}"
+# data = "{'''1''': [{'x': -3, 'y':1}], '''-1''': [{'x': -2, 'y': -5}, {'x': 5, 'y': -1}]}"
 data = sys.argv[1]
 # SOLVE INFINITE SLOPE CASE BY CHECKING FOR SYMMETRICAL SUPPORT VECTORS
 def solve_svm(data):
@@ -32,13 +32,24 @@ def solve_svm(data):
     # coeffs = clf.coef_.tolist()
     coeffs = clf.coef_
     # weight_norm = np.linalg.norm(coeffs)
-    weight_norm = np.sqrt(np.sum(coeffs ** 2))
+    weight_norm = np.sqrt(np.sum(coeffs[0] ** 2))
+    w_hat = clf.coef_[0] / (np.sqrt(np.sum(clf.coef_[0] ** 2)))
+    # print('what is', w_hat)
+    # print('weight norm is', weight_norm)
+    margin = 1 / np.sqrt(np.sum(clf.coef_[0] ** 2))
+    # print('margin is', margin)
     intercept = clf.intercept_.tolist()
     support_vectors['slope'] = np.around(-(coeffs[0][0] / coeffs[0][1]), 2)
     support_vectors['bias'] = np.around(-(intercept[0] / coeffs[0][1]), 2)
-    support_vectors['margin'] = np.around((1 / weight_norm))
-    support_vectors['weight_norm'] = np.around((coeffs / weight_norm)).tolist()
+    support_vectors['bias-1'] = np.around(-((intercept[0] + 1) / coeffs[0][1]), 2)
+    support_vectors['bias-2'] = np.around(-((intercept[0] - 1) / coeffs[0][1]), 2)
+    # support_vectors['margin_dist'] = (w_hat[0] * margin + w_hat[1] * margin)
     print(json.dumps(support_vectors))
+
+
+# abline(b/w[1],-w[2]/w[1])
+# abline((b+1)/w[1],-w[2]/w[1],lty=2)
+# abline((b-1)/w[1],-w[2]/w[1],lty=2)
 
 solve_svm(data)
 

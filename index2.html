@@ -29,17 +29,23 @@
     <div class="content">
         <div class="model-selection-header">
             <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
-                <option value="1" selected>Linear Regression</option>
-                <option value="2">Logistic Regression</option>
-                <option value="3">SVM</option>
-                <option value="4">K-Means</option>
+                <option value="1" selected>Linear Regression()</option>
+                <option value="2">Logistic Regression()</option>
+                <option value="3">SVM()</option>
+                <option value="4">K-Means()</option>
             </select>
         </div>
         <div class="graph" oncontextmenu="return false;">
             <canvas id="my_graph"></canvas>
         </div>
+        <div class = "btn_cont">
+            <button onclick="solve_linear_regression()" class = 'insert_data' style="display: block;">SOLVE</button>
+            <button onclick="solve_logistic_regression()" class = 'insert_data'>SOLVE</button>
+            <button onclick="solve_svm()" class = 'insert_data'>SOLVE</button>
+            <button onclick="solve_k_means()" class = 'insert_data'>SOLVE</button>
+        </div>
     </div>
-    <script src="\js\index.js"></script>
+    <script src="\js\index2.js"></script>
     <!-- <script src="\js\main.js"></script> -->
 
 
