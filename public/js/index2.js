@@ -55,6 +55,7 @@ function line_through_border(slope, bias, border) {
 function setting_switch() {
     let solve_buttons = document.querySelectorAll('.insert_data')
     let chosen_model = document.getElementById('model-selector');
+    let model_divs = document.querySelectorAll('.model_div')
     let i = 0;
     solve_buttons.forEach((solve_button) => {
         i++;
@@ -62,6 +63,15 @@ function setting_switch() {
             solve_button.style.display = 'block';
         } else {
             solve_button.style.display = 'none';
+        }
+    });
+    i = 0;
+    model_divs.forEach((model_div) => {
+        i++;
+        if (chosen_model.value === String(i)) {
+            model_div.style.display = 'block';
+        } else {
+            model_div.style.display = 'none';
         }
     });
     clear_data();

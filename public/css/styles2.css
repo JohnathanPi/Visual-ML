@@ -113,6 +113,7 @@ textarea {
 .model-selector {
     font-family: 'Kumbh Sans', sans-serif;
     padding: 0.625rem;
+    padding-right: 0rem;
     font-size: 2.188rem;
     background-color: transparent;
     border: 0px;
@@ -130,10 +131,12 @@ textarea {
 
 .model-selection-header {
     display: flex;
+    flex-direction: column;
     width: 100%;
     padding-bottom: 12.5px;
     font-size: 40;
     justify-content: center;
+    align-items: center;
 }
 
 .insert_data {
@@ -150,4 +153,76 @@ textarea {
     color: #bc6fe3;
     transition-duration: 0.5s;
     letter-spacing: 0.188rem;
+}
+
+.model_div {
+    width: 800px;
+    height: 35px;
+    border: 15px solid green;
+    padding: 50px;
+    margin: 20px;
+  }
+
+.div_model_1 {
+    display: block;
+}
+
+.div_model_2 {
+    display: none;
+}
+
+.div_model_3 {
+    display: none;
+}
+
+.div_model_4 {
+    display: none;
+}
+
+.insert_data {
+    background: transparent;
+    color: white;
+    border: 0px;
+    font-size: 1.25rem;
+    transition-duration: 0.5s;
+}
+
+.input_design_labels {
+    height: 3.125rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.563rem;
+    margin-bottom: 0.938rem;
+    border: 0px;
+    background: transparent;
+    padding: 0.313rem;
+    font-size: 1.25rem;
+    width: 15.625rem;  
+}
+
+.insert_data:hover {
+    color: #bc6fe3;
+    transition-duration: 0.5s;
+    letter-spacing: 0.188rem;
+}
+
+.border-gradient {
+    border: 0.625rem solid;
+    border-image-slice: 1;
+    border-width: .0.188rem;
+}
+  
+.border-gradient-aqua {
+    border-image-source: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    ;
+    transition-duration: 0.5s;
+}
+
+.border-gradient-aqua:hover {
+    border-width: 0.313rem;
+    transition-duration: 0.5s;
+}
+
+.border-gradient-aqua:active {
+    border-width: 0.313rem;
+    transition-duration: 0.5s;
 }

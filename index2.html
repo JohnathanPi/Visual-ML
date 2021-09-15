@@ -29,18 +29,33 @@
     <div class="content">
         <div class="model-selection-header">
             <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
-                <option value="1" selected>Linear Regression()</option>
+                <option value="1" selected>Linear Regression</option>       
                 <option value="2">Logistic Regression()</option>
                 <option value="3">SVM()</option>
                 <option value="4">K-Means()</option>
             </select>
+            <div class = "model-div-cont">
+                <div class = " model_div div_model_1">
+                    <p style="background-color:tomato;">1</p>
+                </div>
+                <div class = " model_div div_model_2">
+                    <p style="background-color:white;">1</p>
+                </div>
+                <div class = " model_div div_model_3">
+                    <p style="background-color:blue;">1</p>
+                </div>
+                <div class = " model_div div_model_4">
+                    <textarea class="input_design_labels border-gradient border-gradient-aqua" name="" placeholder="Enter K"
+                    id="input_k" cols="" rows=""></textarea>
+                </div>
+            </div>
         </div>
         <div class="graph" oncontextmenu="return false;">
             <canvas id="my_graph"></canvas>
         </div>
         <div class = "btn_cont">
             <button onclick="solve_linear_regression()" class = 'insert_data' style="display: block;">SOLVE</button>
-            <button onclick="solve_logistic_regression()" class = 'insert_data'>SOLVE</button>
+            <button onclick="solve_logistic_regression()" style = "display: none;" class = 'insert_data'>SOLVE</button>
             <button onclick="solve_svm()" class = 'insert_data'>SOLVE</button>
             <button onclick="solve_k_means()" class = 'insert_data'>SOLVE</button>
         </div>
