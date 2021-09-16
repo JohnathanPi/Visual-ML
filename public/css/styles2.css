@@ -110,6 +110,28 @@ textarea {
     transition-duration: 0.5s;
 }
 
+.model-div-cont {
+    font-family: 'Kumbh Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.188rem;
+    background-color: transparent;
+    background-image: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    
+    border: #E0AAFF 2px solid;
+    width: 800px;
+    height: 85px;
+    margin: 20px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .model_div {
+      justify-content: center;
+      align-items: center;
+  }
+
 .model-selector {
     font-family: 'Kumbh Sans', sans-serif;
     padding: 0.625rem;
@@ -155,13 +177,6 @@ textarea {
     letter-spacing: 0.188rem;
 }
 
-.model_div {
-    width: 800px;
-    height: 35px;
-    border: 15px solid green;
-    padding: 50px;
-    margin: 20px;
-  }
 
 .div_model_1 {
     display: block;
@@ -198,6 +213,19 @@ textarea {
     padding: 0.313rem;
     font-size: 1.25rem;
     width: 15.625rem;  
+}
+
+.input_design {
+    height: 12.5rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.563rem;
+    margin-bottom: 0.938rem;
+    border: 0rem;
+    background: transparent;
+    padding: 0.313rem;
+    font-size: 1.25rem;
+    width: 15.625rem;
 }
 
 .insert_data:hover {

@@ -69,7 +69,7 @@ function setting_switch() {
     model_divs.forEach((model_div) => {
         i++;
         if (chosen_model.value === String(i)) {
-            model_div.style.display = 'block';
+            model_div.style.display = 'flex';
         } else {
             model_div.style.display = 'none';
         }
