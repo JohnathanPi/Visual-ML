@@ -9,17 +9,28 @@ input::-webkit-inner-spin-button {
     font-family: 'Kumbh Sans', sans-serif
 }
 
-html, body {
+body {
+    background-image: linear-gradient(to bottom, #10002b, #130232, #170339, #1d0340, #240046);
     margin: 0;
     height: 100%;
 }
+
+
 
 textarea {
     color: white;
 }
 
-.background {
-    background-image: linear-gradient(to bottom, #10002b, #130232, #170339, #1d0340, #240046);
+p {
+    color: white;
+}
+
+.footer {
+    padding: 50px;
+}
+
+.btn_cont {
+    padding: 50px;
 }
 
 .title-cont {
@@ -57,8 +68,7 @@ textarea {
 .header {
     display: flex;
     text-align: left;
-    /* border-bottom: 0.125rem solid #78CEB4; */
-    height: 6.25rem;
+    height: 5rem;
     background-color: #10002b
 }
 
@@ -70,7 +80,7 @@ textarea {
 }
 
 .graph {
-    width: 800px;
+    width: 1000px;
     height:600px;
     background-color: white;
     border-radius: 12px; 
@@ -110,24 +120,41 @@ textarea {
     transition-duration: 0.5s;
 }
 
+
+.guide {
+    font-family: 'Kumbh Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background-color: transparent;
+    width: 800px;
+    height: 35px;
+    margin: 20px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
 .model-div-cont {
     font-family: 'Kumbh Sans', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.188rem;
+    font-size: 1.5rem;
     background-color: transparent;
     background-image: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    
     border: #E0AAFF 2px solid;
     width: 800px;
-    height: 85px;
+    height: 65px;
     margin: 20px;
+    border-radius: 20px;
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
   }
 
-  .model_div {
+.model_div {
       justify-content: center;
       align-items: center;
   }
@@ -161,7 +188,7 @@ textarea {
     align-items: center;
 }
 
-.insert_data {
+.solve_btn {
     display: none;
     padding-top: 15px;
     background: transparent;
@@ -171,7 +198,7 @@ textarea {
     transition-duration: 0.5s;
 }
 
-.insert_data:hover {
+.solve_btn:hover {
     color: #bc6fe3;
     transition-duration: 0.5s;
     letter-spacing: 0.188rem;
@@ -208,7 +235,7 @@ textarea {
     flex-direction: column;
     margin-top: 1.563rem;
     margin-bottom: 0.938rem;
-    border: 0px;
+    border-bottom: 5px linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff) solid;
     background: transparent;
     padding: 0.313rem;
     font-size: 1.25rem;
@@ -234,23 +261,41 @@ textarea {
     letter-spacing: 0.188rem;
 }
 
-.border-gradient {
-    border: 0.625rem solid;
-    border-image-slice: 1;
-    border-width: .0.188rem;
-}
-  
-.border-gradient-aqua {
-    border-image-source: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    ;
-    transition-duration: 0.5s;
+.input_k_box {
+    resize: none;
+    width: 100px;
+    height: 40px;
+    overflow: hidden;
+    border: 0px none;
+    border-bottom: 3px #e0aaff solid;
 }
 
-.border-gradient-aqua:hover {
-    border-width: 0.313rem;
-    transition-duration: 0.5s;
+.input_design {
+    height: 12.5rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.563rem;
+    margin-bottom: 0.938rem;
+    border: 0rem;
+    background: transparent;
+    padding: 0.313rem;
+    font-size: 1.25rem;
+    width: 15.625rem;
 }
 
-.border-gradient-aqua:active {
-    border-width: 0.313rem;
-    transition-duration: 0.5s;
+.button_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-wrap: nowrap;
+}
+
+.actions-cont {
+    display: flex;
+}
+
+.add_data_btn {
+    border-bottom: 1px violet solid;
 }

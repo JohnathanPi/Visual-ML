@@ -20,20 +20,36 @@
         <div class="title-cont">
             <p class="title">Graph Creator Thingy</p>
         </div>
-        <div class="navbar">
+        <!-- <div class="navbar">
             <span class="navbtn linear-wipe">World</span>
             <span class="navbtn linear-wipe">Wide</span>
             <span class="navbtn linear-wipe">Oink</span>
-        </div>
+        </div> -->
+    
     </div>
     <div class="content">
         <div class="model-selection-header">
+            <div class = "guide">
+                <p style="color: white;">Enter data by clicking on the graph or <span onclick = "show_data_box()" class = "add_data_btn" style="color: violet;">enter manually</span></p>
+            </div>
             <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
                 <option value="1" selected>Linear Regression</option>       
-                <option value="2">Logistic Regression()</option>
-                <option value="3">SVM()</option>
-                <option value="4">K-Means()</option>
+                <option value="2">Logistic Regression</option>
+                <option value="3">Linear SVM</option>
+                <option value="4">K-Means</option>
             </select>
+            <div class = "model-selection" id="data_input_1">
+                <div class="model_setting_box">
+                    <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
+                        placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
+                    <div class="button_container">
+                        <div class = "actions-cont">
+                            <button onclick="parse_data()" class="insert_data">ADD</button>
+                            <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class = "model-div-cont">
                 <div class = " model_div div_model_1">
                     <p>1</p>
@@ -46,7 +62,7 @@
                 </div>
                 <div class = " model_div div_model_4">
                     <p style="padding-right: 10px;">K:</p>
-                    <textarea name="" class = "border-gradient border-gradient-aqua input_design_labels" placeholder="Enter K"
+                    <textarea name="" class = "input_k_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
                     id="input_k" cols="" rows=""></textarea>
                 </div>
             </div>
@@ -55,10 +71,13 @@
             <canvas id="my_graph"></canvas>
         </div>
         <div class = "btn_cont">
-            <button onclick="solve_linear_regression()" class = 'insert_data' style="display: block;">SOLVE</button>
-            <button onclick="solve_logistic_regression()" style = "display: none;" class = 'insert_data'>SOLVE</button>
-            <button onclick="solve_svm()" class = 'insert_data'>SOLVE</button>
-            <button onclick="solve_k_means()" class = 'insert_data'>SOLVE</button>
+            <button onclick="solve_linear_regression()" class = "solve_btn" style="display: block;">SOLVE</button>
+            <button onclick="solve_logistic_regression()" style = "display: none;" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_svm()" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_k_means()" class = "solve_btn">SOLVE</button>
+        </div>
+        <div class = "footer">
+            <p>THIS IS A FOOTER</p>
         </div>
     </div>
     <script src="\js\index2.js"></script>

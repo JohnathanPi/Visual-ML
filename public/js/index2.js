@@ -51,6 +51,14 @@ function line_through_border(slope, bias, border) {
     return final_points.slice(0, 2);
 }
 
+function show_data_box() {
+    let data_enter_div = document.getElementById("data_input_1");
+    if (data_enter_div.style.display === '') {
+        data_enter_div.style.display = 'none';
+    } else {
+        data_enter_div.style.display = '';
+    }
+};
 
 function setting_switch() {
     let solve_buttons = document.querySelectorAll('.insert_data')
