@@ -30,7 +30,7 @@ p {
 }
 
 .btn_cont {
-    padding: 50px;
+    padding: 15px;
 }
 
 .title-cont {
@@ -106,8 +106,8 @@ p {
 }
 
 .model-selection {
-    height: 31.25rem;
-    width: 25rem;
+    height: 24rem;
+    width: 22rem;
     background-color: #10002b;
     font-size: 1.875rem;
     border-radius: 1.25rem;
@@ -144,7 +144,7 @@ p {
     background-color: transparent;
     background-image: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    
     border: #E0AAFF 2px solid;
-    width: 800px;
+    width: 550px;
     height: 65px;
     margin: 20px;
     border-radius: 20px;
@@ -179,9 +179,8 @@ p {
 
 .model-selection-header {
     display: flex;
-    flex-direction: column;
     width: 100%;
-    padding-bottom: 12.5px;
+    padding-bottom: 4.5px;
     font-size: 40;
     justify-content: center;
     align-items: center;
@@ -232,6 +231,7 @@ p {
     height: 3.125rem;
     display: flex;
     flex-direction: column;
+    border: 2px violet solid;
     margin-top: 1.563rem;
     margin-bottom: 0.938rem;
     border-bottom: 5px linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff) solid;
@@ -239,19 +239,6 @@ p {
     padding: 0.313rem;
     font-size: 1.25rem;
     width: 15.625rem;  
-}
-
-.input_design {
-    height: 12.5rem;
-    display: flex;
-    flex-direction: column;
-    margin-top: 1.563rem;
-    margin-bottom: 0.938rem;
-    border: 0rem;
-    background: transparent;
-    padding: 0.313rem;
-    font-size: 1.25rem;
-    width: 15.625rem;
 }
 
 .insert_data:hover {
@@ -275,11 +262,15 @@ p {
     flex-direction: column;
     margin-top: 1.563rem;
     margin-bottom: 0.938rem;
-    border: 0rem;
+    border: 2px violet solid;
     background: transparent;
     padding: 0.313rem;
     font-size: 1.25rem;
     width: 15.625rem;
+}
+
+.input_design:focus {
+    border: 5px violet solid;
 }
 
 .button_container {
@@ -296,5 +287,23 @@ p {
 }
 
 .add_data_btn {
+    color: violet;
     border-bottom: 1px violet solid;
+    
+}
+
+.add_data_btn:hover {
+    cursor: pointer;
+}
+
+#error {
+    padding-bottom: 15px;
+}
+
+.add_data_btn {
+    user-select: none; /* standard syntax */
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
 }

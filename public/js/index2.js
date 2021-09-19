@@ -50,7 +50,6 @@ function line_through_border(slope, bias, border) {
             final_points.push(point);
         };
     });
-    console.log(final_points.slice(0, 2))
     return final_points.slice(0, 2);
 }
 
@@ -73,6 +72,34 @@ function get_lin_reg_lambda() {
     return lambda.value
 }
 
+function show_error(msg) {
+    error = document.getElementById('error');
+    error.textContent = msg;
+    error.style.color = "red"
+    setTimeout(function() {
+        error.textContent = '';
+    }, 1000);
+}
+
+function check_readonly() {
+    let label_input = document.getElementById('input_labels');
+    let log_reg_div = document.getElementById('log_reg_div');
+    let svm_div = document.getElementById('svm_div');
+    let add_data_btn = document.getElementById('add_data_btn');
+    if (log_reg_div.style.display === 'flex' || svm_div.style.display === 'flex') {
+        label_input.readOnly = false;
+        add_data_btn.onclick = parse_labled_data;
+
+    } else {
+        label_input.value = "";
+        label_input.readOnly = true;
+        add_data_btn.onclick = parse_data;
+    }
+        
+    
+
+    
+}
 
 function setting_switch() {
     let solve_buttons = document.querySelectorAll('.solve_btn')
@@ -96,6 +123,7 @@ function setting_switch() {
             model_div.style.display = 'none';
         }
     });
+    check_readonly();
     clear_data();
 }
 
@@ -108,24 +136,15 @@ let calc_func_x = (a, b, y) => {
 };
 
 function shuffle(array) {
-    var copy = [],
-        n = array.length,
-        i;
-
-    // While there remain elements to shuffle…
+    let copy = [], n = array.length, i;
     while (n) {
-
-        // Pick a remaining element…
         i = Math.floor(Math.random() * array.length);
-
-        // If not already shuffled, move it to the new array.
         if (i in array) {
             copy.push(array[i]);
             delete array[i];
             n--;
         }
     }
-
     return copy;
 }
 
@@ -179,7 +198,7 @@ function onClickHandler(click) {
 
 
 
-var my_graph = new Chart(ctx, {
+let my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
         datasets: []
@@ -270,54 +289,27 @@ function parse_data() {
     my_graph.update();
 };
 
-function parse_kmeans_data() {
-    const new_data = document.getElementById('input_data_kmeans').value;
-    let parsed_data = extract_data(new_data);
-    let data_points = JSON.parse("[" + parsed_data + "]");
-    let x_vals = [];
-    let y_vals = [];
-    data_points.forEach(data_point => {
-        x_vals.push(data_point[0]);
-        y_vals.push(data_point[1]);
-        add_datasets(my_graph, 0);
-        let point = {
-            'x': data_point[0],
-            'y': data_point[1]
-        };
-        my_graph.data.datasets[0].data.push(point);
-    });
-    max_x = Math.max(...x_vals);
-    max_y = Math.max(...y_vals);
-    max_val = max_x >= max_y ? max_x : max_y;
-    my_graph.options.scales.x.min = -max_val - 10;
-    my_graph.options.scales.x.max = max_val + 10;
-    my_graph.options.scales.y.min = -max_val - 10;
-    my_graph.options.scales.y.max = max_val + 10;
-    my_graph.options.scales.x.position = 'center';
-    my_graph.options.scales.y.position = 'center';
-    document.getElementById('input_data').value = "";
-    my_graph.update();
-
-}
 
 function parse_labled_data() {
-    const new_labled_data = document.getElementById('labled_input_data').value;
-    const new_lables = document.getElementById('input_lables').value;
+    const new_labled_data = document.getElementById('input_data').value;
+    const new_lables = document.getElementById('input_labels').value;
     const lables = new_lables.split `,`.map(x => +x);
     let parsed_data = new_labled_data.replace(/\(/g, "[").replace(/\)/g, "]");
     let data_points = JSON.parse("[" + parsed_data + "]");
     labled_data_points = data_points.map(function (data, i) {
         return [data, lables[i]];
     });
-    if (!my_graph.data.datasets[1]) {
-        my_graph.data.datasets.push({
-            type: 'scatter',
-            label: "Data label 2",
-            data: [],
-            fill: false,
-            backgroundColor: randomColor()
-        });
-    };
+    // if (!my_graph.data.datasets[1]) {
+    //     my_graph.data.datasets.push({
+    //         type: 'scatter',
+    //         label: "Data label 2",
+    //         data: [],
+    //         fill: false,
+    //         backgroundColor: randomColor()
+    //     });
+    // };
+    add_datasets(my_graph, 0);
+    add_datasets(my_graph, 1);
     labled_data_points.forEach(data_point => {
         let point = {
             'x': data_point[0][0],
@@ -329,8 +321,8 @@ function parse_labled_data() {
             my_graph.data.datasets[1].data.push(point);
         }
     });
-    document.getElementById('labled_input_data').value = "";
-    document.getElementById('input_lables').value = "";
+    document.getElementById('input_data').value = "";
+    document.getElementById('input_labels').value = "";
     console.log(my_graph.data.datasets[0]);
     console.log(my_graph.data.datasets[1]);
     my_graph.update();
@@ -352,6 +344,125 @@ function clear_data(flag = 1) {
 ///////////////////////////////////////////////
 // SERVERSIDE MODEL RUNNING //////////////////
 //////////////////////////////////////////////
+
+function solve_linear_regression() {
+    // send POST request to api that runs python script
+    // const data = my_graph.data.datasets[0].data;
+    console.log(get_lin_reg_type());
+    const data = {
+        'data': my_graph.data.datasets[0].data,
+        'flag': get_lin_reg_type(),
+        'lambda': parseFloat(get_lin_reg_lambda()) || 0  
+    };
+
+    console.log(data);
+    options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    fetch('/api', options)
+    // fetch returning data from python script
+    console.log('im at request');
+    fetch('/lin_reg').then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data === 0) {
+                // Need to show this directly to user !
+                show_error("Not enoguh data")
+                throw new Error("Not enough data")
+            }
+            if (data === 1) {
+                show_error("Cannot perform regression with infinite slope")
+                throw new Error("Cannot perform regression with infinite slope")
+            }
+            let slope = data["slope"];
+            let bias = data["bias"];
+            let r_squared = data["R^2"]
+            // need to graph y = x*slope + bias
+            // find min and max points in curr dataset
+            border_size = max_val >= 20 ? max_val : 20;
+            // edge cases (slope = 0) 
+            let lin_reg_data = line_through_border(slope, bias, border_size + 10);
+            console.log('returned', lin_reg_data)
+            my_graph.data.datasets.push({
+                label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`,
+                data: lin_reg_data,
+                showLine: true,
+                fill: false,
+                pointStyle: 'line',
+                borderColor: randomColor()
+            });
+
+            my_graph.update();
+        })
+        .catch((err) => {
+            console.log('rejected', err);
+        })
+}
+
+function solve_logistic_regression() {
+    const data = {
+        '1': my_graph.data.datasets[0].data,
+        '0': my_graph.data.datasets[1].data
+    };
+    console.log(data);
+    options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    fetch('/api', options)
+    fetch('/log_reg').then((response) => {
+        return response.json();
+    }).then((data) => {
+        if (data === 0) {
+            my_graph.data.datasets.push({
+                label: 'test',
+                data: [{
+                    'x': 15,
+                    'y': 30
+                }, {
+                    'x': 15,
+                    'y': -30
+                }],
+                showLine: true,
+                fill: false,
+                pointStyle: 'line',
+                borderColor: randomColor()
+            });
+            my_graph.update();
+            return
+        } else {
+            console.log('the data is', data)
+            let slope = data["slope"];
+            let bias = data["bias"];
+            let acc = data["accuracy"]
+            console.log(`y = ${slope}x + ${bias}`)
+            // need to graph y = x*slope + bias
+            // find min and max points in curr dataset
+            border_size = max_val >= 20 ? max_val : 20;
+            // edge cases (slope = 0) 
+            let seperating_plane = line_through_border(slope, bias, border_size + 10);
+            console.log('sep plane is', seperating_plane)
+            my_graph.data.datasets.push({
+                label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
+                data: seperating_plane,
+                showLine: true,
+                fill: false,
+                pointStyle: 'line',
+                borderColor: randomColor()
+            });
+            my_graph.update();
+
+        }
+    })
+}
+
 
 function solve_svm() {
     const data = {
@@ -507,120 +618,4 @@ function solve_k_means() {
     }).catch((err) => {
         console.log('rejected', err);
     })
-}
-
-function solve_logistic_regression() {
-    const data = {
-        '1': my_graph.data.datasets[0].data,
-        '0': my_graph.data.datasets[1].data
-    };
-    console.log(data);
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
-    fetch('/api', options)
-    fetch('/log_reg').then((response) => {
-        return response.json();
-    }).then((data) => {
-        if (data === 0) {
-            my_graph.data.datasets.push({
-                label: 'test',
-                data: [{
-                    'x': 15,
-                    'y': 30
-                }, {
-                    'x': 15,
-                    'y': -30
-                }],
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderColor: randomColor()
-            });
-            my_graph.update();
-            return
-        } else {
-            console.log('the data is', data)
-            let slope = data["slope"];
-            let bias = data["bias"];
-            let acc = data["accuracy"]
-            console.log(`y = ${slope}x + ${bias}`)
-            // need to graph y = x*slope + bias
-            // find min and max points in curr dataset
-            border_size = max_val >= 20 ? max_val : 20;
-            // edge cases (slope = 0) 
-            let seperating_plane = line_through_border(slope, bias, border_size + 10);
-            console.log('sep plane is', seperating_plane)
-            my_graph.data.datasets.push({
-                label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
-                data: seperating_plane,
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderColor: randomColor()
-            });
-            my_graph.update();
-
-        }
-    })
-}
-
-function solve_linear_regression() {
-    // send POST request to api that runs python script
-    // const data = my_graph.data.datasets[0].data;
-    console.log(get_lin_reg_type());
-    const data = {
-        'data': my_graph.data.datasets[0].data,
-        'flag': get_lin_reg_type(),
-        'lambda': parseFloat(get_lin_reg_lambda())
-    };
-
-    console.log(data);
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
-    fetch('/api', options)
-    // fetch returning data from python script
-    console.log('im at request');
-    fetch('/lin_reg').then((response) => {
-            return response.json();
-        }).then((data) => {
-            if (data === 0) {
-                // Need to show this directly to user !
-                throw new Error("Not enough data")
-            }
-            if (data === 1) {
-                throw new Error("Cannot perform regression with infinite slope")
-            }
-            let slope = data["slope"];
-            let bias = data["bias"];
-            let r_squared = data["R^2"]
-            // need to graph y = x*slope + bias
-            // find min and max points in curr dataset
-            border_size = max_val >= 20 ? max_val : 20;
-            // edge cases (slope = 0) 
-            let lin_reg_data = line_through_border(slope, bias, border_size + 10);
-            console.log('returned', lin_reg_data)
-            my_graph.data.datasets.push({
-                label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`,
-                data: lin_reg_data,
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderColor: randomColor()
-            });
-
-            my_graph.update();
-        })
-        .catch((err) => {
-            console.log('rejected', err);
-        })
 }

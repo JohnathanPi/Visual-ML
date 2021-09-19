@@ -51,11 +51,10 @@ def linear_regression():
         weight_dict['R^2'] = r_squared
         print(json.dumps(weight_dict))
     except Exception as e:
-        # if (str(e) == 'Not enough data'):
-        #     print("0")
-        # else:
-        #     print("1")
-        print(e)
+        if (str(e) == 'Not enough data'):
+            print("0")
+        else:
+            print("1")
 
 
 linear_regression()

@@ -28,33 +28,33 @@
     
     </div>
     <div class="content">
-        <div class="model-selection-header">
-            <div class = "guide">
-                <p style="color: white;">Enter data by clicking on the graph or <span onclick = "show_data_box()" class = "add_data_btn" style="color: violet;">enter manually</span></p>
-            </div>
-            <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
-                <option value="1" selected>Linear Regression</option>       
-                <option value="2">Logistic Regression</option>
-                <option value="3">Linear SVM</option>
-                <option value="4">K-Means</option>
-            </select>
-            <div>
-                <div class = "model-selection" id="data_input_1">
-                <div class="model_setting_box">
-                    <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
-                        placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
-                    <div class="button_container">
-                        <div class = "actions-cont">
-                            <button onclick="parse_data()" class="insert_data">ADD</button>
-                            <button onclick="clear_data()" class="insert_data">CLEAR</button>
-                        </div>
+        <div class = "guide">
+            <p style="color: white;">Enter data by clicking on the graph or <span onclick = "show_data_box()" class = "add_data_btn" >enter manually</span></p>
+        </div>
+        <div class = "model-selection" id="data_input_1">
+            <div class="model_setting_box">
+                <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
+                    placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
+                <textarea readonly class="input_design_labels border-gradient border-gradient-aqua" name=""
+                    placeholder="Enter Lables" id="input_labels" cols="" rows=""></textarea>
+                <div class="button_container">
+                    <div class = "actions-cont">
+                        <button id = 'add_data_btn' onclick="parse_data()" class="insert_data">ADD</button>
+                        <button onclick="clear_data()" class="insert_data">CLEAR</button>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
+        <div class="model-selection-header">
+            <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
+                <option value="1" selected>Linear Regression:</option>       
+                <option value="2">Logistic Regression:</option>
+                <option value="3">Linear SVM:</option>
+                <option value="4">K-Means:</option>
+            </select>
             <div class = "model-div-cont">
-                <div class = " model_div div_model_1">
-                    <p style="padding-right: 10px;">Regularization :</p>
+                <div id = "lin_reg_div" class = "model_div div_model_1">
+                    <p style="padding-right: 10px;">Regularization:</p>
                     <select id="reg-selector" name="model" class="model-selector input_box input_design_labels">
                         <option value="1" selected>None</option>       
                         <option value="2">Ridge</option>
@@ -65,19 +65,20 @@
                     id="input_lambda_lin_reg" cols="" rows=""></textarea>
 
                 </div>
-                <div class = " model_div div_model_2">
+                <div id = "log_reg_div" class = "model_div div_model_2">
                     <p>2</p>
                 </div>
-                <div class = " model_div div_model_3">
+                <div id = "svm_div" class = "model_div div_model_3">
                     <p>3</p>
                 </div>
-                <div class = " model_div div_model_4">
+                <div id = "k_means_div" class = "model_div div_model_4">
                     <p style="padding-right: 10px;">K:</p>
                     <textarea name="" class = "input_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
                     id="input_k" cols="" rows=""></textarea>
                 </div>
             </div>
         </div>
+        <span id = "error"></span>
         <div class="graph" oncontextmenu="return false;">
             <canvas id="my_graph"></canvas>
         </div>
