@@ -58,10 +58,14 @@ def logistic_regression(data):
         # print(weights)
         # print(bias)
         return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate]}
+        if(return_dict['slope'] == -np.inf or return_dict['slope'] == np.inf):
+            raise ValueError('Infinite slope') 
         print(json.dumps(return_dict)) 
     except Exception as e:
-        sys.stderr.write(str(e), "Error on line {}".format(sys.exc_info()[-1].tb_lineno))
-        print('0')
+        if (str(e) == 'Infinite slope'):
+            print('0')
+        else:
+            print('1')
 
 
 logistic_regression(data)

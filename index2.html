@@ -38,7 +38,8 @@
                 <option value="3">Linear SVM</option>
                 <option value="4">K-Means</option>
             </select>
-            <div class = "model-selection" id="data_input_1">
+            <div>
+                <div class = "model-selection" id="data_input_1">
                 <div class="model_setting_box">
                     <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
                         placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
@@ -50,9 +51,19 @@
                     </div>
                 </div>
             </div>
+            </div>
             <div class = "model-div-cont">
                 <div class = " model_div div_model_1">
-                    <p>1</p>
+                    <p style="padding-right: 10px;">Regularization :</p>
+                    <select id="reg-selector" name="model" class="model-selector input_box input_design_labels">
+                        <option value="1" selected>None</option>       
+                        <option value="2">Ridge</option>
+                        <option value="3">Lasso</option>
+                    </select>
+                    <p style="padding-right: 10px;">Lambda:</p>
+                    <textarea name="" class = "input_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
+                    id="input_lambda_lin_reg" cols="" rows=""></textarea>
+
                 </div>
                 <div class = " model_div div_model_2">
                     <p>2</p>
@@ -62,7 +73,7 @@
                 </div>
                 <div class = " model_div div_model_4">
                     <p style="padding-right: 10px;">K:</p>
-                    <textarea name="" class = "input_k_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
+                    <textarea name="" class = "input_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
                     id="input_k" cols="" rows=""></textarea>
                 </div>
             </div>

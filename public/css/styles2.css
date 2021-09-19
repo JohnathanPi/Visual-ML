@@ -111,8 +111,7 @@ p {
     background-color: #10002b;
     font-size: 1.875rem;
     border-radius: 1.25rem;
-    margin-right: 18.75rem;
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: space-evenly;
     align-items:center;
@@ -206,7 +205,7 @@ p {
 
 
 .div_model_1 {
-    display: block;
+    display: flex;
 }
 
 .div_model_2 {
@@ -261,7 +260,7 @@ p {
     letter-spacing: 0.188rem;
 }
 
-.input_k_box {
+.input_box {
     resize: none;
     width: 100px;
     height: 40px;

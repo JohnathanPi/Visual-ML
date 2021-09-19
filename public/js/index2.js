@@ -1,11 +1,14 @@
 // MISC
 ////////////////////////////////////////////////////////////
 var ctx = document.getElementById('my_graph').getContext('2d');
-let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338', 
-              '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
-              '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'];
+let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
+    '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
+    '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
+];
 
-let randomColor = () => {return colors[Math.floor(Math.random() * colors.length)]};
+let randomColor = () => {
+    return colors[Math.floor(Math.random() * colors.length)]
+};
 let max_val = 20;
 
 document.getElementById('my_graph').onmousedown = (event) => {
@@ -53,15 +56,26 @@ function line_through_border(slope, bias, border) {
 
 function show_data_box() {
     let data_enter_div = document.getElementById("data_input_1");
-    if (data_enter_div.style.display === '') {
-        data_enter_div.style.display = 'none';
+    if (data_enter_div.style.display === 'none' || data_enter_div.style.display === '') {
+        data_enter_div.style.display = 'flex';
     } else {
-        data_enter_div.style.display = '';
+        data_enter_div.style.display = 'none';
     }
 };
 
+function get_lin_reg_type() {
+    let reg_type = document.getElementById('reg-selector');
+    return reg_type.value - 1;
+}
+
+function get_lin_reg_lambda() {
+    let lambda = document.getElementById('input_lambda_lin_reg');
+    return lambda.value
+}
+
+
 function setting_switch() {
-    let solve_buttons = document.querySelectorAll('.insert_data')
+    let solve_buttons = document.querySelectorAll('.solve_btn')
     let chosen_model = document.getElementById('model-selector');
     let model_divs = document.querySelectorAll('.model_div')
     let i = 0;
@@ -94,24 +108,26 @@ let calc_func_x = (a, b, y) => {
 };
 
 function shuffle(array) {
-    var copy = [], n = array.length, i;
-  
+    var copy = [],
+        n = array.length,
+        i;
+
     // While there remain elements to shuffle…
     while (n) {
-  
-      // Pick a remaining element…
-      i = Math.floor(Math.random() * array.length);
-  
-      // If not already shuffled, move it to the new array.
-      if (i in array) {
-        copy.push(array[i]);
-        delete array[i];
-        n--;
-      }
+
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * array.length);
+
+        // If not already shuffled, move it to the new array.
+        if (i in array) {
+            copy.push(array[i]);
+            delete array[i];
+            n--;
+        }
     }
-  
+
     return copy;
-  }
+}
 
 function add_datasets(graph, curr_sets) {
     if (graph.data.datasets.length === curr_sets) {
@@ -173,7 +189,7 @@ var my_graph = new Chart(ctx, {
             legend: {
                 display: true,
                 labels: {
-                    filter: function(item, chart) {
+                    filter: function (item, chart) {
                         return !item.text.includes('margin2');
                     }
                 }
@@ -330,7 +346,7 @@ function clear_data(flag = 1) {
             dataset.data = [];
         };
     });
-    my_graph.data.datasets = []; 
+    my_graph.data.datasets = [];
     my_graph.update();
 };
 ///////////////////////////////////////////////
@@ -367,8 +383,8 @@ function solve_svm() {
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
         //let margin_1 = line_through_border(slope, bias - (margin*weight_norm[0][0] + margin*weight_norm[0][1]), border_size + 10);
         //let margin_2 = line_through_border(slope, bias + (margin*weight_norm[0][0] + margin*weight_norm[0][1]), border_size + 10);
-        let margin_1 = line_through_border(slope, bias_1 , border_size + 10);
-        let margin_2 = line_through_border(slope, bias_2 , border_size + 10);
+        let margin_1 = line_through_border(slope, bias_1, border_size + 10);
+        let margin_2 = line_through_border(slope, bias_2, border_size + 10);
         my_graph.data.datasets.push({
             label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
             data: seperating_plane,
@@ -427,8 +443,8 @@ function solve_svm() {
 function solve_k_means() {
     let k = document.getElementById('input_k') === null ? 3 : document.getElementById('input_k').value
     const data = {
-        'data' : my_graph.data.datasets[0].data,
-        'k' : k
+        'data': my_graph.data.datasets[0].data,
+        'k': k
     }
     options = {
         method: 'POST',
@@ -454,8 +470,8 @@ function solve_k_means() {
         for (centroid in centroids) {
             centroid_counter++;
             data_set.push({
-                'x' : centroids[centroid][0],
-                'y' : centroids[centroid][1]
+                'x': centroids[centroid][0],
+                'y': centroids[centroid][1]
             });
         }
         cluster_colors = shuffle(colors).slice(0, centroid_counter);
@@ -464,8 +480,8 @@ function solve_k_means() {
             cluster_data = []
             for (point in clusters[cluster]) {
                 cluster_data.push({
-                    'x' : clusters[cluster][point][0],
-                    'y':  clusters[cluster][point][1]
+                    'x': clusters[cluster][point][0],
+                    'y': clusters[cluster][point][1]
                 })
             };
             my_graph.data.datasets.push({
@@ -487,7 +503,7 @@ function solve_k_means() {
             radius: 10
         });
         my_graph.update()
-        
+
     }).catch((err) => {
         console.log('rejected', err);
     })
@@ -510,31 +526,59 @@ function solve_logistic_regression() {
     fetch('/log_reg').then((response) => {
         return response.json();
     }).then((data) => {
-        let slope = data["slope"];
-        let bias = data["bias"];
-        let acc = data["accuracy"]
-        console.log(`y = ${slope}x + ${bias}`)
-        // need to graph y = x*slope + bias
-        // find min and max points in curr dataset
-        border_size = max_val >= 20 ? max_val : 20;
-        // edge cases (slope = 0) 
-        let seperating_plane = line_through_border(slope, bias, border_size + 10);
-        my_graph.data.datasets.push({
-            label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
-            data: seperating_plane,
-            showLine: true,
-            fill: false,
-            pointStyle: 'line',
-            borderColor: randomColor()
-        });
-        my_graph.update();
+        if (data === 0) {
+            my_graph.data.datasets.push({
+                label: 'test',
+                data: [{
+                    'x': 15,
+                    'y': 30
+                }, {
+                    'x': 15,
+                    'y': -30
+                }],
+                showLine: true,
+                fill: false,
+                pointStyle: 'line',
+                borderColor: randomColor()
+            });
+            my_graph.update();
+            return
+        } else {
+            console.log('the data is', data)
+            let slope = data["slope"];
+            let bias = data["bias"];
+            let acc = data["accuracy"]
+            console.log(`y = ${slope}x + ${bias}`)
+            // need to graph y = x*slope + bias
+            // find min and max points in curr dataset
+            border_size = max_val >= 20 ? max_val : 20;
+            // edge cases (slope = 0) 
+            let seperating_plane = line_through_border(slope, bias, border_size + 10);
+            console.log('sep plane is', seperating_plane)
+            my_graph.data.datasets.push({
+                label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
+                data: seperating_plane,
+                showLine: true,
+                fill: false,
+                pointStyle: 'line',
+                borderColor: randomColor()
+            });
+            my_graph.update();
 
+        }
     })
 }
 
 function solve_linear_regression() {
     // send POST request to api that runs python script
-    const data = my_graph.data.datasets[0].data;
+    // const data = my_graph.data.datasets[0].data;
+    console.log(get_lin_reg_type());
+    const data = {
+        'data': my_graph.data.datasets[0].data,
+        'flag': get_lin_reg_type(),
+        'lambda': parseFloat(get_lin_reg_lambda())
+    };
+
     console.log(data);
     options = {
         method: 'POST',
@@ -551,6 +595,9 @@ function solve_linear_regression() {
         }).then((data) => {
             if (data === 0) {
                 // Need to show this directly to user !
+                throw new Error("Not enough data")
+            }
+            if (data === 1) {
                 throw new Error("Cannot perform regression with infinite slope")
             }
             let slope = data["slope"];
