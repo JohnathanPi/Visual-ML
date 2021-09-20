@@ -270,7 +270,11 @@ p {
 }
 
 .input_design:focus {
-    border: 5px violet solid;
+    border: 3px violet solid;
+}
+
+.input_design_labels:focus {
+    border: 3px violet solid;  
 }
 
 .button_container {

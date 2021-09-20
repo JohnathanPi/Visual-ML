@@ -5,26 +5,27 @@ import numpy as np
 
 # {"data":[{"x":-2,"y":18},{"x":-1,"y":17},{"x":2,"y":12},{"x":3,"y":9},{"x":6,"y":3}],"flag":0}
 """[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}]"""
-"""{'data':[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}], 'flag': 1}"""
+"""{'data':[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}], 'flag': 1, 'lambda': 0}"""
 
-def linear_regression():
+incoming_data = sys.argv[1]
+data_objs = ast.literal_eval(incoming_data)
+data = data_objs['data']
+flag = data_objs['flag']
+reg_param = data_objs['lambda']
+x_vals = []
+y_vals = []
+count = 0
+for point in data:
+    count += 1
+    x_vals.append(point['x'])
+    y_vals.append(point['y'])
+X = np.array([[1 for i in range(count)], x_vals])
+y = np.array(y_vals)
+
+def linear_regression(X, y, flag, reg_param):
     try:
-        incoming_data = sys.argv[1]
-        data_objs = ast.literal_eval(incoming_data)
-        data = data_objs['data']
-        flag = data_objs['flag']
-        reg_param = data_objs['lambda']
-        x_vals = []
-        y_vals = []
-        count = 0
-        for point in data:
-            count += 1
-            x_vals.append(point['x'])
-            y_vals.append(point['y'])
-        X = np.array([[1 for i in range(count)], x_vals])
-        y = np.array([y_vals])
-        if len(x_vals) == len(y_vals) == 1:
-            raise ValueError('Not enough data')
+        # if len(x_vals) == len(y_vals) == 1:
+        #     raise ValueError('Not enough data')
         # (X^TX)^-1
         if flag == 0:
             inv_xt_x = np.linalg.inv(np.matmul(X, X.T)) 
@@ -56,5 +57,31 @@ def linear_regression():
         else:
             print("1")
 
+def clip(beta, alpha):
+    clipped = np.minimum(beta, alpha)
+    clipped = np.maximum(clipped, -alpha)
+    return clipped
 
-linear_regression()
+def proxL1Norm(betaHat, alpha, penalizeAll = True):
+
+    out = betaHat - clip(betaHat, alpha)
+    
+    if not penalizeAll:
+        out[0] = betaHat[0]
+
+    return out
+
+def lasso_regression(X, y, reg_param):
+    maxIter = 300
+    alpha = 0.01
+    beta = np.zeros(2)
+    for i in range(maxIter):
+        grad = X @ (X.T @ beta - y)
+        beta = proxL1Norm(beta - alpha*grad, alpha * reg_param)
+    weight_dict = {}
+    weight_dict['slope'] = np.around(beta[1], 2)
+    weight_dict['bias'] = np.around(beta[0], 2)
+    print(json.dumps(weight_dict))
+
+# linear_regression(X, y, flag, reg_param)
+lasso_regression(X, y, reg_param)
