@@ -8,10 +8,7 @@ import numpy as np
 """{'data':[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}], 'flag': 1, 'lambda': 0}"""
 
 incoming_data = sys.argv[1]
-data_objs = ast.literal_eval(incoming_data)
-data = data_objs['data']
-flag = data_objs['flag']
-reg_param = data_objs['lambda']
+data = ast.literal_eval(incoming_data)
 x_vals = []
 y_vals = []
 count = 0
@@ -22,16 +19,12 @@ for point in data:
 X = np.array([[1 for i in range(count)], x_vals])
 y = np.array(y_vals)
 
-def linear_regression(X, y, flag, reg_param):
+def linear_regression(X, y):
     try:
         # if len(x_vals) == len(y_vals) == 1:
         #     raise ValueError('Not enough data')
         # (X^TX)^-1
-        if flag == 0:
-            inv_xt_x = np.linalg.inv(np.matmul(X, X.T)) 
-        elif flag == 1:
-            inv_xt_x = np.linalg.inv(np.matmul(X + reg_param*np.eye(X.shape[0], X.shape[1]), X.T)) 
-        # (X^Ty)
+        inv_xt_x = np.linalg.inv(np.matmul(X, X.T)) 
         x_ty = np.matmul(inv_xt_x, X)
         w = np.matmul(x_ty, np.transpose(y))
         final_weights = (np.around(w, 2)).ravel()
@@ -57,31 +50,4 @@ def linear_regression(X, y, flag, reg_param):
         else:
             print("1")
 
-def clip(beta, alpha):
-    clipped = np.minimum(beta, alpha)
-    clipped = np.maximum(clipped, -alpha)
-    return clipped
-
-def proxL1Norm(betaHat, alpha, penalizeAll = True):
-
-    out = betaHat - clip(betaHat, alpha)
-    
-    if not penalizeAll:
-        out[0] = betaHat[0]
-
-    return out
-
-def lasso_regression(X, y, reg_param):
-    maxIter = 300
-    alpha = 0.01
-    beta = np.zeros(2)
-    for i in range(maxIter):
-        grad = X @ (X.T @ beta - y)
-        beta = proxL1Norm(beta - alpha*grad, alpha * reg_param)
-    weight_dict = {}
-    weight_dict['slope'] = np.around(beta[1], 2)
-    weight_dict['bias'] = np.around(beta[0], 2)
-    print(json.dumps(weight_dict))
-
-# linear_regression(X, y, flag, reg_param)
-lasso_regression(X, y, reg_param)
+linear_regression(X, y)

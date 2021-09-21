@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
     <title>add data test</title>
-    <link rel="stylesheet" type="text/css" href="\css\styles.css">
+    <link rel="stylesheet" type="text/css" href="css\styles2.css">
     <!-- Google Fonts -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,77 +20,80 @@
         <div class="title-cont">
             <p class="title">Graph Creator Thingy</p>
         </div>
-        <div class="navbar">
+        <!-- <div class="navbar">
             <span class="navbtn linear-wipe">World</span>
             <span class="navbtn linear-wipe">Wide</span>
             <span class="navbtn linear-wipe">Oink</span>
-        </div>
+        </div> -->
+    
     </div>
     <div class="content">
+        <div class = "guide">
+            <p style="color: white;">Enter data by clicking on the graph or <span onclick = "show_data_box()" class = "add_data_btn" >enter manually</span></p>
+        </div>
+        <div class = "model-selection" id="data_input_1">
+            <div class="model_setting_box">
+                <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
+                    placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
+                <textarea readonly class="input_design_labels border-gradient border-gradient-aqua" name=""
+                    placeholder="Enter Lables" id="input_labels" cols="" rows=""></textarea>
+                <div class="button_container">
+                    <div class = "actions-cont">
+                        <button id = 'add_data_btn' onclick="parse_data()" class="insert_data">ADD</button>
+                        <button onclick="clear_data()" class="insert_data">CLEAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="model-selection-header">
+            <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
+                <option value="1" selected>Linear Regression:</option>       
+                <option value="2">Logistic Regression:</option>
+                <option value="3">Linear SVM:</option>
+                <option value="4">K-Means:</option>
+                <option value="5">Decision Tree</option>
+            </select>
+            <div class = "model-div-cont">
+                <div id = "lin_reg_div" class = "model_div div_model_1">
+                    <p style="padding-right: 10px;">Regularization:</p>
+                    <select id="reg-selector" name="model" class="model-selector input_box input_design_labels">
+                        <option value="1" selected>None</option>       
+                        <option value="2">Ridge</option>
+                        <option value="3">Lasso</option>
+                    </select>
+                    <p style="padding-right: 10px;">Lambda:</p>
+                    <textarea name="" class = "input_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
+                    id="input_lambda_lin_reg" cols="" rows=""></textarea>
+                </div>
+                <div id = "log_reg_div" class = "model_div div_model_2">
+                    <p>2</p>
+                </div>
+                <div id = "svm_div" class = "model_div div_model_3">
+                    <p>3</p>
+                </div>
+                <div id = "k_means_div" class = "model_div div_model_4">
+                    <p style="padding-right: 10px;">K:</p>
+                    <textarea name="" class = "input_box border-gradient-aqua border-gradient border-gradient-aqua input_design_labels"
+                    id="input_k" cols="" rows=""></textarea>
+                </div>
+                <div id = "decision_tree_div" class = "model_div div_model_5">
+                    <p>5</p>
+                </div>
+            </div>
+        </div>
+        <span id = "error"></span>
         <div class="graph" oncontextmenu="return false;">
             <canvas id="my_graph"></canvas>
         </div>
-        <div class="model-selection">
-            <div class="model-selection-header">
-                <select onChange="setting_switch()" id="model-selector" name="model" class="model-selector">
-                    <option value="1" selected>Linear Regression</option>
-                    <option value="2">Logistic Regression</option>
-                    <option value="3">SVM</option>
-                    <option value="4">K-Means</option>
-                </select>
-            </div>
-            <div class="model_setting_box" id="input_box_lr">
-                <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
-                    placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
-                <div class="button_container">
-                    <div class = "actions-cont">
-                        <button onclick="parse_data()" class="insert_data">ADD</button>
-                        <button onclick="clear_data()" class="insert_data">CLEAR</button>
-                    </div>
-                    <div>
-                        <button onclick="solve_linear_regression()" class = 'insert_data'>SOLVE</button>
-                    </div>
-                </div>
-            </div>
-            <div class="model_setting_box" id="input_box_log_reg">
-                <textarea class="input_design_smaller border-gradient border-gradient-aqua" name="input_data_text"
-                    placeholder="Enter Data" id="labled_input_data" cols="" rows=""></textarea>
-                <textarea class="input_design_labels border-gradient border-gradient-aqua" name=""
-                    placeholder="Enter Lables" id="input_lables" cols="" rows=""></textarea>
-                <div class="button_container">
-                    <button onclick="parse_labled_data()" class="insert_data">ADD</button>
-                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
-                </div>
-                <div>
-                    <button onclick="solve_logistic_regression()" class = 'insert_data'>SOLVE</button>
-                </div>
-            </div>
-            <div class="model_setting_box" id="input_box_svm">
-                <textarea class="input_design_smaller border-gradient border-gradient-aqua" name="input_data_text"
-                    placeholder="Enter Data" id="labled_input_data" cols="" rows=""></textarea>
-                <textarea class="input_design_labels border-gradient border-gradient-aqua" name=""
-                    placeholder="Enter Lables" id="input_lables" cols="" rows=""></textarea>
-                <div class="button_container">
-                    <button onclick="parse_labled_data()" class="insert_data">ADD</button>
-                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
-                </div>
-                <div>
-                    <button onclick="solve_svm()" class = 'insert_data'>SOLVE</button>
-                </div>
-            </div>
-            <div class="model_setting_box" id="input_box_kmeans">
-                <textarea class="input_design border-gradient border-gradient-aqua" name="input_data_text"
-                    placeholder="Enter Data" id="input_data_kmeans" cols="30" rows="10"></textarea>
-                <textarea class="input_design_labels border-gradient border-gradient-aqua" name="" placeholder="Enter K"
-                    id="input_k" cols="" rows=""></textarea>
-                <div class="button_container">
-                    <button onclick="parse_kmeans_data()" class="insert_data">ADD</button>
-                    <button onclick="clear_data()" class="insert_data">CLEAR</button>
-                </div>
-                <div>
-                    <button onclick="solve_k_means()" class = 'insert_data'>SOLVE</button>
-                </div>
-            </div>
+        <div class = "btn_cont">
+            <button onclick="solve_linear_regression()" class = "solve_btn" style="display: block;">SOLVE</button>
+            <button onclick="solve_logistic_regression()" style = "display: none;" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_svm()" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_k_means()" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_decision_tree()" class = "solve_btn">SOLVE</button>
+        </div>
+        <div class = "footer">
+            <p>THIS IS A FOOTER</p>
         </div>
     </div>
     <script src="\js\index.js"></script>

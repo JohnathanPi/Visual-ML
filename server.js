@@ -7,13 +7,10 @@ var graph_data = "";
 
 app.use(express.json());
 
-// app.get('/',(req,res) => {
-//   res.sendFile(path.join(__dirname+'/index.html'));
-// });
-
 app.get('/',(req,res) => {
-  res.sendFile(path.join(__dirname+'/index2.html'));
+  res.sendFile(path.join(__dirname+'/index.html'));
 });
+
 
 app.post('/api', (req, res) => {
   // recieve array of objects, each representing a point
@@ -94,6 +91,24 @@ app.get('/lin_reg', (req, res) => {
   });
 })
 
+app.get('/decision_tree', (req, res) => {
+  let dataToSend;
+  const python = spawn('py', ['decision_tree_3.py', graph_data]);
+  python.stdout.on('data', function (data) {
+    dataToSend = data;
+    if(dataToSend === '0') {
+      console.log('Error occured in python scrip');
+    }
+  });
+  python.on('close', (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      // send data to browser
+      let final_data = dataToSend;
+      console.log('datatosend is', typeof final_data);
+      res.write(final_data);
+      res.end();
+  });
+})
 
 //add the router
 // app.use('/', router);
