@@ -15,19 +15,19 @@ for label in data_obj:
 X = np.array(X)
 y = np.array(y)
 
-def entropy(labels):
-    hist = np.bincount(labels)
-    probas = hist / len(labels)
-    lst = [p * np.log2(p) for p in probas if p > 0]
-    return -np.sum(lst) 
-
 # def entropy(labels):
 #     hist = np.bincount(labels)
 #     probas = hist / len(labels)
 #     lst = [p * np.log2(p) for p in probas if p > 0]
-#     if (-np.sum(lst) == 0):
-#         return -np.sum(lst) - len(labels)
 #     return -np.sum(lst) 
+
+def entropy(labels):
+    hist = np.bincount(labels)
+    probas = hist / len(labels)
+    lst = [p * np.log2(p) for p in probas if p > 0]
+    if (-np.sum(lst) == 0):
+        return -np.sum(lst) - len(labels)
+    return -np.sum(lst) 
 
 def return_medians(feature_vector):
     medians = []
