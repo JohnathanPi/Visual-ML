@@ -93,7 +93,7 @@ app.get('/lin_reg', (req, res) => {
 
 app.get('/decision_tree', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['decision_tree_3.py', graph_data]);
+  const python = spawn('py', ['decision_tree.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
     if(dataToSend === '0') {

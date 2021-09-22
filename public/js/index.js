@@ -217,7 +217,8 @@ let my_graph = new Chart(ctx, {
                 display: true,
                 labels: {
                     filter: function (item, chart) {
-                        return !item.text.includes('margin2') || !item.text.includes('test');
+                        return !item.text.includes('margin2') && !item.text.includes('test');
+
                     }
                 }
             }
@@ -638,19 +639,22 @@ function solve_decision_tree() {
     }).then((data) => {
         border_size = max_val >= 20 ? max_val : 20;
         console.log('the whole returned data is ', data)
+        let i = 0
         for (line in data) {
-            console.log(data[line][0])
-            line_points = perpendicular_line(data[line][0], data[line][1], border_size)
-            console.log(line_points)
+            console.log('line is', data[line])
+            line_points = data[line]
+            // line_points = perpendicular_line(data[line][0], data[line][1], border_size)
+            // console.log(line_points)
             my_graph.data.datasets.push({
-                label: 'test',
+                label: `test${i}`,
                 data: line_points,
                 showLine: true,
                 fill: false,
                 pointStyle: 'line',
-                borderColor: randomColor()
+                borderColor: '#000'
             });
-            my_graph.update()
+            i++
+            my_graph.update();
         }
 
     })
