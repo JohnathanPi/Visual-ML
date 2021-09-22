@@ -1,15 +1,8 @@
 import json
 import sys
 import ast
-from typing import final
 import numpy as np
-from numpy.lib.shape_base import split
 
-# {"data":[{"x":-2,"y":18},{"x":-1,"y":17},{"x":2,"y":12},{"x":3,"y":9},{"x":6,"y":3}],"flag":0}
-"""[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}]"""
-"""{'data':[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}], 'flag': 1, 'lambda': 0}"""
-"""{'1':[{'x':-9,'y':11},{'x':-10,'y':-7}],'-1':[{'x':7,'y':4}]}"""
-#data = """{'0':[{'x':7,'y':12},{'x':8,'y':7},{'x':-13,'y':2},{'x':-14,'y':9}],'1':[{'x':-6,'y':12},{'x':-5,'y':5},{'x':-6,'y':-4},{'x':7,'y':-7},{'x':7,'y':-15}]}"""
 data = sys.argv[1]
 data_obj = ast.literal_eval(data)
 X = []
@@ -139,18 +132,23 @@ class DecisionTree:
         # function that will recieve all data and build tree
         # stopping conditions
         X = node.X
+        # if node.parent:
+        #     parent_n_samples = node.parent.X.shape[0]
+        # else: 
+        #     parent_n_samples = X.shape[0]
         y = node.y
         num_of_labels = len(np.unique(y))
         if (num_of_labels == 1):
-            # print('X is', X)
-            # print('y is', y)
-            node.split = None
+            # print(node)
+            # or parent_n_samples <= 3
+            # node.split = None
             return
-        left_node, right_node, split = self.best_split(node)
-        node.left_child, node.right_child = left_node, right_node
-        self.splits.append(split)
-        # print(self.splits)
-        return self.grow_tree(left_node), self.grow_tree(right_node)
+        else:
+            left_node, right_node, split = self.best_split(node)
+            node.left_child, node.right_child = left_node, right_node
+            self.splits.append(split)
+            # print(self.splits)
+            return self.grow_tree(left_node, depth + 1), self.grow_tree(right_node, depth + 1)
     
 
 def reorder_splits(root):

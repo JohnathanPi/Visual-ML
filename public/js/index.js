@@ -666,11 +666,11 @@ function solve_decision_tree() {
         border_size = max_val >= 20 ? max_val : 20;
         console.log('the whole returned data is ', data);
         let i = 0;
-        color = '#000';
+        color = '#e00';
         for (line in data) {
             console.log('line is', data[line])
             line_points = data[line]
-            new_color = pSBC (0.04, color, false, true);
+            new_color = pSBC (0.03, color, false, true);
             my_graph.data.datasets.push({
                 label: `test${i}`,
                 data: line_points,
