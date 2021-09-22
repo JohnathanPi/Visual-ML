@@ -1,6 +1,7 @@
 import json
 import sys
 import ast
+from typing import final
 import numpy as np
 from numpy.lib.shape_base import split
 
@@ -116,8 +117,12 @@ class DecisionTree:
                 right_split_labels = [y[i] for i in range(len(X[:, feature])) if X[:, feature][i] >= split]
                 curr_split_entropy = (entropy(left_split_labels) + entropy(right_split_labels)) / 2
                 entropies[(feature, split)] = curr_split_entropy
-              #  print(entropies)
-        best_split, best_feat = min(entropies, key = entropies.get)[1], min(entropies, key = entropies.get)[0]
+        entropies = dict(sorted(entropies.items(), key=lambda val: val[1]))
+        min_entropy = min(entropies.values())
+        min_entropies = {k: v for k, v in entropies.items() if v == min_entropy}
+        temp = (max(min_entropies.keys(), key = lambda val: val[1]))
+        best_split, best_feat = temp[1], temp[0]
+        # best_split, best_feat = min(entropies, key = entropies.get)[1], min(entropies, key = entropies.get)[0]
         node.split = (best_split, best_feat)
         left_split = [X[i] for i in range(len(X[:, best_feat])) if X[:, best_feat][i] < best_split]
         right_split = [X[i] for i in range(len(X[:, best_feat])) if X[:, best_feat][i] >= best_split]  
@@ -174,7 +179,8 @@ def traverse_tree_bfs(root, splits = []):
         # print(queue[0][1], queue[0][0])
         node = queue.pop(0)
         node = node[0]
-        if node.return_split(node.parent) != None and node.split == None: 
+        # and node.split == None
+        if node.return_split(node.parent) != None: 
             splits.append([node.return_node_type(node.parent), node.return_split(node.parent), node.border_coords])
         if node.left_child is not None:
             queue.append([node.left_child, 'left child'])
@@ -191,16 +197,21 @@ tree.grow_tree(root_node)
 # traverse_tree_2(root_node, 'root')
 final_splits =  traverse_tree_bfs(root_node)
 decision_boundaries = {}
-i = 0
+# i = 0
+# for split in final_splits:
+#     print(i, split)
+#     i += 1
 for split in final_splits:
     value = split[1][0]
+    axis = split[1][1]
     final_points = []
     node_box = split[2]
     for point in node_box:
-        if value in point:
+        if value == point[axis]:
             final_points.append({'x':point[0], 'y':point[1]})
     decision_boundaries[i] = final_points[:2]
     i += 1
+    
 print(json.dumps(decision_boundaries))
 # print(json.dumps(final_splits))
 
