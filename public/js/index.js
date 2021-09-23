@@ -6,29 +6,44 @@ let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
     '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
 ];
 
-const pSBC=(p,c0,c1,l)=>{
-    let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
-    if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
-    if(!this.pSBCr)this.pSBCr=(d)=>{
-        let n=d.length,x={};
-        if(n>9){
-            [r,g,b,a]=d=d.split(","),n=d.length;
-            if(n<3||n>4)return null;
-            x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1
-        }else{
-            if(n==8||n==6||n<4)return null;
-            if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
-            d=i(d.slice(1),16);
-            if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;
-            else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1
-        }return x};
-    h=c0.length>9,h=a?c1.length>9?true:c1=="c"?!h:false:h,f=this.pSBCr(c0),P=p<0,t=c1&&c1!="c"?this.pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
-    if(!f||!t)return null;
-    if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
-    else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
-    a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
-    if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
-    else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
+const pSBC = (p, c0, c1, l) => {
+    let r, g, b, P, f, t, h, i = parseInt,
+        m = Math.round,
+        a = typeof (c1) == "string";
+    if (typeof (p) != "number" || p < -1 || p > 1 || typeof (c0) != "string" || (c0[0] != 'r' && c0[0] != '#') || (c1 && !a)) return null;
+    if (!this.pSBCr) this.pSBCr = (d) => {
+        let n = d.length,
+            x = {};
+        if (n > 9) {
+            [r, g, b, a] = d = d.split(","), n = d.length;
+            if (n < 3 || n > 4) return null;
+            x.r = i(r[3] == "a" ? r.slice(5) : r.slice(4)), x.g = i(g), x.b = i(b), x.a = a ? parseFloat(a) : -1
+        } else {
+            if (n == 8 || n == 6 || n < 4) return null;
+            if (n < 6) d = "#" + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (n > 4 ? d[4] + d[4] : "");
+            d = i(d.slice(1), 16);
+            if (n == 9 || n == 5) x.r = d >> 24 & 255, x.g = d >> 16 & 255, x.b = d >> 8 & 255, x.a = m((d & 255) / 0.255) / 1000;
+            else x.r = d >> 16, x.g = d >> 8 & 255, x.b = d & 255, x.a = -1
+        }
+        return x
+    };
+    h = c0.length > 9, h = a ? c1.length > 9 ? true : c1 == "c" ? !h : false : h, f = this.pSBCr(c0), P = p < 0, t = c1 && c1 != "c" ? this.pSBCr(c1) : P ? {
+        r: 0,
+        g: 0,
+        b: 0,
+        a: -1
+    } : {
+        r: 255,
+        g: 255,
+        b: 255,
+        a: -1
+    }, p = P ? p * -1 : p, P = 1 - p;
+    if (!f || !t) return null;
+    if (l) r = m(P * f.r + p * t.r), g = m(P * f.g + p * t.g), b = m(P * f.b + p * t.b);
+    else r = m((P * f.r ** 2 + p * t.r ** 2) ** 0.5), g = m((P * f.g ** 2 + p * t.g ** 2) ** 0.5), b = m((P * f.b ** 2 + p * t.b ** 2) ** 0.5);
+    a = f.a, t = t.a, f = a >= 0 || t >= 0, a = f ? a < 0 ? t : t < 0 ? a : a * P + t * p : 0;
+    if (h) return "rgb" + (f ? "a(" : "(") + r + "," + g + "," + b + (f ? "," + m(a * 1000) / 1000 : "") + ")";
+    else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
 }
 
 let randomColor = () => {
@@ -43,14 +58,26 @@ document.getElementById('my_graph').onmousedown = (event) => {
 
 function perpendicular_line(value, axis, border) {
     if (axis === 1) {
-        point_1 = {'x': -border, 'y': value} 
-        point_2 = {'x': border, 'y': value} 
+        point_1 = {
+            'x': -border,
+            'y': value
+        }
+        point_2 = {
+            'x': border,
+            'y': value
+        }
     } else if (axis === 0) {
-        point_1 = {'x': value, 'y': -border} 
-        point_2 = {'x': value, 'y': border} 
+        point_1 = {
+            'x': value,
+            'y': -border
+        }
+        point_2 = {
+            'x': value,
+            'y': border
+        }
     }
     return [point_1, point_2]
-} 
+}
 
 function line_through_border(slope, bias, border) {
     // find the sides where the line intercepts the graphs border
@@ -113,7 +140,7 @@ function show_error(msg) {
     error = document.getElementById('error');
     error.textContent = msg;
     error.style.color = "red"
-    setTimeout(function() {
+    setTimeout(function () {
         error.textContent = '';
     }, 1000);
 }
@@ -131,7 +158,7 @@ function check_readonly() {
         label_input.value = "";
         label_input.readOnly = true;
         add_data_btn.onclick = parse_data;
-    } 
+    }
 }
 
 function setting_switch() {
@@ -169,7 +196,9 @@ let calc_func_x = (a, b, y) => {
 };
 
 function shuffle(array) {
-    let copy = [], n = array.length, i;
+    let copy = [],
+        n = array.length,
+        i;
     while (n) {
         i = Math.floor(Math.random() * array.length);
         if (i in array) {
@@ -181,23 +210,40 @@ function shuffle(array) {
     return copy;
 }
 
-function add_datasets(graph, curr_sets) {
-    if (graph.data.datasets.length === curr_sets) {
+function add_datasets(graph, expected_sets) {
+    if (graph.data.datasets.length === expected_sets) {
         graph.data.datasets.push({
             type: 'scatter',
-            label: `Class ${curr_sets + 1}`,
+            label: `Class ${expected_sets + 1}`,
             data: [],
             fill: false,
             backgroundColor: randomColor()
         });
+        return true;
+
     }
+    //    else if (my_graph.data.datasets[0] && expected_sets == 1) {
+    //         if (chosen_model.options[chosen_model.selectedIndex].value === '4' || chosen_model.options[chosen_model.selectedIndex].value == '1' ) {
+    //             show_error('This model does not support two calsses');
+    //             return false;
+    //         }
+    //         show_error('enter class 0 data with left click first');
+    //         return false;
+    // }
 }
 
 function onClickHandler(click) {
+    let chosen_model = document.getElementById('model-selector');
+    let curr_model_id = chosen_model.options[chosen_model.selectedIndex].value;
     let curr_scale, x_val, y_val;
-    let flag = 1;
-    if (click.button == 2) {
-        flag = 2;
+    let flag = click.button === 2 ? 'right_click' : 'left_click'
+    if (flag === 'right_click' && ((curr_model_id === '1' || curr_model_id === '4'))) {
+        show_error('This model only supports one class');
+        return
+    }
+    if (flag === 'right_click' && my_graph.data.datasets.length === 0) {
+        show_error('Please enter class 0 data using left click first')
+        return
     }
     for (let scale in my_graph.scales) {
         curr_scale = my_graph.scales[scale];
@@ -212,18 +258,19 @@ function onClickHandler(click) {
         x_val < my_graph.scales['x'].max &&
         y_val > my_graph.scales['y'].min &&
         y_val < my_graph.scales['y'].max) {
-        if (flag == 1) {
+        if (flag == 'left_click') {
             add_datasets(my_graph, 0);
             my_graph.data.datasets[0].data.push({
                 'x': Math.round(x_val),
                 'y': Math.round(y_val)
             });
-        } else if (flag == 2) {
+        } else if (flag == 'right_click') {
             add_datasets(my_graph, 1)
             my_graph.data.datasets[1].data.push({
                 'x': Math.round(x_val),
                 'y': Math.round(y_val)
-            })
+            });
+
         }
     }
     my_graph.update();
@@ -243,7 +290,7 @@ let my_graph = new Chart(ctx, {
                 labels: {
                     filter: function (item, chart) {
                         return !item.text.includes('margin2') && !item.text.includes('test');
-                        
+
 
                     }
                 }
@@ -666,11 +713,11 @@ function solve_decision_tree() {
         border_size = max_val >= 20 ? max_val : 20;
         console.log('the whole returned data is ', data);
         let i = 0;
-        color = '#e00';
+        color = randomColor();
         for (line in data) {
             console.log('line is', data[line])
             line_points = data[line]
-            new_color = pSBC (0.03, color, false, true);
+            new_color = pSBC(0.03, color, false, true);
             my_graph.data.datasets.push({
                 label: `test${i}`,
                 data: line_points,

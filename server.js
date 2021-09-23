@@ -21,7 +21,7 @@ app.post('/api', (req, res) => {
 
 app.get('/log_reg', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['logistic_regression.py', graph_data]);
+  const python = spawn('py', ['models/logistic_regression.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
   });
@@ -37,7 +37,7 @@ app.get('/log_reg', (req, res) => {
 
 app.get('/svm', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['svm2.py', graph_data]);
+  const python = spawn('py', ['models/svm.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
   });
@@ -53,7 +53,7 @@ app.get('/svm', (req, res) => {
 
 app.get('/k_means', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['k_means.py', graph_data]);
+  const python = spawn('py', ['models/k_means.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
   });
@@ -74,7 +74,7 @@ app.get('/k_means', (req, res) => {
 
 app.get('/lin_reg', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['linear_regression.py', graph_data]);
+  const python = spawn('py', ['models/linear_regression.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
     if(dataToSend === '0') {
@@ -93,7 +93,7 @@ app.get('/lin_reg', (req, res) => {
 
 app.get('/decision_tree', (req, res) => {
   let dataToSend;
-  const python = spawn('py', ['decision_tree.py', graph_data]);
+  const python = spawn('py', ['models/decision_tree.py', graph_data]);
   python.stdout.on('data', function (data) {
     dataToSend = data;
     if(dataToSend === '0') {

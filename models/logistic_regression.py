@@ -36,8 +36,8 @@ def logistic_regression(data):
                 X.append([curr['x'], curr['y']])
                 y.append(int(label))
         X = np.array(X)
-        n_iters = 10000
-        learning_rates = [0.0001, 0.001, 0.01, 0.1] 
+        n_iters = 30000
+        learning_rates = [0.001] 
         weights = [0, 0]
         bias = 0
         accuracy_dict = {}
