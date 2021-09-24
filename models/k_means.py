@@ -7,7 +7,6 @@ from numpy import random
 
 
 
-# data =  "[{'x': 5, 'y':3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 7}, {'x': 2, 'y':2},{'x': 3, 'y':4},{'x': 7, 'y':10},{'x': 6, 'y':5},{'x': 1, 'y':1},{'x': -2, 'y':3},{'x': 3, 'y':12},{'x': -5, 'y': -8},{'x': 0, 'y':0}, {'x': 11, 'y': 4},{'x': -1, 'y':12}]"
 
 def dist(pt_1, pt_2):
     return np.sqrt(((pt_1[0] - pt_2[0])**2 + (pt_1[1] - pt_2[1])**2))
@@ -53,6 +52,8 @@ def k_means(data):
         points = []
         for pair in data_objs['data']:
             points.append([pair['x'], pair['y']])
+        if (k > len(points)):
+            raise ValueError('K bigger than num of points')
         starting_k_s = [] 
         # Assign initial clusters and prevent empty clusters
         while (len(set(starting_k_s)) != k):
@@ -79,7 +80,10 @@ def k_means(data):
         }
         print(json.dumps(return_data))
     except Exception as e:
-        sys.stderr.write(str(e), "Error on line {}".format(sys.exc_info()[-1].tb_lineno))
+        # sys.stderr.write(str(e), "Error on line {}".format(sys.exc_info()[-1].tb_lineno))
+        if (e == 'K bigger than num of points'):
+            print('1')
+            return
         print('0')
 
 k_means(data)

@@ -165,11 +165,17 @@ function setting_switch() {
     let solve_buttons = document.querySelectorAll('.solve_btn')
     let chosen_model = document.getElementById('model-selector');
     let model_divs = document.querySelectorAll('.model_div')
+    let model_div_cont = document.getElementById('model-div-cont')
     let i = 0;
     solve_buttons.forEach((solve_button) => {
         i++;
         if (chosen_model.value === String(i)) {
             solve_button.style.display = 'block';
+            if (i === 4) {
+                model_div_cont.style.display = 'flex';
+            } else {
+                model_div_cont.style.display = 'none';
+            }
         } else {
             solve_button.style.display = 'none';
         }
@@ -183,7 +189,7 @@ function setting_switch() {
             model_div.style.display = 'none';
         }
     });
-    // check_readonly();
+    check_readonly();
     clear_data();
 }
 
@@ -196,18 +202,19 @@ let calc_func_x = (a, b, y) => {
 };
 
 function shuffle(array) {
-    let copy = [],
-        n = array.length,
-        i;
+    let copy = array.slice();
+    let final = []; 
+    let n = copy.length
+    let i;
     while (n) {
-        i = Math.floor(Math.random() * array.length);
-        if (i in array) {
-            copy.push(array[i]);
-            delete array[i];
+        i = Math.floor(Math.random() * copy.length);
+        if (i in copy) {
+            final.push(copy[i]);
+            delete copy[i];
             n--;
         }
     }
-    return copy;
+    return final;
 }
 
 function add_datasets(graph, expected_sets) {
@@ -242,7 +249,7 @@ function onClickHandler(click) {
         return
     }
     if (flag === 'right_click' && my_graph.data.datasets.length === 0) {
-        show_error('Please enter class 0 data using left click first')
+        show_error('Please enter class 1 data using left click first')
         return
     }
     for (let scale in my_graph.scales) {
@@ -412,14 +419,6 @@ function parse_labled_data() {
 
 
 function clear_data(flag = 1) {
-    if (!flag) {
-        my_graph.data.datasets = [];
-    }
-    my_graph.data.datasets.forEach(dataset => {
-        if (dataset.label != 'axis') {
-            dataset.data = [];
-        };
-    });
     my_graph.data.datasets = [];
     my_graph.update();
 };
@@ -429,6 +428,10 @@ function clear_data(flag = 1) {
 
 function solve_linear_regression() {
     // send POST request to api that runs python script
+    if (!my_graph.data.datasets[0]) {
+        show_error('Cannot perform linear regression with no data');
+        return;
+    }
     const data = my_graph.data.datasets[0].data;
     console.log(data);
     options = {
@@ -479,6 +482,14 @@ function solve_linear_regression() {
 }
 
 function solve_logistic_regression() {
+    if (!my_graph.data.datasets[0]) {
+        show_error('Cannot perform logistic regression with no data');
+        return;
+    }
+    if (!my_graph.data.datasets[1]) {
+        show_error('Cannot perform logistic regression with one class');
+        return
+    }
     const data = {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
@@ -512,6 +523,9 @@ function solve_logistic_regression() {
             });
             my_graph.update();
             return
+        } if (data === 1) {
+            show_error('Cannot perform logistic regression with one class')
+            return
         } else {
             console.log('the data is', data)
             let slope = data["slope"];
@@ -540,6 +554,14 @@ function solve_logistic_regression() {
 
 
 function solve_svm() {
+    if (!my_graph.data.datasets[0]) {
+        show_error('Cannot perform svm with no data');
+        return;
+    }
+    if (!my_graph.data.datasets[1]) {
+        show_error('Cannot perform svm with one class');
+        return
+    }
     const data = {
         '1': my_graph.data.datasets[0].data,
         '-1': my_graph.data.datasets[1].data
@@ -626,6 +648,10 @@ function solve_svm() {
 
 
 function solve_k_means() {
+    if (!my_graph.data.datasets[0]) {
+        show_error('Cannot perform k_means with no data');
+        return;
+    }
     let k = document.getElementById('input_k') === null ? 3 : document.getElementById('input_k').value
     const data = {
         'data': my_graph.data.datasets[0].data,
@@ -645,9 +671,12 @@ function solve_k_means() {
         return response.json();
     }).then((data) => {
         if (data === 0) {
-            throw new Error("Empty set occured, k not suitable !")
+            show_error("Empty set occured, k not suitable !")
         }
-        clear_data(0);
+        if (data === 1) {
+            show_error('K bigger than number of data points')
+        }
+        clear_data();
         let data_set = [];
         centroids = data['centroids'];
         centroid_counter = 0;
@@ -695,6 +724,14 @@ function solve_k_means() {
 }
 
 function solve_decision_tree() {
+    if (!my_graph.data.datasets[0]) {
+        show_error('Cannot create decision tree with no data');
+        return;
+    }
+    if (!my_graph.data.datasets[1]) {
+        show_error('Cannot create decision tree with one class');
+        return
+    }
     const data = {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
@@ -732,6 +769,5 @@ function solve_decision_tree() {
             color = new_color;
             my_graph.update();
         }
-
     })
 }

@@ -1,10 +1,7 @@
-from typing import final
 import numpy as np
 import json
 import ast
 import sys
-
-from numpy.lib.stride_tricks import broadcast_shapes
 
 
 # data = "{'''1''': [{'x': 2, 'y':2}, {'x': 1, 'y': 1}], '''0''': [{'x': -2, 'y':2}, {'x': -1, 'y': 1}]}"
@@ -54,9 +51,6 @@ def logistic_regression(data):
             accuracy_dict[learning_rate] = accuracy(y, y_preds)
         best_learning_rate = max(accuracy_dict, key = accuracy_dict.get)
         weights, bias = param_dict[best_learning_rate]
-        # print(y_preds, y)
-        # print(weights)
-        # print(bias)
         return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate]}
         if(return_dict['slope'] == -np.inf or return_dict['slope'] == np.inf):
             raise ValueError('Infinite slope') 

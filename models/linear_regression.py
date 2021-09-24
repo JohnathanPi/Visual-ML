@@ -3,9 +3,6 @@ import sys
 import ast
 import numpy as np
 
-# {"data":[{"x":-2,"y":18},{"x":-1,"y":17},{"x":2,"y":12},{"x":3,"y":9},{"x":6,"y":3}],"flag":0}
-"""[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}]"""
-"""{'data':[{'x':-2,'y':6},{'x':1,'y':2},{'x':7,'y':-8}], 'flag': 1, 'lambda': 0}"""
 
 incoming_data = sys.argv[1]
 data = ast.literal_eval(incoming_data)
@@ -21,8 +18,8 @@ y = np.array(y_vals)
 
 def linear_regression(X, y):
     try:
-        # if len(x_vals) == len(y_vals) == 1:
-        #     raise ValueError('Not enough data')
+        if len(x_vals) == len(y_vals) == 1:
+            raise ValueError('Not enough data')
         # (X^TX)^-1
         inv_xt_x = np.linalg.inv(np.matmul(X, X.T)) 
         x_ty = np.matmul(inv_xt_x, X)
