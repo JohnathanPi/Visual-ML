@@ -149,8 +149,11 @@ function check_readonly() {
     let label_input = document.getElementById('input_labels');
     let log_reg_div = document.getElementById('log_reg_div');
     let svm_div = document.getElementById('svm_div');
+    let decision_tree_div = document.getElementById('decision_tree_div');
     let add_data_btn = document.getElementById('add_data_btn');
-    if (log_reg_div.style.display === 'flex' || svm_div.style.display === 'flex') {
+    if (log_reg_div.style.display === 'flex' || 
+        svm_div.style.display === 'flex' ||
+        decision_tree_div.style.display === 'flex') {
         label_input.readOnly = false;
         add_data_btn.onclick = parse_labled_data;
 
@@ -260,22 +263,27 @@ function onClickHandler(click) {
             y_val = curr_scale.getValueForPixel(click.offsetY);
         }
     }
-
+// Math.round((num + Number.EPSILON) * 100) / 100
     if (x_val > my_graph.scales['x'].min &&
         x_val < my_graph.scales['x'].max &&
         y_val > my_graph.scales['y'].min &&
         y_val < my_graph.scales['y'].max) {
         if (flag == 'left_click') {
             add_datasets(my_graph, 0);
+            // my_graph.data.datasets[0].data.push({
+            //     'x': Math.round(x_val),
+            //     'y': Math.round(y_val)
+            // });
             my_graph.data.datasets[0].data.push({
-                'x': Math.round(x_val),
-                'y': Math.round(y_val)
+                'x': Math.round((x_val + Number.EPSILON) * 100) / 100,
+                'y': Math.round((y_val + Number.EPSILON) * 100) / 100
             });
         } else if (flag == 'right_click') {
             add_datasets(my_graph, 1)
+            //  
             my_graph.data.datasets[1].data.push({
-                'x': Math.round(x_val),
-                'y': Math.round(y_val)
+                'x': Math.round((x_val + Number.EPSILON) * 100) / 100,
+                'y': Math.round((y_val + Number.EPSILON) * 100) / 100
             });
 
         }
@@ -331,10 +339,18 @@ let my_graph = new Chart(ctx, {
 // DATA HANDLING ////////////////////////
 /////////////////////////////////////////
 function extract_data(user_data_string) {
-    // CONSIDER ADDING SQUARED BRACKETS SINCE NUMPY ARRAYS
-    const coords = /\((\-?\d+\,\-?\d+)\)/g; // validate legal pairs of coordinates
-    let preprocessed_data = user_data_string.replace(/ /g, "").replace(/\[|\]/g, "")
-    let validated_data = preprocessed_data.match(coords) || [];
+    //const coords = /(\(|\[)(\ *?\-?(\d+|([+-]?([0-9]*[.])?[0-9]+))(\,?|(\, *)|\ *?)\-?(\d+|([+-]?([0-9]*[.])?[0-9]+)))(\)|\])/g; // validate legal pairs of coordinates
+    //const coords = /(\(|\[)(\ *?\-?(\d*\.?\d*)(\,?|(\, *)|\ *?)\-?(\d*\.?\d*))( *)(\)|\])/g
+    const replace_spaces_with_commas = new RegExp(/(?<=\[\ *?\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *))( +?)(?=\ *\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *)\])/g)
+    console.log(user_data_string)
+    //let preprocessed_data = user_data_string.replace(/\[/g, "(").replace(/\]/g, ")")
+    let preprocessed_data = user_data_string.replace(replace_spaces_with_commas, ",").replace(/ /g, "").replace(/\[/g, "(").replace(/\]/g, ")")
+
+    // .replace(/\[|\]/g, "")
+    console.log(preprocessed_data)
+    //let validated_data = user_data_string.match(coords) || [];
+    let validated_data = preprocessed_data || [];
+    console.log(validated_data)
     console.log(preprocessed_data.length === validated_data.length);
     if (validated_data.length === 0) {
         console.log('input error')
@@ -344,15 +360,42 @@ function extract_data(user_data_string) {
         // numbers starting with 0 known error
     }
     document.getElementById('input_data').placeholder = 'Enter Data:';
-    validated_data = validated_data.toString().replace(/\(/g, "[").replace(/\)/g, "]");
+    validated_data = validated_data.toString().replace(/\(/g, "[").replace(/\)/g, "]").replace(/( +|\t+|[\r\n]+)/g, "").
+                                               replace(/\]\[/g, "],[").replace("[[", "[").replace("]]", "]");
+    console.log('the final sent data is', validated_data)
     return validated_data;
 }
 
+function escapeRegExp(stringToGoIntoTheRegex) {
+    return stringToGoIntoTheRegex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
 
 function parse_data() {
     const new_data = document.getElementById('input_data').value;
     let parsed_data = extract_data(new_data);
-    let data_points = JSON.parse("[" + parsed_data + "]");
+    // (temp.match(/\d\.(?!\d)/g)) + 0
+    let trailing_decimal = new RegExp(/\d\.(?!\d)/g)
+    do {
+        temp = trailing_decimal.exec(parsed_data);
+        if (temp) {
+            console.log('FOUND', temp[0],'oftype', typeof temp[0], 'at', temp['index'])
+            // [3.]\.(?!\d)/g
+            test_regex = "/[" + "3." + "]" + "\\" + ".(?!\\d)"
+            console.log('test_regex_is', test_regex)
+            // test_regex_2 = escapeRegExp(test_regex)
+            let final_regex = new RegExp(test_regex, "g");
+            console.log(final_regex)
+            // parsed_data_2 = parsed_data.replace(final_regex, parseInt(temp[0]).toString())
+            // /[3.]\.(?!\d)/g
+            parsed_data_2 = parsed_data.replace(test_regex, parseInt(temp[0]).toString())
+            console.log(parsed_data_2.slice(930, 940))
+        }
+    } while (temp);
+    //parsed_data = parsed_data.replace(/\d\.(?!\d)/g, '5')
+    console.log('parsed data is', parsed_data_2, 'and of type', typeof parsed_data)
+    console.log(parsed_data_2.slice(930, 940), parsed_data_2.length)
+    let data_points = JSON.parse("[" + parsed_data_2 + "]");
+    // let data_points = parsed_data
     let x_vals = [];
     let y_vals = [];
     data_points.forEach(data_point => {
@@ -400,11 +443,12 @@ function parse_labled_data() {
     add_datasets(my_graph, 0);
     add_datasets(my_graph, 1);
     labled_data_points.forEach(data_point => {
+        console.log(data_point)
         let point = {
             'x': data_point[0][0],
             'y': data_point[0][1]
         };
-        if (data_point[1] == 0) {
+        if (data_point[1] === 1) {
             my_graph.data.datasets[0].data.push(point);
         } else {
             my_graph.data.datasets[1].data.push(point);
@@ -672,9 +716,11 @@ function solve_k_means() {
     }).then((data) => {
         if (data === 0) {
             show_error("Empty set occured, k not suitable !")
+            return;
         }
         if (data === 1) {
             show_error('K bigger than number of data points')
+            return;
         }
         clear_data();
         let data_set = [];
