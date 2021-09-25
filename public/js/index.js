@@ -380,21 +380,15 @@ function parse_data() {
         if (temp) {
             console.log('FOUND', temp[0],'oftype', typeof temp[0], 'at', temp['index'])
             // [3.]\.(?!\d)/g
-            test_regex = "/[" + "3." + "]" + "\\" + ".(?!\\d)"
-            console.log('test_regex_is', test_regex)
-            // test_regex_2 = escapeRegExp(test_regex)
-            let final_regex = new RegExp(test_regex, "g");
-            console.log(final_regex)
-            // parsed_data_2 = parsed_data.replace(final_regex, parseInt(temp[0]).toString())
-            // /[3.]\.(?!\d)/g
-            parsed_data_2 = parsed_data.replace(test_regex, parseInt(temp[0]).toString())
-            console.log(parsed_data_2.slice(930, 940))
+            let temp_regex = new RegExp('[' + parseInt(temp[0]).toString() + '\\.]\\.(?!\\d)', "g")
+            parsed_data = parsed_data.replace(temp_regex, parseInt(temp[0]).toString())
+            console.log(parsed_data)
         }
     } while (temp);
     //parsed_data = parsed_data.replace(/\d\.(?!\d)/g, '5')
-    console.log('parsed data is', parsed_data_2, 'and of type', typeof parsed_data)
-    console.log(parsed_data_2.slice(930, 940), parsed_data_2.length)
-    let data_points = JSON.parse("[" + parsed_data_2 + "]");
+    console.log('parsed data is', parsed_data, 'and of type', typeof parsed_data)
+    console.log(parsed_data.slice(930, 940), parsed_data.length)
+    let data_points = JSON.parse("[" + parsed_data + "]");
     // let data_points = parsed_data
     let x_vals = [];
     let y_vals = [];
