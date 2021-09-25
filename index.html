@@ -29,14 +29,14 @@
     </div>
     <div class="content">
         <div class = "guide">
-            <p style="color: white;">Enter data by clicking on the graph or <span onclick = "show_data_box()" class = "add_data_btn" >enter manually</span></p>
+            <p style="color: white; text-align: center;">Enter data by clicking on the graph(left click - class 1, right click - class 2) or <br><span onclick = "show_data_box()" class = "add_data_btn" >enter manually</span></p>
         </div>
         <div class = "model-selection" id="data_input_1">
             <div class="model_setting_box">
                 <textarea class="input_data input_design border-gradient border-gradient-aqua" name="input_data_text"
-                    placeholder="Enter Data" id="input_data" cols="30" rows="10"></textarea>
+                    placeholder="Enter Data in the following formats:&#10;(x1,x2)&#10;[x1,x2]&#10;[[x1,x2],[x3,x4]]&#10;[(x1,x2),(x3,x4)]&#10;numpy array" id="input_data" cols="30" rows="10"></textarea>
                 <textarea readonly class="input_design_labels border-gradient border-gradient-aqua" name=""
-                    placeholder="Enter Lables" id="input_labels" cols="" rows=""></textarea>
+                    placeholder="Enter Lables as 1,0..., [1,0..] or numpy array" id="input_labels" cols="" rows=""></textarea>
                 <div class="button_container">
                     <div class = "actions-cont">
                         <button id = 'add_data_btn' onclick="parse_data()" class="insert_data">ADD</button>

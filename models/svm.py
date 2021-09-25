@@ -43,7 +43,13 @@ def solve_svm(data):
     support_vectors['bias'] = np.around(-(intercept[0] / coeffs[0][1]), 2)
     support_vectors['bias-1'] = np.around(-((intercept[0] + 1) / coeffs[0][1]), 2)
     support_vectors['bias-2'] = np.around(-((intercept[0] - 1) / coeffs[0][1]), 2)
-    # support_vectors['margin_dist'] = (w_hat[0] * margin + w_hat[1] * margin)
+    support_vectors['flag'] = 0
+    if(support_vectors['slope'] == -np.inf or support_vectors['slope'] == np.inf):
+        support_vectors['slope'] = np.mean(sv_s[:, 0])
+        support_vectors['bias'] = 0
+        support_vectors['bias-1'] = np.min(sv_s[:, 0])
+        support_vectors['bias-2'] = np.max(sv_s[:, 0])
+        support_vectors['flag'] = 1
     print(json.dumps(support_vectors))
 
 

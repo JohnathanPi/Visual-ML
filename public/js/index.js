@@ -1,10 +1,30 @@
 // MISC
 ////////////////////////////////////////////////////////////
 var ctx = document.getElementById('my_graph').getContext('2d');
-let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
-    '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
-    '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
-];
+// let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
+//     '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
+//     '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
+// ];
+
+let class_1_colors = ['#7400b8', '#e08ab7', '#0083e2', 
+'#bd2ea4', '#e5989b', '#2a9d8f', '#dda15e', '#9381ff',
+'#56cfe1', '#52b788', '#95d5b2', '#00b4d8', 
+'#b6ccfe']
+
+let class_2_colors = ['#6a4c93', '#e63946', '#2d00f7', 
+'#00296b', '#f25c54', '#9e0059', '#005f73', '#344e41','#1c2541', 
+'#eb5e28', '#ff7b00', '#641220', '#386641', '#7d8597', '#004b23']
+
+
+
+let decision_boundary_colors = ['#264653', '#023e8a', '#7f5539', '#3a0ca3', '#6d6875', '#005f73', '#370617', 
+'#212529', '#495057', '#118ab2', '#34a0a4', '#ee6c4d', '#9a031e', '#3c096c', '#3c096c']
+
+let class_colors = class_1_colors.concat(class_2_colors)
+
+let all_colors = class_1_colors.concat(class_2_colors).concat(decision_boundary_colors);
+
+
 
 const pSBC = (p, c0, c1, l) => {
     let r, g, b, P, f, t, h, i = parseInt,
@@ -46,7 +66,7 @@ const pSBC = (p, c0, c1, l) => {
     else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
 }
 
-let randomColor = () => {
+let randomColor = (colors) => {
     return colors[Math.floor(Math.random() * colors.length)]
 };
 let max_val = 20;
@@ -221,16 +241,36 @@ function shuffle(array) {
 }
 
 function add_datasets(graph, expected_sets) {
-    if (graph.data.datasets.length === expected_sets) {
-        graph.data.datasets.push({
-            type: 'scatter',
-            label: `Class ${expected_sets + 1}`,
-            data: [],
-            fill: false,
-            backgroundColor: randomColor()
-        });
+    let num_of_datasets = graph.data.datasets.length;
+    if (num_of_datasets === expected_sets) {
+        if (num_of_datasets === 0) {
+            graph.data.datasets.push({
+                type: 'scatter',
+                label: `Class ${expected_sets + 1}`,
+                data: [],
+                fill: false,
+                backgroundColor: randomColor(class_1_colors)
+            })
+        }
+        else if (num_of_datasets === 1) {
+            graph.data.datasets.push({
+                type: 'scatter',
+                label: `Class ${expected_sets + 1}`,
+                data: [],
+                fill: false,
+                backgroundColor: randomColor(class_2_colors)
+            })
+        } else {
+            console.log('more datasets ????')
+            graph.data.datasets.push({
+                type: 'scatter',
+                label: `Class ${expected_sets + 1}`,
+                data: [],
+                fill: false,
+                backgroundColor: randomColor(all_colors)
+            });
+        }
         return true;
-
     }
     //    else if (my_graph.data.datasets[0] && expected_sets == 1) {
     //         if (chosen_model.options[chosen_model.selectedIndex].value === '4' || chosen_model.options[chosen_model.selectedIndex].value == '1' ) {
@@ -275,15 +315,16 @@ function onClickHandler(click) {
             //     'y': Math.round(y_val)
             // });
             my_graph.data.datasets[0].data.push({
-                'x': Math.round((x_val + Number.EPSILON) * 100) / 100,
-                'y': Math.round((y_val + Number.EPSILON) * 100) / 100
+                'x': Math.round((x_val)),
+                'y': Math.round((y_val))
+                // + Number.EPSILON  * 100) / 100
             });
         } else if (flag == 'right_click') {
             add_datasets(my_graph, 1)
             //  
             my_graph.data.datasets[1].data.push({
-                'x': Math.round((x_val + Number.EPSILON) * 100) / 100,
-                'y': Math.round((y_val + Number.EPSILON) * 100) / 100
+                'x': Math.round((x_val)),
+                'y': Math.round((y_val))
             });
 
         }
@@ -370,9 +411,8 @@ function escapeRegExp(stringToGoIntoTheRegex) {
     return stringToGoIntoTheRegex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
-function parse_data() {
-    const new_data = document.getElementById('input_data').value;
-    let parsed_data = extract_data(new_data);
+function format_data(unformatted_data) {
+    let parsed_data = extract_data(unformatted_data);
     // (temp.match(/\d\.(?!\d)/g)) + 0
     let trailing_decimal = new RegExp(/\d\.(?!\d)/g)
     do {
@@ -387,8 +427,14 @@ function parse_data() {
     } while (temp);
     //parsed_data = parsed_data.replace(/\d\.(?!\d)/g, '5')
     console.log('parsed data is', parsed_data, 'and of type', typeof parsed_data)
-    console.log(parsed_data.slice(930, 940), parsed_data.length)
-    let data_points = JSON.parse("[" + parsed_data + "]");
+    let formatted_data = JSON.parse("[" + parsed_data + "]");
+    console.log('SUCCESS')
+    return formatted_data;
+}
+
+function parse_data() {
+    const new_data = document.getElementById('input_data').value;
+    data_points = format_data(new_data)
     // let data_points = parsed_data
     let x_vals = [];
     let y_vals = [];
@@ -417,13 +463,17 @@ function parse_data() {
 
 
 function parse_labled_data() {
+    const coords = /\d/g
     const new_labled_data = document.getElementById('input_data').value;
     const new_lables = document.getElementById('input_labels').value;
-    const lables = new_lables.split `,`.map(x => +x);
-    let parsed_data = new_labled_data.replace(/\(/g, "[").replace(/\)/g, "]");
-    let data_points = JSON.parse("[" + parsed_data + "]");
+    if (!new_lables) {
+        show_error('Please enter lables');
+        return;
+    }
+    let labels = new_lables.match(coords).map(x => +x);
+    let data_points = format_data(new_labled_data)
     labled_data_points = data_points.map(function (data, i) {
-        return [data, lables[i]];
+        return [data, labels[i]];
     });
     // if (!my_graph.data.datasets[1]) {
     //     my_graph.data.datasets.push({
@@ -509,7 +559,7 @@ function solve_linear_regression() {
                 showLine: true,
                 fill: false,
                 pointStyle: 'line',
-                borderColor: randomColor()
+                borderColor: randomColor(decision_boundary_colors)
             });
 
             my_graph.update();
@@ -544,20 +594,16 @@ function solve_logistic_regression() {
     fetch('/log_reg').then((response) => {
         return response.json();
     }).then((data) => {
-        if (data === 0) {
+        console.log(data['flag'])
+        if (data['flag'] === 1) {
+            console.log('here')
             my_graph.data.datasets.push({
                 label: 'test',
-                data: [{
-                    'x': 15,
-                    'y': 30
-                }, {
-                    'x': 15,
-                    'y': -30
-                }],
+                data: perpendicular_line(data['slope'], 0, 20),
                 showLine: true,
                 fill: false,
                 pointStyle: 'line',
-                borderColor: randomColor()
+                borderColor: randomColor(decision_boundary_colors)
             });
             my_graph.update();
             return
@@ -582,7 +628,7 @@ function solve_logistic_regression() {
                 showLine: true,
                 fill: false,
                 pointStyle: 'line',
-                borderColor: randomColor()
+                borderColor: randomColor(decision_boundary_colors)
             });
             my_graph.update();
 
@@ -616,6 +662,63 @@ function solve_svm() {
     fetch('/svm').then((response) => {
         return response.json();
     }).then((data) => {
+        if (data["flag"]) {
+            let slope = data["slope"];
+            let bias = data["bias"];
+            let bias_1 = data["bias-1"];
+            let bias_2 = data["bias-2"];
+            my_graph.data.datasets.push({
+                label: `x = ${data['slope']}`,
+                data: perpendicular_line(data['slope'], 0, 20),
+                showLine: true,
+                fill: false,
+                pointStyle: 'line',
+                borderColor: randomColor(decision_boundary_colors)
+            });
+            my_graph.data.datasets.push({
+                label: 'margin',
+                data: perpendicular_line(data['bias-1'], 0, 20),
+                showLine: true,
+                fill: false,
+                borderDash: [10, 10],
+                pointStyle: 'line',
+                borderWidth: 1,
+                borderColor: '#000'
+            });
+            my_graph.data.datasets.push({
+                label: 'margin2',
+                data: perpendicular_line(data['bias-2'], 0, 20),
+                showLine: true,
+                fill: false,
+                borderDash: [10, 10],
+                pointStyle: 'line',
+                borderWidth: 1,
+                borderColor: '#000'
+            });
+            delete data.slope;
+            delete data.bias;
+            delete data.weight_norm;
+            delete data.margin
+            delete data.flag
+            let sv_coords = [];
+            Object.entries(data).forEach(point => {
+                sv_coords.push({
+                    'x': point[1][0],
+                    'y': point[1][1]
+                });
+                console.log('sv coords are', sv_coords);
+            })
+            my_graph.data.datasets.push({
+                label: 'Support Vectors',
+                data: sv_coords,
+                showLine: false,
+                fill: false,
+                borderColor: '#000',
+                radius: 5
+            });
+            my_graph.update();
+            return;
+            }
         let slope = data["slope"];
         let bias = data["bias"];
         let bias_1 = data["bias-1"];
@@ -637,7 +740,7 @@ function solve_svm() {
             showLine: true,
             fill: false,
             pointStyle: 'line',
-            borderColor: randomColor()
+            borderColor: randomColor(decision_boundary_colors)
         });
         my_graph.data.datasets.push({
             label: 'margin',
@@ -663,6 +766,7 @@ function solve_svm() {
         delete data.bias;
         delete data.weight_norm;
         delete data.margin
+        delete data.flag
         console.log('data is', data)
         let sv_coords = [];
         Object.entries(data).forEach(point => {
@@ -728,7 +832,7 @@ function solve_k_means() {
                 'y': centroids[centroid][1]
             });
         }
-        cluster_colors = shuffle(colors).slice(0, centroid_counter);
+        cluster_colors = shuffle(class_colors).slice(0, centroid_counter);
         cluster_colors.push('#eee');
         for (cluster in clusters) {
             cluster_data = []
@@ -790,7 +894,7 @@ function solve_decision_tree() {
         border_size = max_val >= 20 ? max_val : 20;
         console.log('the whole returned data is ', data);
         let i = 0;
-        color = randomColor();
+        color = randomColor(decision_boundary_colors);
         for (line in data) {
             console.log('line is', data[line])
             line_points = data[line]

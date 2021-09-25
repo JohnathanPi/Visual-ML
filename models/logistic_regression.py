@@ -51,9 +51,12 @@ def logistic_regression(data):
             accuracy_dict[learning_rate] = accuracy(y, y_preds)
         best_learning_rate = max(accuracy_dict, key = accuracy_dict.get)
         weights, bias = param_dict[best_learning_rate]
-        return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate]}
+        return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : accuracy_dict[best_learning_rate], 'flag' : 0}
         if(return_dict['slope'] == -np.inf or return_dict['slope'] == np.inf):
-            raise ValueError('Infinite slope') 
+            x_intercept = np.mean(X[:, 0])
+            return_dict = {'slope' : x_intercept, 'bias': 0, 'accuracy' : accuracy_dict[best_learning_rate], 'flag' : 1}
+            print(json.dumps(return_dict))
+            return
         print(json.dumps(return_dict)) 
     except Exception as e:
         if (str(e) == 'Infinite slope'):

@@ -228,7 +228,7 @@ p {
 }
 
 .input_design_labels {
-    height: 3.125rem;
+    height: 4rem;
     display: flex;
     flex-direction: column;
     border: 2px violet solid;
