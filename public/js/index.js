@@ -71,7 +71,7 @@ let class_2_colors = ['#6a4c93', '#e63946', '#2d00f7',
 
 
 
-let decision_boundary_colors = ['#264653', '#023e8a', '#7f5539', '#3a0ca3', '#6d6875', '#005f73', '#370617', 
+let decision_boundary_colors = ['#264653', '#023e8a', '#3a0ca3', '#6d6875', '#005f73', 
 '#212529', '#495057', '#118ab2', '#34a0a4', '#ee6c4d', '#9a031e', '#3c096c', '#3c096c']
 
 let class_colors = class_1_colors.concat(class_2_colors)
@@ -325,6 +325,25 @@ function add_datasets(graph, expected_sets) {
     }
 }
 
+function scale_graph(graph, max_x, max_y) {
+        if (max_x >= 1) {
+            padding_x = max_x + Math.round(Math.log(max_x))
+        }
+        if (max_y >= 1) {
+            padding_y = max_y + Math.round(Math.log(max_y))
+        }
+        if (max_x < 1) {
+            padding_x = max_x + Math.round(-Math.log(max_x))
+        }
+        if (max_y < 1) {
+            padding_y = max_y + Math.round(-Math.log(max_y))
+        }
+        graph.options.scales.x.min = -max_x - padding_x;
+        graph.options.scales.x.max = max_x + padding_x;
+        graph.options.scales.y.min = -max_y - padding_y;
+        graph.options.scales.y.max = max_y + padding_y;
+}
+
 function onClickHandler(click) {
     let chosen_model = document.getElementById('model-selector');
     let curr_model_id = chosen_model.options[chosen_model.selectedIndex].value;
@@ -463,25 +482,11 @@ function parse_data() {
         add_datasets(my_graph, 0);
         my_graph.data.datasets[0].data.push(point);
     };
-    max_x = Math.max(...x_vals);
-    max_y = Math.max(...y_vals);
-    max_val = max_x >= max_y ? max_x : max_y;
-    if (max_val >= 10) {
-        my_graph.options.scales.x.min = -max_val - 5;
-        my_graph.options.scales.x.max = max_val + 5;
-        my_graph.options.scales.y.min = -max_val - 5;
-        my_graph.options.scales.y.max = max_val + 5;
-    } else if (max_val > 1) {
-        my_graph.options.scales.x.min = -max_val - 2;
-        my_graph.options.scales.x.max = max_val + 2;
-        my_graph.options.scales.y.min = -max_val - 2;
-        my_graph.options.scales.y.max = max_val + 2;
-    } else {
-        my_graph.options.scales.x.min = -max_val - 0.25;
-        my_graph.options.scales.x.max = max_val + 0.25;
-        my_graph.options.scales.y.min = -max_val - 0.25;
-        my_graph.options.scales.y.max = max_val + 0.25;
-    }
+    max_x = Math.max.apply(null, x_vals.map(Math.abs));
+    console.log('max x is', max_x)
+    max_y = Math.max.apply(null, y_vals.map(Math.abs));
+    console.log('max y is', max_y)
+    scale_graph(my_graph, max_x, max_y)
     my_graph.options.scales.x.position = 'center';
     my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
@@ -537,23 +542,9 @@ function parse_labled_data() {
             show_error('Entered illegal class !');
         }
     });
-    max_val = max_x >= max_y ? max_x : max_y;
-    if (max_val >= 10) {
-        my_graph.options.scales.x.min = -max_val - 5;
-        my_graph.options.scales.x.max = max_val + 5;
-        my_graph.options.scales.y.min = -max_val - 5;
-        my_graph.options.scales.y.max = max_val + 5;
-    } else if (max_val > 1) {
-        my_graph.options.scales.x.min = -max_val - 2;
-        my_graph.options.scales.x.max = max_val + 2;
-        my_graph.options.scales.y.min = -max_val - 2;
-        my_graph.options.scales.y.max = max_val + 2;
-    } else {
-        my_graph.options.scales.x.min = -max_val - 0.25;
-        my_graph.options.scales.x.max = max_val + 0.25;
-        my_graph.options.scales.y.min = -max_val - 0.25;
-        my_graph.options.scales.y.max = max_val + 0.25;
-    }
+    max_x = Math.max.apply(null, x_vals.map(Math.abs));
+    max_y = Math.max.apply(null, y_vals.map(Math.abs));
+    scale_graph(my_graph, max_x, max_y)
     my_graph.options.scales.x.position = 'center';
     my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
@@ -823,7 +814,6 @@ function solve_svm() {
         my_graph.update();
     })
 }
-
 
 function solve_k_means() {
     if (!my_graph.data.datasets[0]) {

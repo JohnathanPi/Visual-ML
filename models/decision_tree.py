@@ -154,11 +154,10 @@ def traverse_tree_bfs(root, splits = []): # Useful for debugging and retrieving 
             queue.append([node.right_child, 'right_child'])
     return splits
 #                                                       top left   top right bottom left bottom right
-#root_node = Node(X, y, 'root', None, None, None, None, [(-max_x, max_y), (max_x, max_y), (-max_x, -max_y), (max_x, -max_y)]) # Initial root node
 root_node = Node(X, y, 'root', None, None, None, None, [(-max_x - 15, max_y + 15), (max_x + 15, max_y + 15), (-max_x - 15, -max_y - 15), (max_x + 15, -max_y - 15)]) # Initial root node
 tree = DecisionTree(splits = [], root = root_node) # Tree object
 tree.grow_tree(root_node) 
-final_splits = traverse_tree_bfs(root_node)
+final_splits = traverse_tree_bfs(root_node) # Retreive splits in bfs order
 decision_boundaries = {}
 for split in final_splits:
     value = split[1][0]

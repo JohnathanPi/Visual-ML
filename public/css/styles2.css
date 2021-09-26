@@ -170,6 +170,11 @@ p {
     background-image: linear-gradient(to left, #e0aaff, #da9fff, #d494ff, #ce88ff, #c77dff);    
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: #c77dff;
+}
+
+.model-selector option {
+    color: black;
 }
 
 .model-selection:hover {
