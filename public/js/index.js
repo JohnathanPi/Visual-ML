@@ -496,7 +496,12 @@ function parse_data() {
 
 function parse_labled_data() {
     const coords = /\d/g
-    const new_labled_data = document.getElementById('input_data').value;
+    const new_labeld_data = document.getElementById('input_data').value;
+    console.log('new labeld data is', new_labeld_data)
+    if (new_labeld_data === '') {
+        show_error('Please enter data');
+        return; 
+    }
     const new_labels = document.getElementById('input_labels').value;
     if (!new_labels) {
         show_error('Please enter lables');
@@ -510,26 +515,30 @@ function parse_labled_data() {
             return;
         }
     }
-    let data_points = format_data(new_labled_data)
+    let data_points = format_data(new_labeld_data)
     if (data_points === false) {
         return;
     }
     labled_data_points = data_points.map(function (data, i) {
         return [data, labels[i]];
     });
-    let max_x = 0;
-    let max_y = 0;
-    data_points.forEach(point => {
-        if (point[0] > max_x) {
-            max_x = point[0];
-        }
-        if (point[1] > max_y) {
-            max_y = point[1];
-        }
-    });
+    // let max_x = 0;
+    // let max_y = 0;
+    // data_points.forEach(point => {
+    //     if (point[0] > max_x) {
+    //         max_x = point[0];
+    //     }
+    //     if (point[1] > max_y) {
+    //         max_y = point[1];
+    //     }
+    // });
+    x_vals = [];
+    y_vals = [];
     add_datasets(my_graph, 0);
     add_datasets(my_graph, 1);
     labled_data_points.forEach(data_point => {
+        x_vals.push(data_point[0][0]);
+        y_vals.push(data_point[0][1]);
         let point = {
             'x': data_point[0][0],
             'y': data_point[0][1]
