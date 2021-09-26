@@ -16,6 +16,8 @@ for label in data_obj:
         y.append(int(label))
 X = np.array(X)
 y = np.array(y)
+max_x = int(np.ceil(np.max(X[:, 0])))
+max_y = int(np.ceil(np.max(X[:, 1])))
 
 # Information gain function
 
@@ -152,7 +154,8 @@ def traverse_tree_bfs(root, splits = []): # Useful for debugging and retrieving 
             queue.append([node.right_child, 'right_child'])
     return splits
 #                                                       top left   top right bottom left bottom right
-root_node = Node(X, y, 'root', None, None, None, None, [(-20, 20), (20, 20), (-20, -20), (20, -20)]) # Initial root node
+#root_node = Node(X, y, 'root', None, None, None, None, [(-max_x, max_y), (max_x, max_y), (-max_x, -max_y), (max_x, -max_y)]) # Initial root node
+root_node = Node(X, y, 'root', None, None, None, None, [(-max_x - 15, max_y + 15), (max_x + 15, max_y + 15), (-max_x - 15, -max_y - 15), (max_x + 15, -max_y - 15)]) # Initial root node
 tree = DecisionTree(splits = [], root = root_node) # Tree object
 tree.grow_tree(root_node) 
 final_splits = traverse_tree_bfs(root_node)
@@ -173,5 +176,4 @@ result = {}
 for key,value in decision_boundaries.items():
     if value not in result.values():
         result[key] = value
-   
 print(json.dumps(result))

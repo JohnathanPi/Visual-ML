@@ -1,15 +1,69 @@
 // MISC
 ////////////////////////////////////////////////////////////
 var ctx = document.getElementById('my_graph').getContext('2d');
-// let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
-//     '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
-//     '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
-// ];
+
+let my_graph = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+        datasets: []
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    filter: function (item, chart) {
+                        return !item.text.includes('margin2') && !item.text.includes('test');
+
+
+                    }
+                }
+            }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+            padding: 20
+        },
+        scales: {
+            x: {
+                min: -20,
+                max: 20,
+                ticks: {
+                    display: true
+                },
+            },
+            y: {
+
+                min: -20,
+                max: 20,
+                ticks: {
+                    display: true
+                },
+            }
+        }
+    }
+});
+
+let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
+    '#bd2ea4', '#e08ab7', '#fa1b73', '#f7e27e',
+    '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
+];
 
 let class_1_colors = ['#7400b8', '#e08ab7', '#0083e2', 
 '#bd2ea4', '#e5989b', '#2a9d8f', '#dda15e', '#9381ff',
 '#56cfe1', '#52b788', '#95d5b2', '#00b4d8', 
 '#b6ccfe']
+
+// let class_1_colors = ['#34ace0', '#33d9b2'
+// , '#ffb142', '#ffda79', '#cc8e35', '#0fbcf9',
+// '#05c46b','#00d8d6','#ffb8b8']
+
+// let class_2_colors = ['#40407a', '#706fd3', '#2c2c54', 
+// , '#ff5252', '#F97F51', '#b33939', '#cd6133',
+// '#ef5777','#575fcf','#f53b57','#485460',
+// '#7158e2','#3d3d3d','#c56cf0','#cd84f1','#6D214F','#FD7272']
+
 
 let class_2_colors = ['#6a4c93', '#e63946', '#2d00f7', 
 '#00296b', '#f25c54', '#9e0059', '#005f73', '#344e41','#1c2541', 
@@ -102,7 +156,6 @@ function perpendicular_line(value, axis, border) {
 function line_through_border(slope, bias, border) {
     // find the sides where the line intercepts the graphs border
     if (slope === 0) {
-        console.log('slope 0')
         return [{
             'x': -border,
             'y': bias
@@ -176,7 +229,6 @@ function check_readonly() {
         decision_tree_div.style.display === 'flex') {
         label_input.readOnly = false;
         add_data_btn.onclick = parse_labled_data;
-
     } else {
         label_input.value = "";
         label_input.readOnly = true;
@@ -261,7 +313,6 @@ function add_datasets(graph, expected_sets) {
                 backgroundColor: randomColor(class_2_colors)
             })
         } else {
-            console.log('more datasets ????')
             graph.data.datasets.push({
                 type: 'scatter',
                 label: `Class ${expected_sets + 1}`,
@@ -272,14 +323,6 @@ function add_datasets(graph, expected_sets) {
         }
         return true;
     }
-    //    else if (my_graph.data.datasets[0] && expected_sets == 1) {
-    //         if (chosen_model.options[chosen_model.selectedIndex].value === '4' || chosen_model.options[chosen_model.selectedIndex].value == '1' ) {
-    //             show_error('This model does not support two calsses');
-    //             return false;
-    //         }
-    //         show_error('enter class 0 data with left click first');
-    //         return false;
-    // }
 }
 
 function onClickHandler(click) {
@@ -332,66 +375,27 @@ function onClickHandler(click) {
     my_graph.update();
 }
 
-
-
-let my_graph = new Chart(ctx, {
-    type: 'scatter',
-    data: {
-        datasets: []
-    },
-    options: {
-        plugins: {
-            legend: {
-                display: true,
-                labels: {
-                    filter: function (item, chart) {
-                        return !item.text.includes('margin2') && !item.text.includes('test');
-
-
-                    }
-                }
-            }
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-            padding: 20
-        },
-        scales: {
-            x: {
-                min: -20,
-                max: 20,
-                ticks: {
-                    display: true
-                },
-            },
-            y: {
-
-                min: -20,
-                max: 20,
-                ticks: {
-                    display: true
-                },
-            }
-        }
-    }
-});
 //////////////////////////////////////////
 // DATA HANDLING ////////////////////////
 /////////////////////////////////////////
 function extract_data(user_data_string) {
-    //const coords = /(\(|\[)(\ *?\-?(\d+|([+-]?([0-9]*[.])?[0-9]+))(\,?|(\, *)|\ *?)\-?(\d+|([+-]?([0-9]*[.])?[0-9]+)))(\)|\])/g; // validate legal pairs of coordinates
     //const coords = /(\(|\[)(\ *?\-?(\d*\.?\d*)(\,?|(\, *)|\ *?)\-?(\d*\.?\d*))( *)(\)|\])/g
     const replace_spaces_with_commas = new RegExp(/(?<=\[\ *?\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *))( +?)(?=\ *\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *)\])/g)
+    const find_letters = new RegExp(/([A-Z]|[a-z]|[\!-\']|[\*\+\`]|[\:\;\?\@\^\_\~])+/g)
+    //const find_not_numbers = new RegExp(/\D+/g);
+    //|
     console.log(user_data_string)
     //let preprocessed_data = user_data_string.replace(/\[/g, "(").replace(/\]/g, ")")
     let preprocessed_data = user_data_string.replace(replace_spaces_with_commas, ",").replace(/ /g, "").replace(/\[/g, "(").replace(/\]/g, ")")
-
-    // .replace(/\[|\]/g, "")
-    console.log(preprocessed_data)
+    if (preprocessed_data.match(find_letters)) {
+        console.log('Cannot enter letters as data')
+        show_error('Cannot enter letters as data!')
+        return false;
+    }
+    console.log('the processed data is', preprocessed_data)
     //let validated_data = user_data_string.match(coords) || [];
     let validated_data = preprocessed_data || [];
-    console.log(validated_data)
+    console.log('the validated data is', validated_data)
     console.log(preprocessed_data.length === validated_data.length);
     if (validated_data.length === 0) {
         console.log('input error')
@@ -407,38 +411,49 @@ function extract_data(user_data_string) {
     return validated_data;
 }
 
-function escapeRegExp(stringToGoIntoTheRegex) {
-    return stringToGoIntoTheRegex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
-
 function format_data(unformatted_data) {
     let parsed_data = extract_data(unformatted_data);
+    if (parsed_data === false) {
+        show_error('Entered illegal charecter in data !');
+        return false;
+    }
     // (temp.match(/\d\.(?!\d)/g)) + 0
     let trailing_decimal = new RegExp(/\d\.(?!\d)/g)
     do {
         temp = trailing_decimal.exec(parsed_data);
         if (temp) {
-            console.log('FOUND', temp[0],'oftype', typeof temp[0], 'at', temp['index'])
-            // [3.]\.(?!\d)/g
             let temp_regex = new RegExp('[' + parseInt(temp[0]).toString() + '\\.]\\.(?!\\d)', "g")
             parsed_data = parsed_data.replace(temp_regex, parseInt(temp[0]).toString())
-            console.log(parsed_data)
         }
     } while (temp);
     //parsed_data = parsed_data.replace(/\d\.(?!\d)/g, '5')
-    console.log('parsed data is', parsed_data, 'and of type', typeof parsed_data)
-    let formatted_data = JSON.parse("[" + parsed_data + "]");
-    console.log('SUCCESS')
-    return formatted_data;
+    try{
+        let formatted_data = JSON.parse("[" + parsed_data + "]");
+        return formatted_data;
+    } catch {
+        show_error("Data parsing failed !");
+        return;
+    }
 }
 
 function parse_data() {
     const new_data = document.getElementById('input_data').value;
     data_points = format_data(new_data)
-    // let data_points = parsed_data
+    if (data_points === false) {
+        return;
+    }
     let x_vals = [];
     let y_vals = [];
-    data_points.forEach(data_point => {
+    console.log('data points are', data_points, typeof data_points)
+    let point_array = Object.values(data_points)
+    for (let i = 0; i < point_array.length; i++) {
+        let data_point = point_array[i];
+        console.log('the point is', point_array[i])
+        if (data_point[0] === undefined || data_point[1] === undefined) {
+            show_error("Entered 1-D data point");
+            console.log('the illegal point is', data_point)
+            return;            
+        }   
         x_vals.push(data_point[0]);
         y_vals.push(data_point[1]);
         let point = {
@@ -447,14 +462,26 @@ function parse_data() {
         };
         add_datasets(my_graph, 0);
         my_graph.data.datasets[0].data.push(point);
-    });
+    };
     max_x = Math.max(...x_vals);
     max_y = Math.max(...y_vals);
     max_val = max_x >= max_y ? max_x : max_y;
-    my_graph.options.scales.x.min = -max_val - 10;
-    my_graph.options.scales.x.max = max_val + 10;
-    my_graph.options.scales.y.min = -max_val - 10;
-    my_graph.options.scales.y.max = max_val + 10;
+    if (max_val >= 10) {
+        my_graph.options.scales.x.min = -max_val - 5;
+        my_graph.options.scales.x.max = max_val + 5;
+        my_graph.options.scales.y.min = -max_val - 5;
+        my_graph.options.scales.y.max = max_val + 5;
+    } else if (max_val > 1) {
+        my_graph.options.scales.x.min = -max_val - 2;
+        my_graph.options.scales.x.max = max_val + 2;
+        my_graph.options.scales.y.min = -max_val - 2;
+        my_graph.options.scales.y.max = max_val + 2;
+    } else {
+        my_graph.options.scales.x.min = -max_val - 0.25;
+        my_graph.options.scales.x.max = max_val + 0.25;
+        my_graph.options.scales.y.min = -max_val - 0.25;
+        my_graph.options.scales.y.max = max_val + 0.25;
+    }
     my_graph.options.scales.x.position = 'center';
     my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
@@ -465,43 +492,72 @@ function parse_data() {
 function parse_labled_data() {
     const coords = /\d/g
     const new_labled_data = document.getElementById('input_data').value;
-    const new_lables = document.getElementById('input_labels').value;
-    if (!new_lables) {
+    const new_labels = document.getElementById('input_labels').value;
+    if (!new_labels) {
         show_error('Please enter lables');
         return;
     }
-    let labels = new_lables.match(coords).map(x => +x);
+    let labels = new_labels.match(coords).map(x => +x);
+    for (let i = 0; i < labels.length; i++) {
+        console.log(labels[i], typeof labels[i])
+        if (labels[i] != 1 && labels[i] != 0) {
+            show_error('Entered illegal label');
+            return;
+        }
+    }
     let data_points = format_data(new_labled_data)
+    if (data_points === false) {
+        return;
+    }
     labled_data_points = data_points.map(function (data, i) {
         return [data, labels[i]];
     });
-    // if (!my_graph.data.datasets[1]) {
-    //     my_graph.data.datasets.push({
-    //         type: 'scatter',
-    //         label: "Data label 2",
-    //         data: [],
-    //         fill: false,
-    //         backgroundColor: randomColor()
-    //     });
-    // };
+    let max_x = 0;
+    let max_y = 0;
+    data_points.forEach(point => {
+        if (point[0] > max_x) {
+            max_x = point[0];
+        }
+        if (point[1] > max_y) {
+            max_y = point[1];
+        }
+    });
     add_datasets(my_graph, 0);
     add_datasets(my_graph, 1);
     labled_data_points.forEach(data_point => {
-        console.log(data_point)
         let point = {
             'x': data_point[0][0],
             'y': data_point[0][1]
         };
-        if (data_point[1] === 1) {
+        if (data_point[1] === 0) {
             my_graph.data.datasets[0].data.push(point);
-        } else {
+        } else if (data_point[1] === 1) {
             my_graph.data.datasets[1].data.push(point);
+        } else {
+            show_error('Entered illegal class !');
         }
     });
+    max_val = max_x >= max_y ? max_x : max_y;
+    if (max_val >= 10) {
+        my_graph.options.scales.x.min = -max_val - 5;
+        my_graph.options.scales.x.max = max_val + 5;
+        my_graph.options.scales.y.min = -max_val - 5;
+        my_graph.options.scales.y.max = max_val + 5;
+    } else if (max_val > 1) {
+        my_graph.options.scales.x.min = -max_val - 2;
+        my_graph.options.scales.x.max = max_val + 2;
+        my_graph.options.scales.y.min = -max_val - 2;
+        my_graph.options.scales.y.max = max_val + 2;
+    } else {
+        my_graph.options.scales.x.min = -max_val - 0.25;
+        my_graph.options.scales.x.max = max_val + 0.25;
+        my_graph.options.scales.y.min = -max_val - 0.25;
+        my_graph.options.scales.y.max = max_val + 0.25;
+    }
+    my_graph.options.scales.x.position = 'center';
+    my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
     document.getElementById('input_labels').value = "";
-    console.log(my_graph.data.datasets[0]);
-    console.log(my_graph.data.datasets[1]);
     my_graph.update();
 }
 
@@ -521,7 +577,6 @@ function solve_linear_regression() {
         return;
     }
     const data = my_graph.data.datasets[0].data;
-    console.log(data);
     options = {
         method: 'POST',
         headers: {
@@ -531,7 +586,6 @@ function solve_linear_regression() {
     };
     fetch('/api', options)
     // fetch returning data from python script
-    console.log('im at request');
     fetch('/lin_reg').then((response) => {
             return response.json();
         }).then((data) => {
@@ -552,7 +606,6 @@ function solve_linear_regression() {
             border_size = max_val >= 20 ? max_val : 20;
             // edge cases (slope = 0) 
             let lin_reg_data = line_through_border(slope, bias, border_size + 10);
-            console.log('returned', lin_reg_data)
             my_graph.data.datasets.push({
                 label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`,
                 data: lin_reg_data,
@@ -582,7 +635,6 @@ function solve_logistic_regression() {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
     };
-    console.log(data);
     options = {
         method: 'POST',
         headers: {
@@ -594,9 +646,7 @@ function solve_logistic_regression() {
     fetch('/log_reg').then((response) => {
         return response.json();
     }).then((data) => {
-        console.log(data['flag'])
         if (data['flag'] === 1) {
-            console.log('here')
             my_graph.data.datasets.push({
                 label: 'test',
                 data: perpendicular_line(data['slope'], 0, 20),
@@ -611,17 +661,14 @@ function solve_logistic_regression() {
             show_error('Cannot perform logistic regression with one class')
             return
         } else {
-            console.log('the data is', data)
             let slope = data["slope"];
             let bias = data["bias"];
             let acc = data["accuracy"]
-            console.log(`y = ${slope}x + ${bias}`)
             // need to graph y = x*slope + bias
             // find min and max points in curr dataset
             border_size = max_val >= 20 ? max_val : 20;
             // edge cases (slope = 0) 
             let seperating_plane = line_through_border(slope, bias, border_size + 10);
-            console.log('sep plane is', seperating_plane)
             my_graph.data.datasets.push({
                 label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
                 data: seperating_plane,
@@ -650,7 +697,6 @@ function solve_svm() {
         '1': my_graph.data.datasets[0].data,
         '-1': my_graph.data.datasets[1].data
     };
-    console.log(data);
     options = {
         method: 'POST',
         headers: {
@@ -706,7 +752,6 @@ function solve_svm() {
                     'x': point[1][0],
                     'y': point[1][1]
                 });
-                console.log('sv coords are', sv_coords);
             })
             my_graph.data.datasets.push({
                 label: 'Support Vectors',
@@ -723,15 +768,8 @@ function solve_svm() {
         let bias = data["bias"];
         let bias_1 = data["bias-1"];
         let bias_2 = data["bias-2"];
-        // let margin = data['margin_dist'];
-        // console.log('margin is', margin)
-        // console.log('weight norm is', weight_norm)
-        // console.log('margin time sweight norm', margin*weight_norm[0] + margin*weight_norm[1])
         border_size = max_val >= 20 ? max_val : 20;
-        // edge cases (slope = 0) 
         let seperating_plane = line_through_border(slope, bias, border_size + 10);
-        //let margin_1 = line_through_border(slope, bias - (margin*weight_norm[0][0] + margin*weight_norm[0][1]), border_size + 10);
-        //let margin_2 = line_through_border(slope, bias + (margin*weight_norm[0][0] + margin*weight_norm[0][1]), border_size + 10);
         let margin_1 = line_through_border(slope, bias_1, border_size + 10);
         let margin_2 = line_through_border(slope, bias_2, border_size + 10);
         my_graph.data.datasets.push({
@@ -767,14 +805,12 @@ function solve_svm() {
         delete data.weight_norm;
         delete data.margin
         delete data.flag
-        console.log('data is', data)
         let sv_coords = [];
         Object.entries(data).forEach(point => {
             sv_coords.push({
                 'x': point[1][0],
                 'y': point[1][1]
             });
-            console.log('sv coords are', sv_coords);
         })
         my_graph.data.datasets.push({
             label: 'Support Vectors',
@@ -809,11 +845,10 @@ function solve_k_means() {
     fetch('/api', options)
     // fetch returning data from python script
     fetch('/k_means').then((response) => {
-        // console.log(response.json())
         return response.json();
     }).then((data) => {
         if (data === 0) {
-            show_error("Empty set occured, k not suitable !")
+            show_error("Empty set occured, please pick a better K")
             return;
         }
         if (data === 1) {
@@ -861,7 +896,6 @@ function solve_k_means() {
             radius: 10
         });
         my_graph.update()
-
     }).catch((err) => {
         console.log('rejected', err);
     })
@@ -892,11 +926,9 @@ function solve_decision_tree() {
         return response.json();
     }).then((data) => {
         border_size = max_val >= 20 ? max_val : 20;
-        console.log('the whole returned data is ', data);
         let i = 0;
         color = randomColor(decision_boundary_colors);
         for (line in data) {
-            console.log('line is', data[line])
             line_points = data[line]
             new_color = pSBC(0.03, color, false, true);
             my_graph.data.datasets.push({
