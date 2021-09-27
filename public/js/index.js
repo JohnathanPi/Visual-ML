@@ -1,6 +1,6 @@
 // MISC
 ////////////////////////////////////////////////////////////
-var ctx = document.getElementById('my_graph').getContext('2d');
+let ctx = document.getElementById('my_graph').getContext('2d');
 
 let my_graph = new Chart(ctx, {
     type: 'scatter',
@@ -50,8 +50,8 @@ let colors = ['#020c64', '#09df8a', '#7400b8', '#f4845f', '#f3a338',
     '#c0aeed', '#a11d33', '#0083e2', '#00a6fb'
 ];
 
-let class_1_colors = ['#7400b8', '#e08ab7', '#0083e2', 
-'#bd2ea4', '#e5989b', '#2a9d8f', '#dda15e', '#9381ff',
+let class_1_colors = ['#e08ab7', '#0083e2', 
+'#bd2ea4', '#e5989b', '#2a9d8f', '#dda15e',
 '#56cfe1', '#52b788', '#95d5b2', '#00b4d8', 
 '#b6ccfe']
 
@@ -78,6 +78,7 @@ let class_colors = class_1_colors.concat(class_2_colors)
 
 let all_colors = class_1_colors.concat(class_2_colors).concat(decision_boundary_colors);
 
+let clear_button = document.getElementById('clear-button');
 
 
 const pSBC = (p, c0, c1, l) => {
@@ -241,6 +242,7 @@ function setting_switch() {
     let chosen_model = document.getElementById('model-selector');
     let model_divs = document.querySelectorAll('.model_div')
     let model_div_cont = document.getElementById('model-div-cont')
+    clear_button.style.display = 'none';
     let i = 0;
     solve_buttons.forEach((solve_button) => {
         i++;
@@ -343,6 +345,7 @@ function scale_graph(graph, max_x, max_y) {
         graph.options.scales.y.min = -max_y - padding_y;
         graph.options.scales.y.max = max_y + padding_y;
 }
+
 
 function onClickHandler(click) {
     let chosen_model = document.getElementById('model-selector');
@@ -455,6 +458,8 @@ function format_data(unformatted_data) {
     }
 }
 
+
+
 function parse_data() {
     const new_data = document.getElementById('input_data').value;
     data_points = format_data(new_data)
@@ -485,6 +490,7 @@ function parse_data() {
     max_x = Math.max.apply(null, x_vals.map(Math.abs));
     console.log('max x is', max_x)
     max_y = Math.max.apply(null, y_vals.map(Math.abs));
+    max_val = max_x >= max_y ? max_x : max_y;
     console.log('max y is', max_y)
     scale_graph(my_graph, max_x, max_y)
     my_graph.options.scales.x.position = 'center';
@@ -522,16 +528,6 @@ function parse_labled_data() {
     labled_data_points = data_points.map(function (data, i) {
         return [data, labels[i]];
     });
-    // let max_x = 0;
-    // let max_y = 0;
-    // data_points.forEach(point => {
-    //     if (point[0] > max_x) {
-    //         max_x = point[0];
-    //     }
-    //     if (point[1] > max_y) {
-    //         max_y = point[1];
-    //     }
-    // });
     x_vals = [];
     y_vals = [];
     add_datasets(my_graph, 0);
@@ -553,6 +549,7 @@ function parse_labled_data() {
     });
     max_x = Math.max.apply(null, x_vals.map(Math.abs));
     max_y = Math.max.apply(null, y_vals.map(Math.abs));
+    max_val = max_x >= max_y ? max_x : max_y;
     scale_graph(my_graph, max_x, max_y)
     my_graph.options.scales.x.position = 'center';
     my_graph.options.scales.y.position = 'center';
@@ -563,7 +560,12 @@ function parse_labled_data() {
 
 
 function clear_data(flag = 1) {
+    clear_button.style.display = 'none';
     my_graph.data.datasets = [];
+    my_graph.options.scales.x.max = 20;
+    my_graph.options.scales.x.min = -20;
+    my_graph.options.scales.y.max = 20;
+    my_graph.options.scales.y.min = -20;
     my_graph.update();
 };
 ///////////////////////////////////////////////
@@ -614,7 +616,7 @@ function solve_linear_regression() {
                 pointStyle: 'line',
                 borderColor: randomColor(decision_boundary_colors)
             });
-
+            clear_button.style.display = "flex"
             my_graph.update();
         })
         .catch((err) => {
@@ -667,6 +669,7 @@ function solve_logistic_regression() {
             // need to graph y = x*slope + bias
             // find min and max points in curr dataset
             border_size = max_val >= 20 ? max_val : 20;
+            console.log(border_size);
             // edge cases (slope = 0) 
             let seperating_plane = line_through_border(slope, bias, border_size + 10);
             my_graph.data.datasets.push({

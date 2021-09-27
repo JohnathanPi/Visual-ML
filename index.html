@@ -83,7 +83,6 @@
         <span id = "error"></span>
         <div class="graph" oncontextmenu="return false;">
             <canvas id="my_graph"></canvas>
-            <!-- <button onclick="clear_data()" style = "color: black;"class="insert_data">CLEAR</button> -->
         </div>
         <div class = "btn_cont", style="display:flex; flex-direction:row; align-items: flex-end;">
             <button onclick="solve_linear_regression()" class = "solve_btn" style="display: block;">SOLVE</button>
@@ -91,6 +90,7 @@
             <button onclick="solve_svm()" class = "solve_btn">SOLVE</button>
             <button onclick="solve_k_means()" class = "solve_btn">SOLVE</button>
             <button onclick="solve_decision_tree()" class = "solve_btn">SOLVE</button>
+            <button onclick="clear_data()" id = "clear-button" style = "display: none;" class="insert_data">CLEAR</button>
         </div>
         <div class = "footer">
             <p>THIS IS A FOOTER</p>
