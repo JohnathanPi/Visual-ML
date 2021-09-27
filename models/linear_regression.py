@@ -5,6 +5,7 @@ import numpy as np
 
 
 incoming_data = sys.argv[1]
+# Load incoming data into numpy arrays
 data = ast.literal_eval(incoming_data)
 x_vals = []
 y_vals = []
@@ -21,10 +22,12 @@ def linear_regression(X, y):
         if len(x_vals) == len(y_vals) == 1:
             raise ValueError('Not enough data')
         # (X^TX)^-1
-        inv_xt_x = np.linalg.inv(np.matmul(X, X.T)) 
+        inv_xt_x = np.linalg.inv(np.matmul(X, X.T))
+        # (X*Ty) 
         x_ty = np.matmul(inv_xt_x, X)
+        # final multiplication
         w = np.matmul(x_ty, np.transpose(y))
-        final_weights = (np.around(w, 2)).ravel()
+        final_weights = (np.around(w, 2)).ravel() # round weights
         slope, bias = final_weights[1], final_weights[0]
         weight_dict = {"slope" : slope, 'bias' : bias}
         # Calcualte R^2
@@ -40,6 +43,7 @@ def linear_regression(X, y):
         else:
             r_squared = np.around(1 - (ssr/ sst), 2)
         weight_dict['R^2'] = r_squared
+        # return final values as json
         print(json.dumps(weight_dict))
     except Exception as e:
         if (str(e) == 'Not enough data'):

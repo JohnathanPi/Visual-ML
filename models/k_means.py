@@ -1,21 +1,20 @@
 import numpy as np
+from numpy import random
 import json
 import sys
 import ast
 
-from numpy import random
-
-
-
-
 def dist(pt_1, pt_2):
+    # calculate euclidean distance between two points
     return np.sqrt(((pt_1[0] - pt_2[0])**2 + (pt_1[1] - pt_2[1])**2))
 
 def group_mean(points):
+    # used to recalculate centroids
     x_val = (np.sum(points, axis = 0) / len(points)).tolist()
     return x_val
 
 def assign_clusters(clusters, points, assignments, k):
+    # Reassigns each point to its new cluster
     for i in range(1, k + 1):
         clusters[i] = []
     for i in range(len(points)):
@@ -29,6 +28,7 @@ def calc_centroids(clusters, k):
     return centroids
 
 def assign_points(points, centroids, k):
+    # Find the cluster to which each point belongs
     assignments = []
     for point in points:
         dists = []
@@ -38,10 +38,8 @@ def assign_points(points, centroids, k):
     return assignments
 
 def random_point(points):
+    # Used to create better initial clusters to prevent empty sets
     return points[random.choice(len(points))]
-
-def WSS():
-    pass
 
 data = sys.argv[1]
 
@@ -54,13 +52,12 @@ def k_means(data):
             points.append([pair['x'], pair['y']])
         if (k > len(points)):
             raise ValueError('K bigger than num of points')
-        starting_k_s = [] 
+        starting_assignments = [] 
         # Assign initial clusters and prevent empty clusters
-        while (len(set(starting_k_s)) != k):
-            starting_k_s = np.floor(np.random.rand(len(points)) * k + 1).tolist()
+        while (len(set(starting_assignments)) != k):
+            starting_assignments = np.floor(np.random.rand(len(points)) * k + 1).tolist()
         clusters = {}
-        # Assign intial clusters 
-        clusters = assign_clusters(clusters, points, starting_k_s, k)
+        clusters = assign_clusters(clusters, points, starting_assignments, k)
         # Assign initial centroids to existing points to decrease chance of empty cluster
         centroids = {i: random_point(points) for i in range(1, k + 1)}  
         # Order of operations: Recieve indeces -> assign to clusters -> recalc centroids -> repeat
@@ -73,14 +70,12 @@ def k_means(data):
             i += 1
             if (prev_centroids == centroids):
                 break
-        # print("the final clusters are", json.dumps(clusters))
         return_data = {
             'centroids' : centroids,
             'clusters': clusters
         }
         print(json.dumps(return_data))
     except Exception as e:
-        # sys.stderr.write(str(e), "Error on line {}".format(sys.exc_info()[-1].tb_lineno))
         if (e == 'K bigger than num of points'):
             print('1')
             return

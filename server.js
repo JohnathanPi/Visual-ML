@@ -15,56 +15,45 @@ app.get('/',(req,res) => {
 app.post('/api', (req, res) => {
   // recieve array of objects, each representing a point
   graph_data = JSON.stringify(req.body);
-  console.log('loaded data is', graph_data, 'and of type', typeof graph_data);
   res.end();
 })
 
 app.get('/log_reg', (req, res) => {
-  let dataToSend;
+  let data_to_send;
+  // spawn solver script
   const python = spawn('py', ['models/logistic_regression.py', graph_data]);
   python.stdout.on('data', function (data) {
-    dataToSend = data;
+    data_to_send = data;
   });
   python.on('close', (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      // send data to browser
-      let final_data = dataToSend;
-      console.log('datatosend is', final_data);
+      let final_data = data_to_send;
+      // send data back
       res.write(final_data);
       res.end();
   });
 })
 
 app.get('/svm', (req, res) => {
-  let dataToSend;
+  let data_to_send;
   const python = spawn('py', ['models/svm.py', graph_data]);
   python.stdout.on('data', function (data) {
-    dataToSend = data;
+    data_to_send = data;
   });
   python.on('close', (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      // send data to browser
-      let final_data = dataToSend;
-      console.log('datatosend is', final_data);
+      let final_data = data_to_send;
       res.write(final_data);
       res.end();
   });
 })
 
 app.get('/k_means', (req, res) => {
-  let dataToSend;
+  let data_to_send;
   const python = spawn('py', ['models/k_means.py', graph_data]);
   python.stdout.on('data', function (data) {
-    dataToSend = data;
-  });
-  python.stderr.on('data', function(data) {
-    console.error(data.toString());
+    data_to_send = data;
   });
   python.on('close', (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      // send data to browser
-      let final_data = dataToSend;
-      console.log('datatosend is', final_data);
+      let final_data = data_to_send;
       res.write(final_data);
       res.end();
   });
@@ -73,45 +62,31 @@ app.get('/k_means', (req, res) => {
 
 
 app.get('/lin_reg', (req, res) => {
-  let dataToSend;
+  let data_to_send;
   const python = spawn('py', ['models/linear_regression.py', graph_data]);
   python.stdout.on('data', function (data) {
-    dataToSend = data;
-    if(dataToSend === '0') {
-      console.log('Error occured in python scrip');
-    }
+    data_to_send = data;
   });
   python.on('close', (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      // send data to browser
-      let final_data = dataToSend;
-      console.log('datatosend is', typeof final_data);
+      let final_data = data_to_send;
       res.write(final_data);
       res.end();
   });
 })
 
 app.get('/decision_tree', (req, res) => {
-  let dataToSend;
+  let data_to_send;
   const python = spawn('py', ['models/decision_tree.py', graph_data]);
   python.stdout.on('data', function (data) {
-    dataToSend = data;
-    if(dataToSend === '0') {
-      console.log('Error occured in python scrip');
-    }
+    data_to_send = data;
   });
   python.on('close', (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      // send data to browser
-      let final_data = dataToSend;
-      console.log('datatosend is', typeof final_data);
+      let final_data = data_to_send;
       res.write(final_data);
       res.end();
   });
 })
 
-//add the router
-// app.use('/', router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(process.env.port || 3000);

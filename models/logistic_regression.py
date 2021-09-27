@@ -4,11 +4,6 @@ import ast
 import sys
 
 
-# data = "{'''1''': [{'x': 2, 'y':2}, {'x': 1, 'y': 1}], '''0''': [{'x': -2, 'y':2}, {'x': -1, 'y': 1}]}"
-# data = "{'''1''': [{'x': 1, 'y':1}], '''0''': [{'x': -1, 'y':-1}]}"
-# data = "{'''1''': [{'x': 5, 'y':10}, {'x': 5, 'y':5}], '''0''': [{'x': 10, 'y':10}, {'x': 10, 'y':5}]}"
-# data = "{'''1''': [{'x': 0, 'y':0}], '''0''': [{'x': -5, 'y':-5}]}"
-
 data = sys.argv[1]
 
 def sigmoid(x):
@@ -34,18 +29,19 @@ def logistic_regression(data):
                 y.append(int(label))
         X = np.array(X)
         n_iters = 30000
-        learning_rates = [0.001] 
+        learning_rates = [0.001] # currently uses single learning rate but left for flexibillity 
         weights = [0, 0]
         bias = 0
         accuracy_dict = {}
         param_dict = {}
         for learning_rate in learning_rates:
             for _ in range(n_iters):
-                y_preds = (sigmoid(linear_func(X, weights, bias)))
+                y_preds = (sigmoid(linear_func(X, weights, bias))) # predicting y's
                 # Cost function gradients
                 dw = (1 / X.shape[0]) * np.dot(X.T, (y_preds - y))
                 db = (1 / X.shape[0]) * np.sum(y_preds - y)
-                weights -= learning_rate * dw
+                # readjusting weights
+                weights -= learning_rate * dw 
                 bias -= learning_rate * db
             param_dict[learning_rate] = [weights, bias]
             accuracy_dict[learning_rate] = accuracy(y, y_preds)
@@ -53,7 +49,8 @@ def logistic_regression(data):
         weights, bias = param_dict[best_learning_rate]
         return_dict = {'slope' : np.around(-(weights[0] / weights[1]), 2), 'bias': np.around(-(bias / weights[1]), 2), 'accuracy' : np.around(accuracy_dict[best_learning_rate], 2), 'flag' : 0}
         if(return_dict['slope'] == -np.inf or return_dict['slope'] == np.inf):
-            x_intercept = np.mean(X[:, 0])
+            # if decision boundary has infinite slope
+            x_intercept = np.mean(X[:, 0]) 
             return_dict = {'slope' : x_intercept, 'bias': 0, 'accuracy' : np.around(accuracy_dict[best_learning_rate], 2), 'flag' : 1}
             print(json.dumps(return_dict))
             return

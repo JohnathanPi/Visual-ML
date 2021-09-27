@@ -100,7 +100,6 @@ class DecisionTree:
         X = node.X
         y = node.y
         if (len(X) == 1):
-            # print('RECIEVED SINGLE DATA POINT')
             return
         num_of_features = X.shape[1]
         entropies = {} # Dict to keep all possible splits and their information gain
