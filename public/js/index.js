@@ -409,10 +409,10 @@ function extract_data(user_data_string) {
     // handles numpy array entry, changes spaces between numbers only to commas
     const replace_spaces_with_commas = new RegExp(/(?<=\[\ *?\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *))( +?)(?=\ *\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *)\])/g)
     // checks for illegal charecters in entered data
-    const find_letters = new RegExp(/([A-Z]|[a-z]|[\!-\']|[\*\+\`]|[\:\;\?\@\^\_\~])+/g)
+    const find_illegal_chars = new RegExp(/([A-Z]|[a-z]|[\!-\']|[\*\+\`]|[\:\;\?\@\^\_\~])+/g)
     //let preprocessed_data = user_data_string.replace(/\[/g, "(").replace(/\]/g, ")")
     let preprocessed_data = user_data_string.replace(replace_spaces_with_commas, ",").replace(/ /g, "").replace(/\[/g, "(").replace(/\]/g, ")")
-    if (preprocessed_data.match(find_letters)) {
+    if (preprocessed_data.match(find_illegal_chars)) {
         show_error('Cannot enter letters as data!')
         return false;
     }
@@ -914,6 +914,10 @@ function solve_decision_tree() {
     fetch('/decision_tree').then((response) => {
         return response.json();
     }).then((data) => {
+        if (data === 0) {
+            show_error('An unknown error occured');
+            return;
+        }
         // recieve pairs of points representing the lines and draw them on graph
         border_size = max_val >= 20 ? max_val : 20;
         let i = 0;
