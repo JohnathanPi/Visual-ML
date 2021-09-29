@@ -139,12 +139,16 @@ Currently, the supported models are:
         }
     } while (temp);
     ```
-    
-  
   
   * Drawing infinite slope:
-  
-  * Scaling graph ?
+    For both logistic regression and linear SVM, decision boundaries with infinite slope
+    (for example x = 5) can occur. These edge cases need to be handled seperately from the     other cases since numpy will return `np.inf` which raises an error on the frontend.
+    For each model this edge case
+    is caught beforehand by checking if the slope is equal to `np.inf` or `-np.inf`, then
+    handled differently according to the model. For logistic regression, the mean of the
+    x-axis values is drawn parallel to the y-axis. For linear SVM, decision boundry is
+    set to be the mean of the support vectors, and the margins are drawn around the           minimum and maximum of the support vectors.
+
   
   
   
