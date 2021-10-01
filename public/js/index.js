@@ -124,18 +124,18 @@ const pSBC = (p, c0, c1, l) => {
     else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
 }
 
-let randomColor = (colors) => {
+let random_color = (colors) => {
     return colors[Math.floor(Math.random() * colors.length)]
 };
 let max_val = 20;
 
 document.getElementById('my_graph').onmousedown = (event) => {
-    onClickHandler(event);
+    on_click_handler(event);
 }
 
 // GRAPH RELATED FUNCS ///////////////////////
 // ##########################################
-function onClickHandler(click) {
+function on_click_handler(click) {
     let chosen_model = document.getElementById('model-selector');
     let curr_model_id = chosen_model.options[chosen_model.selectedIndex].value;
     let curr_scale, x_val, y_val;
@@ -193,7 +193,7 @@ function add_datasets(graph, expected_sets) {
                 label: `Class ${expected_sets + 1}`,
                 data: [],
                 fill: false,
-                backgroundColor: randomColor(class_1_colors)
+                backgroundColor: random_color(class_1_colors)
             })
         } else if (num_of_datasets === 1) {
             graph.data.datasets.push({
@@ -201,7 +201,7 @@ function add_datasets(graph, expected_sets) {
                 label: `Class ${expected_sets + 1}`,
                 data: [],
                 fill: false,
-                backgroundColor: randomColor(class_2_colors)
+                backgroundColor: random_color(class_2_colors)
             })
         } else {
             graph.data.datasets.push({
@@ -209,12 +209,17 @@ function add_datasets(graph, expected_sets) {
                 label: `Class ${expected_sets + 1}`,
                 data: [],
                 fill: false,
-                backgroundColor: randomColor(all_colors)
+                backgroundColor: random_color(all_colors)
             });
         }
         return true;
     }
     return;
+}
+
+function max_border_size(graph) {
+    let border_vals = [graph.options.scales.x.min, graph.options.scales.x.max, graph.options.scales.y.min, graph.options.scales.y.max];
+    return Math.max.apply(null, border_vals.map(Math.abs)); 
 }
 
 function scale_graph(graph, max_x, max_y) {
@@ -556,7 +561,6 @@ function clear_data(flag = 1) {
 ///////////////////////////////////////////////
 // SERVERSIDE MODEL RUNNING //////////////////
 //////////////////////////////////////////////
-
 function solve_linear_regression() {
     // send POST request to api that runs python script
     if (!my_graph.data.datasets[0]) {
@@ -571,40 +575,47 @@ function solve_linear_regression() {
         },
         body: JSON.stringify(data)
     };
-    fetch('/api', options) // posts data to the server
-    // fetch returning data from python script
-    fetch('/lin_reg').then((response) => {
-            return response.json();
-        }).then((data) => {
-            if (data === 0) {
-                // solver script returns 0 if there is a single data point
-                show_error("Not enoguh data")
-                return
-            }
-            if (data === 1) {
-                // solver script returns 1 if the regression line has infinite slope
-                show_error("Cannot perform regression with infinite slope")
-                return
-            }
-            let slope = data["slope"];
-            let bias = data["bias"];
-            let r_squared = data["R^2"]
-            border_size = max_val >= 20 ? max_val : 20; // adjusts border if needed
-            let lin_reg_data = line_through_border(slope, bias, border_size + 10); // gets the two points between which to draw the line
-            my_graph.data.datasets.push({ // pushes line to graph
-                label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`,
-                data: lin_reg_data,
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderColor: randomColor(decision_boundary_colors)
-            });
-            clear_button.style.display = "flex" // displays clear button
-            my_graph.update();
-        })
-        .catch((err) => {
-            console.log('rejected', err);
-        })
+    console.log('THE SENT DATA IS', JSON.stringify(data))
+    async function send_and_solve_lin_reg() {
+        await fetch('/api', options);
+        console.log('finished awaiting');
+        fetch('/lin_reg').then((response) => {
+                console.log('THE RESPONSE IS', response)
+                return response.json();
+            }).then((data) => {
+                console.log('THE DATA IS', data);
+                if (data === 0) {
+                    // solver script returns 0 if there is a single data point
+                    show_error("Not enoguh data")
+                    return
+                }
+                if (data === 1) {
+                    // solver script returns 1 if the regression line has infinite slope
+                    show_error("Cannot perform regression with infinite slope")
+                    return
+                }
+                let slope = data["slope"];
+                let bias = data["bias"];
+                let r_squared = data["R^2"]
+                let max_border = max_border_size(my_graph)
+                border_size = max_border >= 20 ? max_border : 20; // adjusts border if needed
+                let lin_reg_data = line_through_border(slope, bias, border_size + 10); // gets the two points between which to draw the line
+                my_graph.data.datasets.push({ // pushes line to graph
+                    label: bias >= 0 ? `y = ${slope}x + ${bias} | R^2 = ${r_squared}` : `y = ${slope}x - ${-1*bias} | R^2 = ${r_squared}`,
+                    data: lin_reg_data,
+                    showLine: true,
+                    fill: false,
+                    pointStyle: 'line',
+                    borderColor: random_color(decision_boundary_colors)
+                });
+                clear_button.style.display = "flex" // displays clear button
+                my_graph.update();
+            })
+            .catch((err) => {
+                console.log('rejected', err);
+            })
+    }
+    send_and_solve_lin_reg();
 }
 
 function solve_logistic_regression() {
@@ -627,44 +638,53 @@ function solve_logistic_regression() {
         },
         body: JSON.stringify(data)
     };
-    fetch('/api', options)
-    fetch('/log_reg').then((response) => {
-        return response.json();
-    }).then((data) => {
-        if (data['flag'] === 1) {
-            // infinite slope edge case
-            my_graph.data.datasets.push({
-                label: 'test',
-                data: perpendicular_line(data['slope'], 0, 20),
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderColor: randomColor(decision_boundary_colors)
-            });
-            my_graph.update();
-            return
-        }
-        if (data === 1) {
-            show_error('Cannot perform logistic regression with one class')
-            return
-        } else {
-            let slope = data["slope"];
-            let bias = data["bias"];
-            let acc = data["accuracy"]
-            border_size = max_val >= 20 ? max_val : 20;
-            let seperating_plane = line_through_border(slope, bias, border_size + 10);
-            my_graph.data.datasets.push({
-                label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
-                data: seperating_plane,
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderColor: randomColor(decision_boundary_colors)
-            });
-            clear_button.style.display = "flex" // displays clear button
-            my_graph.update();
-        }
-    })
+    console.log('THE SENT DATA IS', JSON.stringify(data))
+    async function send_and_solve_log_reg() {
+        await fetch('/api', options);
+        console.log('finished awaiting');
+        fetch('/log_reg').then((response) => {
+            console.log('THE RESPONSE IS', response)
+            return response.json();
+        }).then((data) => {
+            console.log('The data is', data)
+            if (data['flag'] === 1) {
+                // infinite slope edge case
+                my_graph.data.datasets.push({
+                    label: 'test',
+                    data: perpendicular_line(data['slope'], 0, 20),
+                    showLine: true,
+                    fill: false,
+                    pointStyle: 'line',
+                    borderColor: random_color(decision_boundary_colors)
+                });
+                my_graph.update();
+                return
+            }
+            if (data === 1) {
+                show_error('Cannot perform logistic regression with one class')
+                return
+            } else {
+                let slope = data["slope"];
+                let bias = data["bias"];
+                let acc = data["accuracy"]
+                let max_border = max_border_size(my_graph)
+                border_size = max_border >= 20 ? max_border : 20;
+                let seperating_plane = line_through_border(slope, bias, border_size + 10);
+                my_graph.data.datasets.push({
+                    label: bias >= 0 ? `y = ${slope}x + ${bias} | accuracy = ${acc}` : `y = ${slope}x - ${-1*bias} | accuracy = ${acc}`,
+                    data: seperating_plane,
+                    showLine: true,
+                    fill: false,
+                    pointStyle: 'line',
+                    borderColor: random_color(decision_boundary_colors)
+                });
+                clear_button.style.display = "flex" // displays clear button
+                my_graph.update();
+            }
+        })
+
+    }
+    send_and_solve_log_reg();
 }
 
 
@@ -688,26 +708,92 @@ function solve_svm() {
         },
         body: JSON.stringify(data)
     };
-    fetch('/api', options)
-    fetch('/svm').then((response) => {
-        return response.json();
-    }).then((data) => {
-        if (data === 0 ) {
-            show_error('An unknown error occured');
-        }
-        if (data["flag"]) {
-            // infinite slope edge case
+    console.log('THE SENT DATA IS', JSON.stringify(data))
+    async function send_and_solve_SVM() {
+        await fetch('/api', options);
+        console.log('finished awaiting');
+        fetch('/svm').then((response) => {
+            console.log('THE RESPONSE IS', response)
+            return response.json();
+        }).then((data) => {
+            console.log('The data is', data)
+            if (data === 0) {
+                show_error('An unknown error occured');
+            }
+            if (data["flag"]) {
+                // infinite slope edge case
+                my_graph.data.datasets.push({
+                    label: `x = ${data['slope']}`,
+                    data: perpendicular_line(data['slope'], 0, 20),
+                    showLine: true,
+                    fill: false,
+                    pointStyle: 'line',
+                    borderColor: random_color(decision_boundary_colors)
+                });
+                my_graph.data.datasets.push({
+                    label: 'margin',
+                    data: perpendicular_line(data['bias-1'], 0, 20),
+                    showLine: true,
+                    fill: false,
+                    borderDash: [10, 10],
+                    pointStyle: 'line',
+                    borderWidth: 1,
+                    borderColor: '#000'
+                });
+                my_graph.data.datasets.push({
+                    label: 'margin2',
+                    data: perpendicular_line(data['bias-2'], 0, 20),
+                    showLine: true,
+                    fill: false,
+                    borderDash: [10, 10],
+                    pointStyle: 'line',
+                    borderWidth: 1,
+                    borderColor: '#000'
+                });
+                // clear data to allow iteration of support vectors
+                delete data.slope;
+                delete data.bias;
+                delete data.weight_norm;
+                delete data.margin
+                delete data.flag
+                let sv_coords = [];
+                Object.entries(data).forEach(point => {
+                    sv_coords.push({
+                        'x': point[1][0],
+                        'y': point[1][1]
+                    });
+                })
+                my_graph.data.datasets.push({
+                    label: 'Support Vectors',
+                    data: sv_coords,
+                    showLine: false,
+                    fill: false,
+                    borderColor: '#000',
+                    radius: 5
+                });
+                my_graph.update();
+                return;
+            }
+            let slope = data["slope"];
+            let bias = data["bias"];
+            let bias_1 = data["bias-1"];
+            let bias_2 = data["bias-2"];
+            let max_border = max_border_size(my_graph)
+            border_size = max_border >= 20 ? max_border : 20;
+            let seperating_plane = line_through_border(slope, bias, border_size + 10);
+            let margin_1 = line_through_border(slope, bias_1, border_size + 10);
+            let margin_2 = line_through_border(slope, bias_2, border_size + 10);
             my_graph.data.datasets.push({
-                label: `x = ${data['slope']}`,
-                data: perpendicular_line(data['slope'], 0, 20),
+                label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
+                data: seperating_plane,
                 showLine: true,
                 fill: false,
                 pointStyle: 'line',
-                borderColor: randomColor(decision_boundary_colors)
+                borderColor: random_color(decision_boundary_colors)
             });
             my_graph.data.datasets.push({
                 label: 'margin',
-                data: perpendicular_line(data['bias-1'], 0, 20),
+                data: margin_1,
                 showLine: true,
                 fill: false,
                 borderDash: [10, 10],
@@ -717,7 +803,7 @@ function solve_svm() {
             });
             my_graph.data.datasets.push({
                 label: 'margin2',
-                data: perpendicular_line(data['bias-2'], 0, 20),
+                data: margin_2,
                 showLine: true,
                 fill: false,
                 borderDash: [10, 10],
@@ -725,7 +811,7 @@ function solve_svm() {
                 borderWidth: 1,
                 borderColor: '#000'
             });
-            // clear data to allow iteration of support vectors
+            // clear data object for iteration of support vectors
             delete data.slope;
             delete data.bias;
             delete data.weight_norm;
@@ -746,69 +832,11 @@ function solve_svm() {
                 borderColor: '#000',
                 radius: 5
             });
+            clear_button.style.display = "flex" // displays clear button
             my_graph.update();
-            return;
-        }
-        let slope = data["slope"];
-        let bias = data["bias"];
-        let bias_1 = data["bias-1"];
-        let bias_2 = data["bias-2"];
-        border_size = max_val >= 20 ? max_val : 20;
-        let seperating_plane = line_through_border(slope, bias, border_size + 10);
-        let margin_1 = line_through_border(slope, bias_1, border_size + 10);
-        let margin_2 = line_through_border(slope, bias_2, border_size + 10);
-        my_graph.data.datasets.push({
-            label: bias >= 0 ? `y = ${slope}x + ${bias}` : `y = ${slope}x - ${-1*bias}`,
-            data: seperating_plane,
-            showLine: true,
-            fill: false,
-            pointStyle: 'line',
-            borderColor: randomColor(decision_boundary_colors)
-        });
-        my_graph.data.datasets.push({
-            label: 'margin',
-            data: margin_1,
-            showLine: true,
-            fill: false,
-            borderDash: [10, 10],
-            pointStyle: 'line',
-            borderWidth: 1,
-            borderColor: '#000'
-        });
-        my_graph.data.datasets.push({
-            label: 'margin2',
-            data: margin_2,
-            showLine: true,
-            fill: false,
-            borderDash: [10, 10],
-            pointStyle: 'line',
-            borderWidth: 1,
-            borderColor: '#000'
-        });
-        // clear data object for iteration of support vectors
-        delete data.slope;
-        delete data.bias;
-        delete data.weight_norm;
-        delete data.margin
-        delete data.flag
-        let sv_coords = [];
-        Object.entries(data).forEach(point => {
-            sv_coords.push({
-                'x': point[1][0],
-                'y': point[1][1]
-            });
         })
-        my_graph.data.datasets.push({
-            label: 'Support Vectors',
-            data: sv_coords,
-            showLine: false,
-            fill: false,
-            borderColor: '#000',
-            radius: 5
-        });
-        clear_button.style.display = "flex" // displays clear button
-        my_graph.update();
-    })
+    }
+    send_and_solve_SVM();
 }
 
 function solve_k_means() {
@@ -829,65 +857,72 @@ function solve_k_means() {
         },
         body: JSON.stringify(data)
     };
-    fetch('/api', options)
-    // fetch returning data from python script
-    fetch('/k_means').then((response) => {
-        return response.json();
-    }).then((data) => {
-        if (data === 0) {
-            show_error("Empty set occured, please pick a better K")
-            return;
-        }
-        if (data === 1) {
-            show_error('K bigger than number of data points')
-            return;
-        }
-        clear_data(); // wipes data from graph to allow recoloring of data into clusters
-        let data_set = [];
-        centroids = data['centroids'];
-        centroid_counter = 0;
-        clusters = data['clusters'];
-        for (centroid in centroids) {
-            centroid_counter++;
-            data_set.push({
-                'x': centroids[centroid][0],
-                'y': centroids[centroid][1]
-            });
-        }
-        // make sure each cluster has a different color
-        cluster_colors = shuffle(class_colors).slice(0, centroid_counter);
-        cluster_colors.push('#eee');
-        for (cluster in clusters) { // create clusters on graph
-            cluster_data = []
-            for (point in clusters[cluster]) {
-                cluster_data.push({
-                    'x': clusters[cluster][point][0],
-                    'y': clusters[cluster][point][1]
-                })
-            };
+    console.log('THE SENT DATA IS', JSON.stringify(data))
+    async function send_and_solve_k_means() {
+        await fetch('/api', options);
+        console.log('finished awaiting');
+        // fetch returning data from python script
+        fetch('/k_means').then((response) => {
+            console.log('THE RESPONSE IS', response)
+            return response.json();
+        }).then((data) => {
+            console.log('The data is', data)
+            if (data === 0) {
+                show_error("Empty set occured, please pick a better K")
+                return;
+            }
+            if (data === 1) {
+                show_error('K bigger than number of data points')
+                return;
+            }
+            clear_data(); // wipes data from graph to allow recoloring of data into clusters
+            let data_set = [];
+            centroids = data['centroids'];
+            centroid_counter = 0;
+            clusters = data['clusters'];
+            for (centroid in centroids) {
+                centroid_counter++;
+                data_set.push({
+                    'x': centroids[centroid][0],
+                    'y': centroids[centroid][1]
+                });
+            }
+            // make sure each cluster has a different color
+            cluster_colors = shuffle(class_colors).slice(0, centroid_counter);
+            cluster_colors.push('#eee');
+            for (cluster in clusters) { // create clusters on graph
+                cluster_data = []
+                for (point in clusters[cluster]) {
+                    cluster_data.push({
+                        'x': clusters[cluster][point][0],
+                        'y': clusters[cluster][point][1]
+                    })
+                };
+                my_graph.data.datasets.push({
+                    type: 'scatter',
+                    label: `Cluster ${cluster}`,
+                    data: cluster_data,
+                    fill: false,
+                    backgroundColor: cluster_colors[parseInt(cluster) - 1]
+                });
+            }
             my_graph.data.datasets.push({
-                type: 'scatter',
-                label: `Cluster ${cluster}`,
-                data: cluster_data,
+                label: "Centroids",
+                data: data_set,
+                showLine: false,
                 fill: false,
-                backgroundColor: cluster_colors[parseInt(cluster) - 1]
+                pointStyle: 'triangle',
+                backgroundColor: cluster_colors,
+                borderColor: '#000',
+                radius: 10
             });
-        }
-        my_graph.data.datasets.push({
-            label: "Centroids",
-            data: data_set,
-            showLine: false,
-            fill: false,
-            pointStyle: 'triangle',
-            backgroundColor: cluster_colors,
-            borderColor: '#000',
-            radius: 10
-        });
-        clear_button.style.display = "flex" // displays clear button
-        my_graph.update()
-    }).catch((err) => {
-        console.log('rejected', err);
-    })
+            clear_button.style.display = "flex" // displays clear button
+            my_graph.update()
+        }).catch((err) => {
+            console.log('rejected', err);
+        })
+    }
+    send_and_solve_k_means();
 }
 
 function solve_decision_tree() {
@@ -910,37 +945,45 @@ function solve_decision_tree() {
         },
         body: JSON.stringify(data)
     };
-    fetch('/api', options)
-    fetch('/decision_tree').then((response) => {
-        return response.json();
-    }).then((data) => {
-        if (data === 0) {
-            show_error('An unknown error occured');
-            return;
-        }
-        // recieve pairs of points representing the lines and draw them on graph
-        border_size = max_val >= 20 ? max_val : 20;
-        let i = 0;
-        color = randomColor(decision_boundary_colors);
-        for (line in data) {
-            line_points = data[line]
-            //new_color = pSBC(0.03, color, false, true);
-            new_color = color
-            my_graph.data.datasets.push({
-                label: `test${i}`,
-                data: line_points,
-                showLine: true,
-                fill: false,
-                pointStyle: 'line',
-                borderWidth: 2,
-                borderColor: new_color
-            });
-            i++;
-            color = new_color;
-        }
-        clear_button.style.display = "flex" // displays clear button
-        my_graph.update();
-    }).catch((err) => {
-        console.log('rejected', err);
-    })
+    console.log('THE SENT DATA IS', JSON.stringify(data))
+    async function send_and_solve_decision_tree() {
+        await fetch('/api', options);
+        console.log('finished awaiting');
+        fetch('/decision_tree').then((response) => {
+            console.log('THE RESPONSE IS', response)
+            return response.json();
+        }).then((data) => {
+            console.log('The data is', data)
+            if (data === 0) {
+                show_error('An unknown error occured');
+                return;
+            }
+            // recieve pairs of points representing the lines and draw them on graph
+            let max_border = max_border_size(my_graph)
+            border_size = max_border >= 20 ? max_border : 20;
+            let i = 0;
+            color = random_color(decision_boundary_colors);
+            for (line in data) {
+                line_points = data[line]
+                //new_color = pSBC(0.03, color, false, true);
+                new_color = color
+                my_graph.data.datasets.push({
+                    label: `test${i}`,
+                    data: line_points,
+                    showLine: true,
+                    fill: false,
+                    pointStyle: 'line',
+                    borderWidth: 2,
+                    borderColor: new_color
+                });
+                i++;
+                color = new_color;
+            }
+            clear_button.style.display = "flex" // displays clear button
+            my_graph.update();
+        }).catch((err) => {
+            console.log('rejected', err);
+        })
+    }
+    send_and_solve_decision_tree();
 }
