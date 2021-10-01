@@ -1,6 +1,6 @@
-# ML-Graph-Project :crayon:
+# Visual-ML :crayon:
 
-Hey! 'project name' is a web app that allows you to generate your own datasets,
+Hey! Visual-ML is a web app that allows you to generate your own datasets,
 run classic machine learning algorithms on them and 
 view their decision boundaries, all in the browser! 
 Currently, the supported models are:
