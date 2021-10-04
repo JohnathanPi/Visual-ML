@@ -178,7 +178,7 @@ p {
 }
 
 .model-selection:hover {
-    box-shadow: 0rem 0rem 2rem 0rem #78ceb4;
+    box-shadow: 0rem 0rem 0.6rem 0rem #78ceb4;
     transition-duration: 0.5s;
 }
 
@@ -203,8 +203,6 @@ p {
 
 .solve_btn:hover {
     color: #bc6fe3;
-    transition-duration: 0.5s;
-    letter-spacing: 0.188rem;
 }
 
 
@@ -248,8 +246,6 @@ p {
 
 .insert_data:hover {
     color: #bc6fe3;
-    transition-duration: 0.5s;
-    letter-spacing: 0.188rem;
 }
 
 .input_box {
