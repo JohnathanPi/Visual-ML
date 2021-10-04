@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
-    <title>add data test</title>
+    <title>Visual-ML</title>
     <link rel="stylesheet" type="text/css" href="css\styles.css">
     <!-- Google Fonts -->
 
@@ -23,7 +23,7 @@
     </div>
     <div class="content">
         <div class = "guide">
-            <p style="color: white; text-align: center;">Enter data by clicking on the graph(left click - class 1, right click - class 2) or <br><span onclick = "show_data_box()" class = "add_data_btn" >enter manually</span></p>
+            <p style="color: white; text-align: center;">Enter data by clicking on the graph(left click - class 1, right click - class 2) or <br><span id = "class-toggle" onclick = "class_toggle()" class = "add_data_btn">toggle class (1) </span>or<br><span onclick = "show_data_box()" class = "add_data_btn" >enter manually</span></p>
         </div>
         <div class = "model-selection" id="data_input_1">
             <div class="model_setting_box">
@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="model-selection-header">
-            <select onChange="setting_switch()" class="model-selector" id="model-selector" name="model">
+            <select autocomplete="off" onChange="setting_switch()" class="model-selector" id="model-selector" name="model">
                 <option value="1" selected>Linear Regression</option>       
                 <option value="2">Logistic Regression</option>
                 <option value="3">Linear SVM</option>
@@ -79,12 +79,12 @@
             <canvas id="my_graph"></canvas>
         </div>
         <div class = "btn_cont", style="display:flex; flex-direction:row; align-items: flex-end;">
-            <button onclick="solve_linear_regression()" class = "solve_btn" style="display: block;">SOLVE</button>
-            <button onclick="solve_logistic_regression()" style = "display: none;" class = "solve_btn">SOLVE</button>
-            <button onclick="solve_svm()" class = "solve_btn">SOLVE</button>
-            <button onclick="solve_k_means()" class = "solve_btn">SOLVE</button>
-            <button onclick="solve_decision_tree()" class = "solve_btn">SOLVE</button>
-            <button onclick="clear_data()" id = "clear-button" style = "display: none; padding-left: 30px;" class="insert_data">CLEAR</button>
+            <button onclick="solve_linear_regression()" id = "solve_btn" class = "solve_btn" style="display: block;">SOLVE</button>
+            <!-- <button onclick="solve_logistic_regression()" id = "solve_btn_log_reg" style = "display: none;" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_svm()" id = "solve_btn_svm" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_k_means()" id = "solve_btn_k_means" class = "solve_btn">SOLVE</button>
+            <button onclick="solve_decision_tree()" id = "solve_btn_decision_tree" class = "solve_btn">SOLVE</button> -->
+            <button onclick="clear_data()" id = "clear-button" style = "display: none;" class="solve_btn">CLEAR</button>
         </div>
         <div class = "footer">
             <a href="https://github.com/JohnathanPi" target="_blank">

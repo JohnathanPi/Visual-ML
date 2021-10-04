@@ -1,7 +1,17 @@
 // MISC
 ////////////////////////////////////////////////////////////
 let ctx = document.getElementById('my_graph').getContext('2d');
-
+let prev_solved;
+let solve_btn_obj = {
+    '1': solve_linear_regression,
+    '2': solve_logistic_regression,
+    '3': solve_svm,
+    '4': solve_k_means,
+    '5': solve_decision_tree
+};
+let prev_scaled = false;
+let curr_class = 1;
+let solve_btn = document.getElementById('solve_btn');
 let my_graph = new Chart(ctx, {
     type: 'scatter',
     data: {
@@ -159,19 +169,33 @@ function on_click_handler(click) {
     if (!my_graph.data.datasets[0]) {
         add_datasets(my_graph, 0)
     }
-    if (!my_graph.data.datasets[1] && flag === 'right_click') {
+    if ((!my_graph.data.datasets[1] && (flag === 'right_click' || curr_class === 2))) {
+        if (curr_model_id === '1' || curr_model_id === '4') {
+            show_error('This model only supports class 1');
+            return
+        }
         add_datasets(my_graph, 1)
     }
     if (x_val > my_graph.scales['x'].min && // click within border
         x_val < my_graph.scales['x'].max &&
         y_val > my_graph.scales['y'].min &&
         y_val < my_graph.scales['y'].max) {
-        if (flag === 'left_click') {
+        if (flag === 'left_click' && curr_class === 1) {
             my_graph.data.datasets[0].data.push({
                 'x': Math.round(x_val),
                 'y': Math.round(y_val)
             });
-        } else if (flag === 'right_click') {
+        } else if (flag === 'right_click' || curr_class === 2) {
+            if (curr_class === 2) {
+                if (curr_model_id === '1' || curr_model_id === '4') {
+                    show_error('This model only supports one class');
+                    return
+                }
+                if (my_graph.data.datasets.length === 0) {
+                    show_error('Please enter class 1 data using left click first')
+                    return
+                }
+            }
             my_graph.data.datasets[1].data.push({
                 'x': Math.round(x_val),
                 'y': Math.round(y_val)
@@ -219,10 +243,27 @@ function add_datasets(graph, expected_sets) {
 
 function max_border_size(graph) {
     let border_vals = [graph.options.scales.x.min, graph.options.scales.x.max, graph.options.scales.y.min, graph.options.scales.y.max];
-    return Math.max.apply(null, border_vals.map(Math.abs)); 
+    return Math.max.apply(null, border_vals.map(Math.abs));
+}
+
+function is_between_borders(graph, val) {
+    if (val < graph.options.scales.x.min || val < graph.options.scales.y.min) {
+        return false;
+    }
+    if (val > graph.options.scales.x.max || val > graph.options.scales.y.max) {
+        return false;
+    }
+    return true;
 }
 
 function scale_graph(graph, max_x, max_y) {
+    // DO NOT SCALE DOWN IF GRAPH HAS DATA
+    if (is_between_borders(my_graph, max_x) && (is_between_borders(my_graph,  max_y))) {
+        if (prev_scaled === true) {
+            console.log('Value within bounds, not resizing');
+            return;
+        }
+    }
     if (max_x >= 1) {
         padding_x = max_x + Math.round(Math.log(max_x))
     }
@@ -239,6 +280,7 @@ function scale_graph(graph, max_x, max_y) {
     graph.options.scales.x.max = max_x + padding_x;
     graph.options.scales.y.min = -max_y - padding_y;
     graph.options.scales.y.max = max_y + padding_y;
+    prev_scaled = true;
     return;
 }
 
@@ -305,14 +347,39 @@ function line_through_border(slope, bias, border) {
 // ####### DOM FUNCTIONS #########################
 // ###############################################
 
+function class_toggle() {
+    let toggle = document.getElementById('class-toggle');
+    if (curr_class === 1) {
+        curr_class = 2;
+        toggle.innerText = "toggle class (2) ";
+        toggle.style.color = '#6495ED';
+        return
+    } else {
+        curr_class = 1;
+        toggle.innerText = "toggle class (1) ";
+        toggle.style.color = 'violet'
+        return
+    }
+}
+
 function show_error(msg) {
     // general function to display errors to the user
     error = document.getElementById('error');
-    error.textContent = msg;
+    error.textContent = msg
     error.style.color = "red"
     setTimeout(() => {
         error.textContent = '';
     }, 1500);
+}
+
+function show_loading(state) {
+    error = document.getElementById('error');
+    if (state === 'on') {
+        error.innerText = 'Solving, this might take a few seconds';
+        error.style.color = 'aquamarine'
+    } else {
+        error.innerText = ''
+    }
 }
 
 function show_data_box() {
@@ -347,36 +414,28 @@ function check_readonly() {
 function setting_switch() {
     // changes between the divs displaying model parameters
     // places correct solve button for each model and hides others
-    let solve_buttons = document.querySelectorAll('.solve_btn')
     let chosen_model = document.getElementById('model-selector');
     let model_divs = document.querySelectorAll('.model_div')
     let model_div_cont = document.getElementById('model-div-cont')
     clear_button.style.display = 'none';
+    solve_btn.style.dispaly = 'flex';
     let i = 0;
-    solve_buttons.forEach((solve_button) => {
+    model_divs.forEach((model_div) => {
         i++;
         if (chosen_model.value === String(i)) {
-            solve_button.style.display = 'block';
+            solve_btn.onclick = solve_btn_obj[String(i)];
             if (i === 4) {
                 model_div_cont.style.display = 'flex';
             } else {
                 model_div_cont.style.display = 'none';
             }
-        } else {
-            solve_button.style.display = 'none';
-        }
-    });
-    i = 0;
-    model_divs.forEach((model_div) => {
-        i++;
-        if (chosen_model.value === String(i)) {
             model_div.style.display = 'flex';
         } else {
             model_div.style.display = 'none';
         }
     });
     check_readonly();
-    clear_data();
+    clear_data(flag = 1);
 }
 
 let calc_func_y = (a, b, x) => {
@@ -482,8 +541,8 @@ function parse_data() {
     max_y = Math.max.apply(null, y_vals.map(Math.abs)); // finds maximal y by absolute value
     max_val = max_x >= max_y ? max_x : max_y;
     scale_graph(my_graph, max_x, max_y) // scales the graph according to the maximal value so that all data will be visible
-    my_graph.options.scales.x.position = 'center'; // add x axis
-    my_graph.options.scales.y.position = 'center'; // add y axis
+    // my_graph.options.scales.x.position = 'center'; // add x axis
+    // my_graph.options.scales.y.position = 'center'; // add y axis
     document.getElementById('input_data').value = "";
     my_graph.update();
 };
@@ -539,16 +598,17 @@ function parse_labled_data() {
     max_y = Math.max.apply(null, y_vals.map(Math.abs));
     max_val = max_x >= max_y ? max_x : max_y;
     scale_graph(my_graph, max_x, max_y)
-    my_graph.options.scales.x.position = 'center';
-    my_graph.options.scales.y.position = 'center';
+    // my_graph.options.scales.x.position = 'center';
+    // my_graph.options.scales.y.position = 'center';
     document.getElementById('input_data').value = "";
     document.getElementById('input_labels').value = "";
     my_graph.update();
 }
 
 
-function clear_data(flag = 1) {
-    // used to clear and rescale the graph after solving or changing model
+function clear_data(flag = 0) {
+    solve_btn.disabled = false
+    solve_btn.style.display = 'flex';
     clear_button.style.display = 'none';
     my_graph.data.datasets = [];
     my_graph.options.scales.x.max = 20;
@@ -561,26 +621,39 @@ function clear_data(flag = 1) {
 ///////////////////////////////////////////////
 // SERVERSIDE MODEL RUNNING //////////////////
 //////////////////////////////////////////////
+
+async function send_data(data) {
+    console.log('SEND DATA TO API');
+    options = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json', /// ####################### ///
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    const response = await fetch('/api', options)
+    return response.json();
+}
+
 function solve_linear_regression() {
-    // send POST request to api that runs python script
+    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform linear regression with no data');
         return;
     }
     const data = my_graph.data.datasets[0].data;
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
     console.log('THE SENT DATA IS', JSON.stringify(data))
     async function send_and_solve_lin_reg() {
-        await fetch('/api', options);
-        console.log('finished awaiting');
-        fetch('/lin_reg').then((response) => {
-                console.log('THE RESPONSE IS', response)
+        show_loading('on');
+        await send_data(data).then((posted_val) => {
+            console.log('THE POSTED VALUES ARE', posted_val['data']);
+        }).catch(err => {
+            show_error('An error occured, please try again');
+            console.log('Error', err, 'Occured while posting data');
+        });
+        await fetch('/lin_reg').then((response) => {
+                console.log('FINISHED FETCHING, THE RESPONSE IS', response)
                 return response.json();
             }).then((data) => {
                 console.log('THE DATA IS', data);
@@ -608,17 +681,25 @@ function solve_linear_regression() {
                     pointStyle: 'line',
                     borderColor: random_color(decision_boundary_colors)
                 });
+                prev_solved = 'solve_btn_lin_reg';
                 clear_button.style.display = "flex" // displays clear button
+                solve_btn.style.display = 'none';
                 my_graph.update();
+                show_loading('off');
             })
             .catch((err) => {
                 console.log('rejected', err);
-            })
+            }).catch(err => {
+                show_error('An error occured, please try again')
+                console.log('rejected', err)
+            });
     }
     send_and_solve_lin_reg();
 }
 
+
 function solve_logistic_regression() {
+    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform logistic regression with no data');
         return;
@@ -631,18 +712,16 @@ function solve_logistic_regression() {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
     };
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
     console.log('THE SENT DATA IS', JSON.stringify(data))
     async function send_and_solve_log_reg() {
-        await fetch('/api', options);
-        console.log('finished awaiting');
-        fetch('/log_reg').then((response) => {
+        show_loading('on');
+        await send_data(data).then((posted_val) => {
+            console.log('THE POSTED VALUES ARE', posted_val['data']);
+        }).catch(err => {
+            show_error('An error occured, please try again');
+            console.log('Error', err, 'Occured while posting data');
+        });
+        await fetch('/log_reg').then((response) => {
             console.log('THE RESPONSE IS', response)
             return response.json();
         }).then((data) => {
@@ -678,17 +757,23 @@ function solve_logistic_regression() {
                     pointStyle: 'line',
                     borderColor: random_color(decision_boundary_colors)
                 });
-                clear_button.style.display = "flex" // displays clear button
+                prev_solved = 'solve_btn_log_reg';
+                clear_button.style.display = "flex"; // displays clear button
+                solve_btn.style.display = 'none';
                 my_graph.update();
+                show_loading('off');
             }
-        })
-
+        }).catch(err => {
+            show_error('An error occured, please try again')
+            console.log('rejected', err)
+        });
     }
     send_and_solve_log_reg();
 }
 
 
 function solve_svm() {
+    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform svm with no data');
         return;
@@ -701,24 +786,23 @@ function solve_svm() {
         '1': my_graph.data.datasets[0].data,
         '-1': my_graph.data.datasets[1].data
     };
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
     console.log('THE SENT DATA IS', JSON.stringify(data))
-    async function send_and_solve_SVM() {
-        await fetch('/api', options);
-        console.log('finished awaiting');
-        fetch('/svm').then((response) => {
+    async function send_and_solve_svm() {
+        show_loading('on');
+        await send_data(data).then((posted_val) => {
+            console.log('THE POSTED VALUES ARE', posted_val['data']);
+        }).catch(err => {
+            show_error('An error occured, please try again');
+            console.log('Error', err, 'Occured while posting data');
+        });
+        await fetch('/svm').then((response) => {
             console.log('THE RESPONSE IS', response)
             return response.json();
         }).then((data) => {
             console.log('The data is', data)
             if (data === 0) {
                 show_error('An unknown error occured');
+
             }
             if (data["flag"]) {
                 // infinite slope edge case
@@ -772,6 +856,7 @@ function solve_svm() {
                     radius: 5
                 });
                 my_graph.update();
+                show_loading('off');
                 return;
             }
             let slope = data["slope"];
@@ -832,14 +917,21 @@ function solve_svm() {
                 borderColor: '#000',
                 radius: 5
             });
-            clear_button.style.display = "flex" // displays clear button
+            prev_solved = "solve_btn_svm";
+            clear_button.style.display = "flex"; // displays clear button
+            solve_btn.style.display = 'none';
             my_graph.update();
-        })
+            show_loading('off');
+        }).catch(err => {
+            show_error('An error occured, please try again')
+            console.log('rejected', err)
+        });
     }
-    send_and_solve_SVM();
+    send_and_solve_svm();
 }
 
 function solve_k_means() {
+    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform k_means with no data');
         return;
@@ -850,25 +942,22 @@ function solve_k_means() {
         'data': my_graph.data.datasets[0].data,
         'k': k
     }
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
     console.log('THE SENT DATA IS', JSON.stringify(data))
     async function send_and_solve_k_means() {
-        await fetch('/api', options);
-        console.log('finished awaiting');
-        // fetch returning data from python script
-        fetch('/k_means').then((response) => {
+        show_loading('on');
+        await send_data(data).then((posted_val) => {
+            console.log('THE POSTED VALUES ARE', posted_val['data']);
+        }).catch(err => {
+            show_error('An error occured, please try again');
+            console.log('Error', err, 'Occured while posting data');
+        });
+        await fetch('/k_means').then((response) => {
             console.log('THE RESPONSE IS', response)
             return response.json();
         }).then((data) => {
             console.log('The data is', data)
             if (data === 0) {
-                show_error("Empty set occured, please pick a better K")
+                show_error("Empty set occured, please retry or pick a better K")
                 return;
             }
             if (data === 1) {
@@ -916,16 +1005,22 @@ function solve_k_means() {
                 borderColor: '#000',
                 radius: 10
             });
-            clear_button.style.display = "flex" // displays clear button
+            prev_solved = 'solve_btn_k_means';
+            clear_button.style.display = "flex"; // displays clear button
+            solve_btn.style.display = 'none';
             my_graph.update()
+            show_loading('off');
         }).catch((err) => {
+            show_error('An error occured, please try again');
             console.log('rejected', err);
-        })
+        });
+
     }
     send_and_solve_k_means();
 }
 
 function solve_decision_tree() {
+    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot create decision tree with no data');
         return;
@@ -938,18 +1033,16 @@ function solve_decision_tree() {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
     };
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
     console.log('THE SENT DATA IS', JSON.stringify(data))
     async function send_and_solve_decision_tree() {
-        await fetch('/api', options);
-        console.log('finished awaiting');
-        fetch('/decision_tree').then((response) => {
+        show_loading('on');
+        await send_data(data).then((posted_val) => {
+            console.log('THE POSTED VALUES ARE', posted_val['data']);
+        }).catch(err => {
+            show_error('An error occured posting the data, please try again');
+            console.log('Error', err, 'Occured while posting data');
+        });
+        await fetch('/decision_tree').then((response) => {
             console.log('THE RESPONSE IS', response)
             return response.json();
         }).then((data) => {
@@ -979,11 +1072,15 @@ function solve_decision_tree() {
                 i++;
                 color = new_color;
             }
+            prev_solved = 'solve_btn_decision_tree';
             clear_button.style.display = "flex" // displays clear button
+            solve_btn.style.display = 'none';
             my_graph.update();
+            show_loading('off');
         }).catch((err) => {
+            show_error('An error occured getting the data, please try again');
             console.log('rejected', err);
-        })
+        });
     }
     send_and_solve_decision_tree();
 }
