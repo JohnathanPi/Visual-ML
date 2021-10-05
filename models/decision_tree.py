@@ -7,6 +7,7 @@ import numpy as np
 
 data = sys.argv[1]
 data_obj = ast.literal_eval(data)
+
 X = []
 y = []
 for label in data_obj:
@@ -18,6 +19,10 @@ X = np.array(X)
 y = np.array(y)
 max_x = int(np.ceil(np.max(X[:, 0])))
 max_y = int(np.ceil(np.max(X[:, 1])))
+if np.abs(max_x) < 20:
+    max_x = 20
+if np.abs(max_y) < 20:
+    max_y = 20
 
 # Information gain function
 
