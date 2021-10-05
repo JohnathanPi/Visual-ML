@@ -11,7 +11,21 @@ Currently, the supported models are:
   * Linear SVM
   * K-Means clustering
   * Decision trees
-
+ 
+<!--  <p align = "center">
+ <img src = "https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/decision_tree_2.png" width = "75%" height = "50%">
+  -->
+  
+<!--  <p float="left">
+  <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/decision_tree_2.png" width = "33%">
+  <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/k%20means.png"  width = "33%"> 
+  <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/Linear%20SVM.png" width = "33%">
+</p> -->
+ 
+ Decision Tree             |  K-Means | Linear SVM
+:-------------------------:|:-------------------------:|:-------------------------:
+![](https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/decision_tree.png)|![](https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/k_means.png)|![](https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/linear_svm.png)
+ 
 # :dna:About:
 
    * The web apps frontend is made using html,css and vanilla javascript. The graph itself 
@@ -36,16 +50,16 @@ Currently, the supported models are:
     it contains etc..). It also containts the fetch requests to the
     server.
   * server.js: Responsible for recieving the data from the user,
-    sending it to the python scripts and recieving the data back.
+    sending it to the python scripts and recieving & sending the data back.
   * models/: The folder containing all of the python scripts that
     run the models on the data.
 
 # :toolbox:How it works:
   * The general flow is this: the graph itself, which is rendered using chart-js, 
-    lives as an object inside index.js and is displayed in an html ```<canvas id="my_graph"></canvas>```
-    tag. After entering the data, clicking the solve button sends the entered data that is
+    lives as an object inside index.js and is displayed in an html ```<canvas></canvas>```
+    tag. After entering the data, clicking the solve button posts the entered data that is
     now inside the graph object to the server, where it spawns a child process that runs
-    the appropriate python script which runs the model on the data, and returns the
+    the requested python script which runs the model on the data, and returns the
     appropriate data needed to graph the decision boundary.
   * ### Linear regression: 
     Linear regression is solved using the closed form matrix multiplication
@@ -53,9 +67,9 @@ Currently, the supported models are:
   * ### Logistic regression: 
     Logistic regression is solved using gradient descent. The script 
     returns the decision boundarys' slope, bias and accuracy. 
-  * ###Linear SVM:
-    Solved using scikit-learn's SVM.SVC with a linear kernel. An SGD SVM using hinge loss
-    was attempted (and is in the models/ folder) however it was not consistent and accurate
+  * ### Linear SVM:
+    Solved using scikit-learn's SVM.SVC with a linear kernel.SVM using SGD and the hinge loss
+    formulation was attempted (and is in the models/ folder) however it was not consistent and accurate
     enough so is not currently used. The script returns the support vectors coordinates and 
     the slope and biases of the decision boundarys and margin lines.
   * ### K-Means:
@@ -64,9 +78,9 @@ Currently, the supported models are:
     where a centroid has no point that is closest to it thus leading it to remain empty,
     the initial centroids are random points in the data, instead of the means of the initial
     random clusters. When an empty set occures, the algorithm stops and the user is shown
-    a message asking them to pick a more suitable K. The script returns the coordinates of
+    a message asking them to pick a more suitable K or retry. The script returns the coordinates of
     each cluster-mean and the points that belong to each cluster, so that they can all
-    recieve different colors when they are shown to the user.
+    be colored differently when they are shown to the user.
   * ### Decision Tree:
     By far the hardest model to implement and decision boundary to draw (detailed
     explanation in the challenges section), the decision tree is implemented using 
@@ -79,7 +93,7 @@ Currently, the supported models are:
 # :abacus: Challenges:
   
   * ### Drawing the decision tree decision boudnary:
-    The tree class is built out of nodes that structured like this:
+    The tree class is built out of nodes that are structured like this:
     ```python
     class Node():
       def __init__(self, X, y, is_x_child = 'root', parent = None, left_child = None, right_child = None, split = None, border_coords = []):
@@ -94,7 +108,7 @@ Currently, the supported models are:
     ```
     The main attribute that allows the decision boundaries to by drawn is the
     *border_coords* attribute, that defines the coordinates of the 'box' that
-    each node encloses inside the graph. So, for example, the boorder_coords for
+    each node encloses inside the graph. So, for example, the border_coords for
     the root node of the decision tree would be the four edges of the whole graph.
     At the initialization of each new node, it's new border_coords are calculated
     according to its split, which is a tuple containing the value and the axis along 
@@ -108,15 +122,15 @@ Currently, the supported models are:
     in the tree, however that idea was scrapped when on large trees, the splits became
     barely visible !
   
-  * Parsing the manual data:
+  * ### Parsing the manual data:
     When the user enters the data manually, multiple format are supported, however the
     toughest one to implement was numpy arrays (after they were printed). It was 
-    important to me to allow for numpy arrays to be pasted mainly so that generated
+    important for me to allow for numpy arrays to be pasted mainly so that generated
     datasets like sk-learns make_moons, make_blobs etc.. could be supported. The problem
     with numpy arrays is that after they are printed, they are displayed with alot of
-    whitespace, no commas, and the biggest trouble, whole numbers displayed as floats
-    (for example 3.)!
-    To parse the data, mainly two regular expressions are used:
+    whitespace, no commas, and whole numbers displayed as floats
+    (for example 3.).
+    To parse the data, two main regular expressions are used:
     ```javascript
     const replace_spaces_with_commas = new RegExp(/(?<=\[\ *?\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *))( +?)(?=\ *\-?\(\d+|([+-]?([0-9]*[.])?[0-9]+\.?\ *)\])/g)
     const find_illegal_chars = new RegExp(/([A-Z]|[a-z]|[\!-\']|[\*\+\`]|[\:\;\?\@\^\_\~])+/g)
@@ -128,7 +142,7 @@ Currently, the supported models are:
     When the user inputs new data, it is matched against find_illegal_chars to verify that it
     is indeed legal data!
     Since the data is recieved as a string, floats such as '3.' are problamatic when calling
-    `JSON.parse()`, which turns the string into usable data, on the recieved data. to solve this, before calling `JSON.parse()`, the 
+    `JSON.parse()`, which turns the recieved string into usable data. To solve this, before calling `JSON.parse()`, the 
     'illegal' charecters are replaced with a regex that changes according to the number like so:
     ```javascript
     let trailing_decimal = new RegExp(/\d\.(?!\d)/g) // finds numbers of the type 3., 1. etc...
@@ -142,7 +156,7 @@ Currently, the supported models are:
     } while (temp);
     ```
   
-  * Drawing infinite slope:
+  * ### Drawing infinite slope:
     For both logistic regression and linear SVM, decision boundaries with infinite slope
     (for example x = 5) can occur. These edge cases need to be handled seperately from the     other cases since numpy will return `np.inf` which raises an error on the frontend.
     For each model this edge case
