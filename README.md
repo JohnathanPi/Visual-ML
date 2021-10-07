@@ -2,7 +2,7 @@
 <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/text-logo.png">
  </p>
 
-For the web app, please visit: https://visual-ml.herokuapp.com (might take between 10-30 seconds on start)
+For the web app, please visit: https://visual-ml.herokuapp.com (might take between 10-30 seconds on start, PC recommended)
 
 Hey! Visual-ML is a web app that allows you to generate your own datasets,
 run classic machine learning algorithms on them and 
@@ -30,8 +30,8 @@ Currently, the supported models are:
  
 # :dna:About:
 
-   * The web apps frontend is made using html,css and vanilla javascript. The graph itself 
-    is visualized using chart-js. The backend server uses node-js (express) to run python scripts
+   * The web apps frontend is made using MHTL,CSS and JavaScript. The graph itself 
+    is visualized using chart-js. The backend server uses Node.js (express) to run python scripts
     that run the models and send the results back to the frontend (through the server), where the new data is 
     processed and pushed to the chart.
 
