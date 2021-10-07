@@ -66,6 +66,12 @@ let class_1_colors = ['#e08ab7', '#0083e2',
     '#b6ccfe'
 ]
 
+let class_2_colors = ['#6a4c93', '#e63946', 
+    '#f25c54', '#9e0059', '#005f73', '#344e41', '#1c2541',
+    '#eb5e28', '#ff7b00', '#641220', '#386641', '#7d8597', '#004b23'
+]
+
+
 // let class_1_colors = ['#34ace0', '#33d9b2'
 // , '#ffb142', '#ffda79', '#cc8e35', '#0fbcf9',
 // '#05c46b','#00d8d6','#ffb8b8']
@@ -74,13 +80,6 @@ let class_1_colors = ['#e08ab7', '#0083e2',
 // , '#ff5252', '#F97F51', '#b33939', '#cd6133',
 // '#ef5777','#575fcf','#f53b57','#485460',
 // '#7158e2','#3d3d3d','#c56cf0','#cd84f1','#6D214F','#FD7272']
-
-
-let class_2_colors = ['#6a4c93', '#e63946', '#2d00f7',
-    '#00296b', '#f25c54', '#9e0059', '#005f73', '#344e41', '#1c2541',
-    '#eb5e28', '#ff7b00', '#641220', '#386641', '#7d8597', '#004b23'
-]
-
 
 
 let decision_boundary_colors = ['#264653', '#023e8a', '#3a0ca3', '#6d6875', '#005f73',
@@ -611,10 +610,13 @@ function clear_data(flag = 0) {
     solve_btn.style.display = 'flex';
     clear_button.style.display = 'none';
     my_graph.data.datasets = [];
-    my_graph.options.scales.x.max = 20;
-    my_graph.options.scales.x.min = -20;
-    my_graph.options.scales.y.max = 20;
-    my_graph.options.scales.y.min = -20;
+    if (flag != 1) {
+        console.log('Not resizing');
+        my_graph.options.scales.x.max = 20;
+        my_graph.options.scales.x.min = -20;
+        my_graph.options.scales.y.max = 20;
+        my_graph.options.scales.y.min = -20;
+    }
     my_graph.update();
 };
 
@@ -637,11 +639,11 @@ async function send_data(data) {
 }
 
 function solve_linear_regression() {
-    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform linear regression with no data');
         return;
     }
+    solve_btn.disabled = true;
     const data = my_graph.data.datasets[0].data;
     console.log('THE SENT DATA IS', JSON.stringify(data))
     async function send_and_solve_lin_reg() {
@@ -660,11 +662,13 @@ function solve_linear_regression() {
                 if (data === 0) {
                     // solver script returns 0 if there is a single data point
                     show_error("Not enoguh data")
+                    solve_btn.disabled = false;
                     return
                 }
                 if (data === 1) {
                     // solver script returns 1 if the regression line has infinite slope
                     show_error("Cannot perform regression with infinite slope")
+                    solve_btn.disabled = false;
                     return
                 }
                 let slope = data["slope"];
@@ -699,7 +703,6 @@ function solve_linear_regression() {
 
 
 function solve_logistic_regression() {
-    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform logistic regression with no data');
         return;
@@ -708,6 +711,7 @@ function solve_logistic_regression() {
         show_error('Cannot perform logistic regression with one class');
         return
     }
+    solve_btn.disabled = true;
     const data = {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
@@ -773,7 +777,6 @@ function solve_logistic_regression() {
 
 
 function solve_svm() {
-    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform svm with no data');
         return;
@@ -782,6 +785,7 @@ function solve_svm() {
         show_error('Cannot perform svm with one class');
         return
     }
+    solve_btn.disabled = true;
     const data = {
         '1': my_graph.data.datasets[0].data,
         '-1': my_graph.data.datasets[1].data
@@ -802,7 +806,8 @@ function solve_svm() {
             console.log('The data is', data)
             if (data === 0) {
                 show_error('An unknown error occured');
-
+                solve_btn.disabled = false;
+                return;
             }
             if (data["flag"]) {
                 // infinite slope edge case
@@ -931,17 +936,24 @@ function solve_svm() {
 }
 
 function solve_k_means() {
-    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot perform k_means with no data');
         return;
     }
+    let nums_regex = /\d+/g;
     // default to k = 3 if not entered
     let k = document.getElementById('input_k') === null ? 3 : document.getElementById('input_k').value
+    let parsed_k = k.match(/\d+/g)
+    console.log('PARSED K IS', parsed_k);
+    if (!parsed_k) {
+        show_error('Illegal K, please enter a number for K');
+        return;
+    }
     const data = {
         'data': my_graph.data.datasets[0].data,
         'k': k
     }
+    solve_btn.disabled = true;
     console.log('THE SENT DATA IS', JSON.stringify(data))
     async function send_and_solve_k_means() {
         show_loading('on');
@@ -958,13 +970,15 @@ function solve_k_means() {
             console.log('The data is', data)
             if (data === 0) {
                 show_error("Empty set occured, please retry or pick a better K")
+                solve_btn.disabled = false;
                 return;
             }
             if (data === 1) {
                 show_error('K bigger than number of data points')
+                solve_btn.disabled = false;
                 return;
             }
-            clear_data(); // wipes data from graph to allow recoloring of data into clusters
+            clear_data(flag = 1); // wipes data from graph to allow recoloring of data into clusters
             let data_set = [];
             centroids = data['centroids'];
             centroid_counter = 0;
@@ -1020,7 +1034,6 @@ function solve_k_means() {
 }
 
 function solve_decision_tree() {
-    solve_btn.disabled = true;
     if (!my_graph.data.datasets[0]) {
         show_error('Cannot create decision tree with no data');
         return;
@@ -1029,6 +1042,7 @@ function solve_decision_tree() {
         show_error('Cannot create decision tree with one class');
         return
     }
+    solve_btn.disabled = true;
     const data = {
         '1': my_graph.data.datasets[0].data,
         '0': my_graph.data.datasets[1].data
@@ -1049,6 +1063,7 @@ function solve_decision_tree() {
             console.log('The data is', data)
             if (data === 0) {
                 show_error('An unknown error occured');
+                solve_btn.disabled = false;
                 return;
             }
             // recieve pairs of points representing the lines and draw them on graph

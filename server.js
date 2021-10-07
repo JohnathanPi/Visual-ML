@@ -3,8 +3,18 @@ const path = require('path');
 const {
   spawn
 } = require('child_process');
-
 const app = express();
+
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`)
+    } else {
+      next()
+    }
+  })
+}
+
 app.use(express.json());
 
 let graph_data;
@@ -25,7 +35,9 @@ app.post('/api', (req, res) => {
   graph_data = ""
   graph_data = JSON.stringify(req.body);
   console.log('graph_data_is', graph_data);
-  res.send({'data':graph_data});
+  res.send({
+    'data': graph_data
+  });
   res.end();
 })
 
