@@ -2,6 +2,8 @@
 <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/text-logo.png">
  </p>
 
+For the web app, please visit: https://visual-ml.herokuapp.com (might take between 10-30 seconds on start)
+
 Hey! Visual-ML is a web app that allows you to generate your own datasets,
 run classic machine learning algorithms on them and 
 view their decision boundaries, all in the browser! 
@@ -47,7 +49,7 @@ Currently, the supported models are:
     sees, from DOM manipulation to manipulating the chart object
     (adding points on click, displaying the data that is recieved
     from the server, scaling the graphs size according to the data
-    it contains etc..). It also containts the fetch requests to the
+    it contains etc..). It also containts the POST and GET requests to the
     server.
   * server.js: Responsible for recieving the data from the user,
     sending it to the python scripts and recieving & sending the data back.
@@ -55,7 +57,7 @@ Currently, the supported models are:
     run the models on the data.
 
 # :toolbox:How it works:
-  * The general flow is this: the graph itself, which is rendered using chart-js, 
+  * The general workflow is: the graph itself, which is rendered using chart-js, 
     lives as an object inside index.js and is displayed in an html ```<canvas></canvas>```
     tag. After entering the data, clicking the solve button posts the entered data that is
     now inside the graph object to the server, where it spawns a child process that runs
@@ -68,7 +70,7 @@ Currently, the supported models are:
     Logistic regression is solved using gradient descent. The script 
     returns the decision boundarys' slope, bias and accuracy. 
   * ### Linear SVM:
-    Solved using scikit-learn's SVM.SVC with a linear kernel.SVM using SGD and the hinge loss
+    Solved using scikit-learn's SVM.SVC with a linear kernel. A Linear SVM using SGD and the hinge loss
     formulation was attempted (and is in the models/ folder) however it was not consistent and accurate
     enough so is not currently used. The script returns the support vectors coordinates and 
     the slope and biases of the decision boundarys and margin lines.
@@ -92,7 +94,7 @@ Currently, the supported models are:
  
 # :abacus: Challenges:
   
-  * ### Drawing the decision tree decision boudnary:
+  * ### Drawing the decision tree decision boundary:
     The tree class is built out of nodes that are structured like this:
     ```python
     class Node():
@@ -123,9 +125,9 @@ Currently, the supported models are:
     barely visible !
   
   * ### Parsing the manual data:
-    When the user enters the data manually, multiple format are supported, however the
+    When the user enters the data manually, multiple formats are supported, however the
     toughest one to implement was numpy arrays (after they were printed). It was 
-    important for me to allow for numpy arrays to be pasted mainly so that generated
+    important to me to allow for numpy arrays to be pasted, mainly so that generated
     datasets like sk-learns make_moons, make_blobs etc.. could be supported. The problem
     with numpy arrays is that after they are printed, they are displayed with alot of
     whitespace, no commas, and whole numbers displayed as floats
@@ -162,7 +164,7 @@ Currently, the supported models are:
     For each model this edge case
     is caught beforehand by checking if the slope is equal to `np.inf` or `-np.inf`, then
     handled differently according to the model. For logistic regression, the mean of the
-    x-axis values is drawn parallel to the y-axis. For linear SVM, decision boundry is
+    x-axis values is drawn parallel to the y-axis. For linear SVM, the decision boundry is
     set to be the mean of the support vectors, and the margins are drawn around the           minimum and maximum of the support vectors.
 
   
