@@ -57,7 +57,7 @@ Currently, the supported models are:
     run the models on the data.
 
 # :toolbox:How it works:
-  * The general workflow is: the graph itself, which is rendered using chart-js, 
+  * The general workflow is as follows: the graph itself, which is rendered using chart-js, 
     lives as an object inside index.js and is displayed in an html ```<canvas></canvas>```
     tag. After entering the data, clicking the solve button posts the entered data that is
     now inside the graph object to the server, where it spawns a child process that runs
