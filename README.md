@@ -30,7 +30,7 @@ Currently, the supported models are:
  
 # :dna:About:
 
-   * The web apps frontend is made using MHTL,CSS and JavaScript. The graph itself 
+   * The web apps frontend is made using HTML, CSS and JavaScript. The graph itself 
     is visualized using chart-js. The backend server uses Node.js (express) to run python scripts
     that run the models and send the results back to the frontend (through the server), where the new data is 
     processed and pushed to the chart.
