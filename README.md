@@ -2,7 +2,7 @@
 <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/text-logo.png">
  </p>
 
-## Note: The web app is currently down after Heroku (where the site is hosted) removed their basic plan from the site. I'm in the process of porting the sites back end to Python so that it can be hosted someplace else, since not many hosting sevices support apps that use both Python  and Node 
+## Note: The web app is currently down after Heroku (where the site is hosted) removed their basic plan from the site. I'm in the process of porting the sites back end to Python so that it can be hosted someplace else, since not many hosting sevices have basic plans that support apps that use both Python and Node.
 For the web app, please visit: https://visual-ml.herokuapp.com (might take between 10-30 seconds on start, PC recommended)
 
 Hey! Visual-ML is a web app that allows you to generate your own datasets,
