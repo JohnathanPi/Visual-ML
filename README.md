@@ -1,6 +1,9 @@
 <p align = "center">
 <img src="https://github.com/JohnathanPi/ML-Graph-Project/blob/master/public/images/text-logo.png">
  </p>
+ 
+For the web app, please visit: https://visual-ml.herokuapp.com (might take between 10-30 seconds on start, PC recommended)
+
 
 Hey! Visual-ML is a web app that allows you to generate your own datasets,
 run classic machine learning algorithms on them and 
